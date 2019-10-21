@@ -41,7 +41,7 @@ class WorldstateEmitter extends EventEmitter {
 
   /**
    * Get current rss feed items
-   * @return {Object} [description]
+   * @returns {Object} [description]
    */
   getRss() {
     return this.rss.feeder.list().map((i) => ({ url: i.url, items: i.items }));
@@ -51,7 +51,7 @@ class WorldstateEmitter extends EventEmitter {
    * Get a specific worldstate, defaulting to 'pc' for the platform and 'en' for the language
    * @param  {String} [platform='pc'] platform to get
    * @param  {String} [locale='en']   locale/languate to fetch
-   * @return {[type]}                 [description]
+   * @returns {Object}                 [description]
    */
   // eslint-disable-next-line class-methods-use-this
   getWorldstate(platform = 'pc', locale = 'en') {
@@ -60,7 +60,7 @@ class WorldstateEmitter extends EventEmitter {
 
   /**
    * Get Twitter data
-   * @return {Promise} promised twitter data
+   * @returns {Promise} promised twitter data
    */
   async getTwitter() {
     return this.twitter.getData();
