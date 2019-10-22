@@ -1,10 +1,8 @@
 'use strict';
 
-const { between, lastUpdated, logger } = require('../../utilities');
+const { between, lastUpdated } = require('../../utilities');
 
 module.exports = (data, deps) => {
-  // logger.info(`received ${deps.key}`);
-
   if (!data) return undefined;
   const last = new Date(lastUpdated[deps.platform][deps.language]);
   const activation = new Date(data.activation);
@@ -14,7 +12,7 @@ module.exports = (data, deps) => {
     const packet = {
       ...deps,
       data,
-      eventKey: deps.eventKey || deps.key,
+      id: deps.eventKey || deps.key,
     };
     return packet;
   }

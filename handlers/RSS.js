@@ -1,17 +1,14 @@
 'use strict';
 
-const EventEmitter = require('events');
 const RssFeedEmitter = require('rss-feed-emitter');
 const feeds = require('../resources/rssFeeds.json');
 
 const { logger } = require('../utilities');
 
-class RSS extends EventEmitter {
-  constructor() {
-    super();
-
+class RSS {
+  constructor(eventEmitter) {
     this.logger = logger;
-
+    this.emitter = eventEmitter;
     this.feeder = new RssFeedEmitter({ userAgent: 'WFCD Feed Notifier' });
 
     feeds.forEach((feed) => {
@@ -51,9 +48,9 @@ class RSS extends EventEmitter {
             },
             title: item.title,
             image: firstImg,
-            key: feed.key,
+            id: feed.key,
           };
-          this.emit('rss', rssSummary);
+          this.emitter.emit('rss', rssSummary);
         }
       } catch (error) {
         this.logger.error(error);
@@ -62,4 +59,4 @@ class RSS extends EventEmitter {
   }
 }
 
-module.exports = new RSS({ userAgent: 'WFCD Feed Notifier' });
+module.exports = RSS;

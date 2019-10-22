@@ -1,13 +1,9 @@
 'use strict';
 
 const Worldstate = require('warframe-worldstate-parser');
-const EventEmitter = require('events');
 
-// const { logger } = require('../utilities');
-
-class WSCache extends EventEmitter {
-  constructor(platform, language, kuvaCache) {
-    super();
+class WSCache {
+  constructor(platform, language, kuvaCache, eventEmitter) {
     this.inner = null;
     Object.defineProperty(this, 'inner', { enumerable: false, configurable: false });
 
@@ -16,6 +12,8 @@ class WSCache extends EventEmitter {
 
     this.platform = platform;
     this.language = language;
+
+    this.emitter = eventEmitter;
   }
 
   get data() {
@@ -26,7 +24,7 @@ class WSCache extends EventEmitter {
     const t = new Worldstate(newData, { locale: this.language, kuvaCache: this.kuvaCache });
     if (!t.timestamp) return;
     this.inner = t;
-    this.emit('update', this.inner);
+    this.emitter.emit('ws:update:parsed', { language: this.language, platform: this.platform, data: this.inner });
   }
 
   set twitter(newTwitter) {

@@ -24,7 +24,7 @@ module.exports = (nightwave, deps) => {
       activeChallenges: groups[group],
     }, {
       ...deps,
-      eventKey: `nightwave.${group}`,
+      id: `nightwave.${group}`,
     }));
   });
 };

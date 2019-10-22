@@ -2,9 +2,6 @@
 
 require('colors');
 const { transports, createLogger, format } = require('winston');
-const warframeData = require('warframe-worldstate-data');
-const Cache = require('json-fetch-cache');
-const WSCache = require('./WSCache');
 
 const {
   combine, label, printf, colorize,
@@ -22,36 +19,6 @@ const logger = createLogger({
   transports: [transport],
 });
 logger.level = process.env.LOG_LEVEL || 'error';
-
-const platforms = ['pc', 'ps4', 'xb1', 'swi'];
-const worldStates = {};
-const kuvaCache = new Cache('https://10o.io/kuvalog.json', 300000, {
-  useEmitter: false, logger, delayStart: false, maxRetry: 1,
-});
-
-const wsTimeout = process.env.CACHE_TIMEOUT || 60000;
-const wsRawCaches = {};
-
-platforms.forEach((p) => {
-  const url = `http://content${p === 'pc' ? '' : `.${p}`}.warframe.com/dynamic/worldState.php`;
-  worldStates[p] = {};
-
-  warframeData.locales.forEach((locale) => {
-    worldStates[p][locale] = new WSCache(p, locale, kuvaCache);
-  });
-  wsRawCaches[p] = new Cache(url, wsTimeout, {
-    delayStart: false,
-    parser: (str) => str,
-    useEmitter: true,
-    logger,
-  });
-
-  wsRawCaches[p].on('update', (dataStr) => {
-    warframeData.locales.forEach((locale) => {
-      worldStates[p][locale].data = dataStr;
-    });
-  });
-});
 
 /**
  * Group an array by a field value
@@ -113,9 +80,7 @@ const lastUpdated = {
 
 module.exports = {
   logger,
-  worldStates,
   groupBy,
-  warframeData,
   fromNow,
   between,
   lastUpdated,

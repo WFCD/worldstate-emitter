@@ -1,6 +1,5 @@
 'use strict';
 
-const EventEmitter = require('events');
 const Twitter = require('twitter');
 const toWatch = require('../resources/tweeters.json');
 
@@ -20,12 +19,11 @@ const determineTweetType = (tweet) => {
 };
 
 /**
- * Twitter event emitter
- * @extends EventEmitter
+ * Twitter event handler
  */
-class TwitterCache extends EventEmitter {
-  constructor() {
-    super();
+class TwitterCache {
+  constructor(eventEmitter) {
+    this.emitter = eventEmitter;
     this.timeout = process.env.TWITTER_TIMEOUT || 60000;
     this.initTime = Date.now();
 
@@ -128,7 +126,7 @@ class TwitterCache extends EventEmitter {
         parsedData.push(parsedTweet);
 
         if (parsedTweet.createdAt.getTime() > this.lastUpdated) {
-          this.emit('tweet', parsedTweet);
+          this.emitter.emit('tweet', parsedTweet);
         }
       }
     } catch (error) {
@@ -153,4 +151,4 @@ class TwitterCache extends EventEmitter {
   }
 }
 
-module.exports = new TwitterCache();
+module.exports = TwitterCache;

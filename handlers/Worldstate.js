@@ -1,9 +1,17 @@
 'use strict';
 
-const EventEmitter = require('events');
-const {
-  worldStates, logger, groupBy, warframeData: { locales }, lastUpdated,
-} = require('../utilities');
+const Cache = require('json-fetch-cache');
+const { locales } = require('warframe-worldstate-data');
+
+const WSCache = require('../utilities/WSCache');
+
+const { logger, groupBy, lastUpdated } = require('../utilities');
+
+const platforms = ['pc', 'ps4', 'xb1', 'swi'];
+const worldStates = {};
+const kuvaCache = new Cache('https://10o.io/kuvalog.json', 300000, {
+  useEmitter: false, logger, delayStart: false, maxRetry: 1,
+});
 
 const fissureKey = (fissure) => `fissures.t${fissure.tierNum}.${(fissure.missionType || '').toLowerCase()}`;
 const acolyteKey = (acolyte) => ({
@@ -67,7 +75,7 @@ const parseNew = (deps) => {
         deps = {
           ...deps,
           data: data[type],
-          eventKey: `kuva.${data[type][0].type.replace(/\s/g, '').toLowerCase()}`,
+          id: `kuva.${data[type][0].type.replace(/\s/g, '').toLowerCase()}`,
         };
         packets.push(require('./events/objectLike')(deps.data, deps));
       });
@@ -75,7 +83,7 @@ const parseNew = (deps) => {
     case 'events':
       deps = {
         ...deps,
-        eventKey: eKeyOverrides[deps.key],
+        id: eKeyOverrides[deps.key],
       };
     case 'alerts':
     case 'conclaveChallenges':
@@ -91,7 +99,7 @@ const parseNew = (deps) => {
         const k = checkOverrides(deps.key, arrayItem);
         packets.push(require('./events/objectLike')(arrayItem, {
           ...deps,
-          eventKey: k,
+          id: k,
         }));
       });
       return packets;
@@ -99,16 +107,14 @@ const parseNew = (deps) => {
     case 'earthCycle':
     case 'vallisCycle':
       // these need special logic to make sure the extra time events fire
-      require('./events/cycleLike')(deps.data, deps);
-      break;
+      return require('./events/cycleLike')(deps.data, deps);
     case 'sortie':
     case 'voidTrader':
     case 'arbitration':
       // pretty straightforward, make sure the activation
       //    is between the last update and current cycle start
-      deps.eventKey = checkOverrides(deps.key, deps.data);
-      require('./events/objectLike')(deps.data, deps);
-      break;
+      deps.id = checkOverrides(deps.key, deps.data);
+      return require('./events/objectLike')(deps.data, deps);
     case 'nightwave':
       return require('./events/nightwave')(deps.data, deps);
     case 'persistentEnemies':
@@ -125,18 +131,73 @@ const parseNew = (deps) => {
   return undefined;
 };
 
-class Worldstate extends EventEmitter {
-  constructor() {
-    super();
-    Object.keys(worldStates)
-      .forEach((platform) => {
-        locales.forEach((locale) => {
-          worldStates[platform][locale].on('update', (data) => {
-            const packet = { platform, worldstate: data, language: locale };
-            this.parseEvents(packet);
-          });
-        });
+const wsTimeout = process.env.CACHE_TIMEOUT || 60000;
+const wsRawCaches = {};
+
+class Worldstate {
+  constructor(eventEmitter, platform, locale) {
+    this.emitter = eventEmitter;
+    this.platform = platform;
+    this.locale = locale;
+    logger.verbose('starting up worldstate listener...');
+    if (platform) {
+      logger.verbose(`only listening for ${platform}...`);
+    }
+    if (locale) {
+      logger.verbose(`only listening for ${locale}...`);
+    }
+
+    this.setUpRawEmitters();
+    this.setupParsedEvents();
+  }
+
+  /**
+   * Set up emitting raw worldstate data
+   */
+  setUpRawEmitters() {
+    platforms.forEach((p) => {
+      if (this.platform && this.platform !== p) return;
+
+      const url = `http://content${p === 'pc' ? '' : `.${p}`}.warframe.com/dynamic/worldState.php`;
+      worldStates[p] = {};
+
+      locales.forEach((locale) => {
+        if (!this.locale || this.locale === locale) {
+          worldStates[p][locale] = new WSCache(p, locale, kuvaCache, this.emitter);
+        }
       });
+
+      wsRawCaches[p] = new Cache(url, wsTimeout, {
+        delayStart: false,
+        parser: (str) => str,
+        useEmitter: true,
+        logger,
+      });
+
+      /* listen for the raw cache updates so we can emit them from the super emitter */
+      wsRawCaches[p].on('update', (dataStr) => {
+        this.emitter.emit('ws:update:raw', { platform: p, data: dataStr });
+      });
+    });
+
+    /* when the raw emits happen, parse them and store them on parsed worldstate caches */
+    this.emitter.on('ws:update:raw', ({ platform, data }) => {
+      locales.forEach((locale) => {
+        if (!this.locale || this.locale === locale) {
+          worldStates[platform][locale].data = data;
+        }
+      });
+    });
+  }
+
+  /**
+   * Set up listeners for the parsed worldstate updates
+   */
+  setupParsedEvents() {
+    this.emitter.on('ws:update:parsed', ({ language, platform, data }) => {
+      const packet = { platform, worldstate: data, language };
+      this.parseEvents(packet, this.emitter);
+    });
   }
 
   /**
@@ -163,11 +224,16 @@ class Worldstate extends EventEmitter {
     lastUpdated[platform][language] = Date.now();
 
     packets
-      .filter((p) => p && p.eventKey)
+      .filter((p) => p && p.id)
       .forEach((packet) => {
-        this.emit('update', packet);
+        this.emitter.emit('ws:update:event', packet);
       });
+  }
+
+  emit(packet) {
+    logger.silly(`ws:update:event - emitting ${packet.id}`);
+    this.emitter.emit('ws:update:event', packet);
   }
 }
 
-module.exports = new Worldstate();
+module.exports = Worldstate;
