@@ -18,7 +18,6 @@ const acolyteKey = (acolyte) => ({
   eventKey: `enemies${acolyte.isDiscovered ? '' : '.departed'}`,
   activation: acolyte.lastDiscoveredAt,
 });
-
 const arbiKey = (arbitration) => {
   if (!(arbitration && arbitration.enemy)) return '';
 
@@ -69,17 +68,25 @@ const parseNew = (deps) => {
   const packets = [];
   switch (deps.key) {
     case 'kuva':
-      if (!deps.data) break;
+      if (!deps.data) {
+        logger.error('no kuva data');
+        return undefined;
+      }
       const data = groupBy(deps.data, 'type');
       Object.keys(data).forEach((type) => {
         deps = {
           ...deps,
           data: data[type],
           id: `kuva.${data[type][0].type.replace(/\s/g, '').toLowerCase()}`,
+          activation: data[type][0].activation,
+          expiry: data[type][0].expiry,
         };
-        packets.push(require('./events/objectLike')(deps.data, deps));
+        const p = require('./events/objectLike')(deps.data, deps);
+        if (p) {
+          packets.push(p);
+        }
       });
-      return packets;
+      return packets.filter((p) => p);
     case 'events':
       deps = {
         ...deps,
@@ -126,25 +133,26 @@ const parseNew = (deps) => {
       };
       return require('./events/objectLike')(deps.data, deps);
     default:
-      return undefined;
+      return packets;
   }
-  return undefined;
 };
 
 const wsTimeout = process.env.CACHE_TIMEOUT || 60000;
 const wsRawCaches = {};
+
+const debugEvents = ['arbitration', 'kuva', 'nightwave'];
 
 class Worldstate {
   constructor(eventEmitter, platform, locale) {
     this.emitter = eventEmitter;
     this.platform = platform;
     this.locale = locale;
-    logger.verbose('starting up worldstate listener...');
+    logger.silly('starting up worldstate listener...');
     if (platform) {
-      logger.verbose(`only listening for ${platform}...`);
+      logger.debug(`only listening for ${platform}...`);
     }
     if (locale) {
-      logger.verbose(`only listening for ${locale}...`);
+      logger.debug(`only listening for ${locale}...`);
     }
 
     this.setUpRawEmitters();
@@ -215,24 +223,44 @@ class Worldstate {
       });
 
       if (Array.isArray(packet)) {
-        packets.push(...packet);
-      } else {
+        if (packet.length) {
+          packets.push(...(packet.filter((p) => p && p !== null)));
+        }
+      } else if (packet) {
         packets.push(packet);
       }
     });
 
     lastUpdated[platform][language] = Date.now();
-
     packets
-      .filter((p) => p && p.id)
+      .filter((p) => p && p.id && packets !== null)
       .forEach((packet) => {
-        this.emitter.emit('ws:update:event', packet);
+        this.emit('ws:update:event', packet);
       });
   }
 
-  emit(packet) {
+  emit(id, packet) {
+    if (debugEvents.includes(packet.key)) logger.warn(packet.key);
+
     logger.silly(`ws:update:event - emitting ${packet.id}`);
-    this.emitter.emit('ws:update:event', packet);
+    delete packet.cycleStart;
+    delete packet.key;
+    this.emitter.emit(id, packet);
+  }
+
+  /**
+   * get a specific worldstate version
+   * @param  {string} [platform='pc'] Platform of the worldstate
+   * @param  {string} [locale='en']   Locale of the worldsttate
+   * @returns {Object}                 Worldstate corresponding to provided data
+   * @throws {Error} when the platform or locale aren't tracked and aren't updated
+   */
+  // eslint-disable-next-line class-methods-use-this
+  get(platform = 'pc', language = 'en') {
+    if (worldStates[platform] && worldStates[platform][language]) {
+      return worldStates[platform][language].data;
+    }
+    throw new Error(`Platform (${platform}) or language (${language}) not tracked.\nEnsure that the parameters passed are correct`);
   }
 }
 

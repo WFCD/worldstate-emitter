@@ -19,12 +19,14 @@ module.exports = (nightwave, deps) => {
 
   const packets = [];
   Object.keys(groups).forEach((group) => {
-    packets.push(require('./objectLike')({
+    const p = require('./objectLike')({
       ...nightwave,
       activeChallenges: groups[group],
     }, {
       ...deps,
       id: `nightwave.${group}`,
-    }));
+    });
+    packets.push(p);
   });
+  return packets;
 };

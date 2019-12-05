@@ -1,20 +1,19 @@
 'use strict';
 
-const { between, lastUpdated } = require('../../utilities');
+const { between, lastUpdated, logger } = require('../../utilities');
 
 module.exports = (data, deps) => {
   if (!data) return undefined;
   const last = new Date(lastUpdated[deps.platform][deps.language]);
   const activation = new Date(data.activation);
-  const start = new Date(deps.cycleStart - 10000000);
-
+  const start = new Date(deps.cycleStart);
   if (between(last, activation, start)) {
-    const packet = {
+    const p = {
       ...deps,
       data,
-      id: deps.eventKey || deps.key,
+      id: deps.id || deps.key,
     };
-    return packet;
+    if (deps.key === 'kuva') logger.warn(`objectlike: ${JSON.stringify(p)}`);
   }
   return undefined;
 };

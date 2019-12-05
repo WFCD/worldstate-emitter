@@ -49,7 +49,7 @@ class TwitterCache {
         this.updateInterval = setInterval(() => this.update(), this.timeout);
         this.update();
       } else {
-        logger.verbose(`client not initialized... invalid token: ${clientInfo.bearer_token}`);
+        logger.warn(`Twitter client not initialized... invalid token: ${clientInfo.bearer_token}`);
       }
     } catch (err) {
       this.client = undefined;

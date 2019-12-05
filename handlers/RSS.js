@@ -15,7 +15,7 @@ class RSS {
       this.feeder.add({ url: feed.url, timeout: 30000 });
     });
 
-    this.logger.verbose('RSS Feed active');
+    this.logger.debug('RSS Feed active');
 
     this.start = Date.now();
 

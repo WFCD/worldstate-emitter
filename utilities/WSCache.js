@@ -23,8 +23,10 @@ class WSCache {
   set data(newData) {
     const t = new Worldstate(newData, { locale: this.language, kuvaCache: this.kuvaCache });
     if (!t.timestamp) return;
-    this.inner = t;
-    this.emitter.emit('ws:update:parsed', { language: this.language, platform: this.platform, data: this.inner });
+    setTimeout(() => {
+      this.inner = t;
+      this.emitter.emit('ws:update:parsed', { language: this.language, platform: this.platform, data: this.inner });
+    }, 1000);
   }
 
   set twitter(newTwitter) {

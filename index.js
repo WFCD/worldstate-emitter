@@ -6,7 +6,7 @@ const RSS = require('./handlers/RSS');
 const Worldstate = require('./handlers/Worldstate');
 const Twitter = require('./handlers/Twitter');
 
-const { logger, worldStates } = require('./utilities');
+const { logger } = require('./utilities');
 
 class WorldstateEmitter extends EventEmitter {
   /**
@@ -23,7 +23,7 @@ class WorldstateEmitter extends EventEmitter {
     this.worldstate = new Worldstate(this, platform, locale);
     this.twitter = new Twitter(this);
 
-    logger.verbose('hey look, i started up...');
+    logger.silly('hey look, i started up...');
     this.setupLogging();
   }
 
@@ -32,11 +32,11 @@ class WorldstateEmitter extends EventEmitter {
    * @private
    */
   setupLogging() {
-    this.on('rss', (body) => logger.verbose(`emitted: ${body.id}`));
-    this.on('ws:update:raw', (body) => logger.debug(`emitted raw: ${body.platform}`));
-    this.on('ws:update:parsed', (body) => logger.debug(`emitted parsed: ${body.platform} in ${body.language}`));
-    this.on('ws:update:event', (body) => logger.debug(`emitted event: ${body.id} ${body.platform} in ${body.language}`));
-    this.on('tweet', (body) => logger.debug(`emitted: ${body.id}`));
+    this.on('rss', (body) => logger.silly(`emitted: ${body.id}`));
+    this.on('ws:update:raw', (body) => logger.silly(`emitted raw: ${body.platform}`));
+    this.on('ws:update:parsed', (body) => logger.silly(`emitted parsed: ${body.platform} in ${body.language}`));
+    this.on('ws:update:event', (body) => logger.silly(`emitted event: ${body.id} ${body.platform} in ${body.language}`));
+    this.on('tweet', (body) => logger.silly(`emitted: ${body.id}`));
   }
 
   /**
@@ -54,11 +54,8 @@ class WorldstateEmitter extends EventEmitter {
    * @returns {Object}                 Requested worldstate
    */
   // eslint-disable-next-line class-methods-use-this
-  getWorldstate(platform = 'pc', locale = 'en') {
-    if (worldStates[platform] && worldStates[platform][locale]) {
-      return worldStates[platform][locale].data;
-    }
-    throw new Error(`Platform (${platform}) or locale (${locale}) not tracked.\nEnsure that the parameters passed are correct`);
+  getWorldstate(platform = 'pc', language = 'en') {
+    return this.worldstate.get(platform, language);
   }
 
   /**
@@ -66,7 +63,7 @@ class WorldstateEmitter extends EventEmitter {
    * @returns {Promise} promised twitter data
    */
   async getTwitter() {
-    return this.twitter.getData();
+    return this.twitter.clientInfoValid ? this.twitter.getData() : undefined;
   }
 }
 

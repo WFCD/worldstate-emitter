@@ -65,7 +65,7 @@ function fromNow(d, now = Date.now) {
  */
 const lastUpdated = {
   pc: {
-    en: Date.now(),
+    en: 0, // Date.now(),
   },
   ps4: {
     en: Date.now(),
