@@ -212,7 +212,7 @@ class Worldstate {
    * Parse new worldstate events
    * @param  {Object} worldstate     worldstate to find packets from
    * @param  {string} platform       platform the worldstate corresponds to
-   * @param  {string} [language='en' }]            langauge of the worldstate
+   * @param  {string} [language='en'] langauge of the worldstate
    */
   parseEvents({ worldstate, platform, language = 'en' }) {
     const cycleStart = Date.now();
@@ -244,7 +244,6 @@ class Worldstate {
 
     logger.silly(`ws:update:event - emitting ${packet.id}`);
     delete packet.cycleStart;
-    delete packet.key;
     this.emitter.emit(id, packet);
   }
 
