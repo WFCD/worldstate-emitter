@@ -3,12 +3,17 @@
 const Worldstate = require('warframe-worldstate-parser');
 
 class WSCache {
-  constructor(platform, language, kuvaCache, eventEmitter) {
+  constructor({
+    platform, language, kuvaCache, sentientCache, eventEmitter,
+  }) {
     this.inner = null;
     Object.defineProperty(this, 'inner', { enumerable: false, configurable: false });
 
     this.kuvaCache = kuvaCache;
     Object.defineProperty(this, 'kuvaCache', { enumerable: false, configurable: false });
+
+    this.sentientCache = sentientCache;
+    Object.defineProperty(this, 'sentientCache', { enumerable: false, configurable: false });
 
     this.platform = platform;
     this.language = language;
@@ -21,7 +26,11 @@ class WSCache {
   }
 
   set data(newData) {
-    const t = new Worldstate(newData, { locale: this.language, kuvaCache: this.kuvaCache });
+    const t = new Worldstate(newData, {
+      locale: this.language,
+      kuvaCache: this.kuvaCache,
+      sentientCache: this.sentientCache,
+    });
     if (!t.timestamp) return;
     setTimeout(() => {
       this.inner = t;

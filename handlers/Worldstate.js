@@ -12,6 +12,9 @@ const worldStates = {};
 const kuvaCache = new Cache('https://10o.io/kuvalog.json', 300000, {
   useEmitter: false, logger, delayStart: false, maxRetry: 1,
 });
+const sentientCache = new Cache('https://10o.io/anomaly.json', 300000, {
+  useEmitter: false, logger, delayStart: false, maxRetry: 1,
+});
 
 const fissureKey = (fissure) => `fissures.t${fissure.tierNum}.${(fissure.missionType || '').toLowerCase()}`;
 const acolyteKey = (acolyte) => ({
@@ -171,7 +174,9 @@ class Worldstate {
 
       locales.forEach((locale) => {
         if (!this.locale || this.locale === locale) {
-          worldStates[p][locale] = new WSCache(p, locale, kuvaCache, this.emitter);
+          worldStates[p][locale] = new WSCache({
+            platform: p, locale, kuvaCache, sentientCache, eventEmitter: this.emitter,
+          });
         }
       });
 
