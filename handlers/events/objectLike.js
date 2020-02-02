@@ -13,7 +13,7 @@ module.exports = (data, deps) => {
       data,
       id: deps.id || deps.key,
     };
-    if (deps.key === 'kuva') logger.warn(`objectlike: ${JSON.stringify(p)}`);
+    return p;
   }
   return undefined;
 };

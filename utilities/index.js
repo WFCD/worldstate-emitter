@@ -39,6 +39,7 @@ const groupBy = (array, field) => {
   return grouped;
 };
 
+const allowedDeviation = 30000;
 /**
  * Validate that b is between a and c
  * @param  {Date} a The first Date, should be the last time things were updated
@@ -46,7 +47,9 @@ const groupBy = (array, field) => {
  * @param  {Date} c The third Date, should be the start time of this update cycle
  * @returns {boolean}   if the event date is between the server start time and the last update time
  */
-const between = (a, b, c = new Date()) => ((b > a) && (b < c));
+const between = (a, b, c = new Date()) => {
+  ((b + allowedDeviation > a) && (b - allowedDeviation < c))
+};
 
 /**
  * Returns the number of milliseconds between now and a given date

@@ -32,6 +32,8 @@ class WorldstateEmitter extends EventEmitter {
    * @private
    */
   setupLogging() {
+    this.on('error', logger.error);
+
     this.on('rss', (body) => logger.silly(`emitted: ${body.id}`));
     this.on('ws:update:raw', (body) => logger.silly(`emitted raw: ${body.platform}`));
     this.on('ws:update:parsed', (body) => logger.silly(`emitted parsed: ${body.platform} in ${body.language}`));
@@ -44,16 +46,15 @@ class WorldstateEmitter extends EventEmitter {
    * @returns {Object} [description]
    */
   getRss() {
-    return this.rss.feeder.list().map((i) => ({ url: i.url, items: i.items }));
+    return this.rss.feeder.list.map((i) => ({ url: i.url, items: i.items }));
   }
 
   /**
    * Get a specific worldstate, defaulting to 'pc' for the platform and 'en' for the language
-   * @param  {String} [platform='pc'] platform to get
-   * @param  {String} [locale='en']   locale/languate to fetch
+   * @param  {string} [platform='pc'] platform to get
+   * @param  {string} [language='en']   locale/languate to fetch
    * @returns {Object}                 Requested worldstate
    */
-  // eslint-disable-next-line class-methods-use-this
   getWorldstate(platform = 'pc', language = 'en') {
     return this.worldstate.get(platform, language);
   }

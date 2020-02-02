@@ -32,9 +32,9 @@
     "@sentry/node": "^5.7.1",
     "colors": "^1.4.0",
     "json-fetch-cache": "^1.2.1",
-    "rss-feed-emitter": "file:../../rss-feed-emitter",
+    "rss-feed-emitter": "github:filipedeschamps/rss-feed-emitter#0c6beac",
     "twitter": "^1.7.1",
-    "warframe-worldstate-data": "^1.0.12",
+    "warframe-worldstate-data": "^1.3.3",
     "warframe-worldstate-parser": "^2.9.4",
     "winston": "^3.2.1"
   },
