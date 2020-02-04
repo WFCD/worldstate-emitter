@@ -2,7 +2,18 @@
 
 const Worldstate = require('warframe-worldstate-parser');
 
+/**
+ * Warframe WorldState Cache - store and retrieve current worldstate data
+ */
 class WSCache {
+  /**
+   * Set up a cache checking for data and updates to a specific worldstate set
+   * @param {string}        platform      Platform to track
+   * @param {string}        language      Langauge/translation to track
+   * @param {JSONCache}     kuvaCache     Cache of kuva data, provided by Semlar
+   * @param {JSONCache}     sentientCache Cache of sentient outpost data, provided by Semlar
+   * @param {Eventemitter}  eventEmitter  Emitter to push new worldstate updates to
+   */
   constructor({
     platform, language, kuvaCache, sentientCache, eventEmitter,
   }) {
@@ -21,10 +32,18 @@ class WSCache {
     this.emitter = eventEmitter;
   }
 
+  /**
+   * Get the latest worldstate data from this cache
+   * @returns {Object} Current worldstate data
+   */
   get data() {
     return this.inner;
   }
 
+  /**
+   * Set the current data, aslso parses and emits data
+   * @param  {string} newData New string data to parse
+   */
   set data(newData) {
     const t = new Worldstate(newData, {
       locale: this.language,
@@ -38,6 +57,10 @@ class WSCache {
     }, 1000);
   }
 
+  /**
+   * Set the current twitter data for the worldstate
+   * @param  {Object} newTwitter twitter data
+   */
   set twitter(newTwitter) {
     if (!(newTwitter && newTwitter.length)) return;
     this.inner.twitter = newTwitter;

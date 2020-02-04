@@ -5,7 +5,14 @@ const feeds = require('../resources/rssFeeds.json');
 
 const { logger } = require('../utilities');
 
+/**
+ * RSS Emitter, leverages [rss-feed-emitter](https://npmjs.org/package/rss-feed-emitter)
+ */
 class RSS {
+  /**
+   * Set up emitting events for warframe forum entries
+   * @param {EventEmitter} eventEmitter Emitter to send events from
+   */
   constructor(eventEmitter) {
     this.logger = logger;
     this.emitter = eventEmitter;

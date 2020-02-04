@@ -22,6 +22,10 @@ const determineTweetType = (tweet) => {
  * Twitter event handler
  */
 class TwitterCache {
+  /**
+   * Create a new Twitter self-updating cache
+   * @param {EventEmitter} eventEmitter emitter to push new tweets to
+   */
   constructor(eventEmitter) {
     this.emitter = eventEmitter;
     this.timeout = process.env.TWITTER_TIMEOUT || 60000;
@@ -58,6 +62,10 @@ class TwitterCache {
     }
   }
 
+  /**
+   * Force the cache to update
+   * @returns {Promise} the currently updating promise.
+   */
   async update() {
     if (!this.clientInfoValid) return undefined;
 
@@ -76,6 +84,10 @@ class TwitterCache {
     return this.updating;
   }
 
+  /**
+   * Get data able to be parsed from twitter.
+   * @returns {Promise.<Array.<Object>>} Twieets
+   */
   async getParseableData() {
     logger.silly('Starting Twitter update...');
     const parsedData = [];
@@ -141,6 +153,11 @@ class TwitterCache {
     return parsedData;
   }
 
+  /**
+   * Get the current data or a promise with the current data
+   * @returns {Promise.<Object> | Object} either the current data
+   *  if it's not updating, or the promise returning the new data
+   */
   async getData() {
     if (!this.clientInfoValid) return undefined;
 

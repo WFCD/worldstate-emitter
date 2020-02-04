@@ -121,6 +121,10 @@ const parseNew = (deps) => {
     case 'sortie':
     case 'voidTrader':
     case 'arbitration':
+    case 'sentientOutposts':
+      if (deps.key === 'sentientOutposts') {
+        logger.debug(JSON.stringify(deps.data));
+      }
       // pretty straightforward, make sure the activation
       //    is between the last update and current cycle start
       deps.id = checkOverrides(deps.key, deps.data);
@@ -145,7 +149,16 @@ const wsRawCaches = {};
 
 const debugEvents = ['arbitration', 'kuva', 'nightwave'];
 
+/**
+ * Handler for worldstate data
+ */
 class Worldstate {
+  /**
+   * Set up listening for specific platform and locale if provided.
+   * @param {EventEmitter} eventEmitter Emitter to push new worldstate events to
+   * @param {string} platform     Platform to watch (optional)
+   * @param {string} locale       Locale (actually just language) to watch
+   */
   constructor(eventEmitter, platform, locale) {
     this.emitter = eventEmitter;
     this.platform = platform;
@@ -217,7 +230,7 @@ class Worldstate {
    * Parse new worldstate events
    * @param  {Object} worldstate     worldstate to find packets from
    * @param  {string} platform       platform the worldstate corresponds to
-   * @param  {string} [language='en'] langauge of the worldstate
+   * @param  {string} [language='en'] langauge of the worldstate (defaults to 'en')
    */
   parseEvents({ worldstate, platform, language = 'en' }) {
     const cycleStart = Date.now();
@@ -244,6 +257,11 @@ class Worldstate {
       });
   }
 
+  /**
+   * Emit an event with given id
+   * @param  {string} id     Id of the event to emit
+   * @param  {Object} packet Data packet to emit
+   */
   emit(id, packet) {
     if (debugEvents.includes(packet.key)) logger.warn(packet.key);
 
