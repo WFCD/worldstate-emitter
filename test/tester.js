@@ -6,4 +6,10 @@ const e = new Emitter({ platform: 'pc', language: 'en' });
 
 e.on('rss', console.log);
 
-console.log(JSON.stringify(e.getRss()));
+const wsEvents = ['kuva', 'arbitration', 'fissures'];
+
+e.on('ws:update:event', ({ id, language, platform, key, data }) => {
+  if (wsEvents.includes(key)) {
+    console.log(`${id}:${language}:${platform}:${key}`);
+  }
+});

@@ -1,5 +1,7 @@
 'use strict';
 
+const Cache = require('json-fetch-cache');
+
 require('colors');
 const { transports, createLogger, format } = require('winston');
 
@@ -13,7 +15,7 @@ const logFormat = printf((info) => `[${info.label}] ${info.level}: ${info.messag
 const logger = createLogger({
   format: combine(
     colorize(),
-    label({ label: 'WS'.cyan }),
+    label({ label: 'WS'.brightBlue }),
     logFormat,
   ),
   transports: [transport],
@@ -60,7 +62,6 @@ const between = (a, b, c = new Date()) => {
 function fromNow(d, now = Date.now) {
   return new Date(d).getTime() - now();
 }
-
 
 /**
  * Map of last updated dates/times

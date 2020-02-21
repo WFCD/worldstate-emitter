@@ -45,13 +45,14 @@ class WSCache {
    * @param  {string} newData New string data to parse
    */
   set data(newData) {
-    const t = new Worldstate(newData, {
-      locale: this.language,
-      kuvaCache: this.kuvaCache,
-      sentientCache: this.sentientCache,
-    });
-    if (!t.timestamp) return;
-    setTimeout(() => {
+    setTimeout(async () => {
+      const t = new Worldstate(newData, {
+        locale: this.language,
+        kuvaData: await this.kuvaCache.getData(),
+        sentientData: await this.sentientCache.getData(),
+      });
+      if (!t.timestamp) return;
+      
       this.inner = t;
       this.emitter.emit('ws:update:parsed', { language: this.language, platform: this.platform, data: this.inner });
     }, 1000);

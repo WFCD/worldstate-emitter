@@ -7,14 +7,17 @@ const WSCache = require('../utilities/WSCache');
 
 const { logger, groupBy, lastUpdated } = require('../utilities');
 
+const wsTimeout = process.env.CACHE_TIMEOUT || 60000;
 const platforms = ['pc', 'ps4', 'xb1', 'swi'];
 const worldStates = {};
-const kuvaCache = new Cache('https://10o.io/kuvalog.json', 300000, {
-  useEmitter: false, logger, delayStart: false, maxRetry: 1,
-});
-const sentientCache = new Cache('https://10o.io/anomaly.json', 300000, {
-  useEmitter: false, logger, delayStart: false, maxRetry: 1,
-});
+const wsRawCaches = {};
+
+
+const debugEvents = ['arbitration', 'kuva', 'nightwave'];
+
+const smTimeout = process.env.SEMLAR_TIMEOUT || 300000;
+const kuvaCache = new Cache('https://10o.io/kuvalog.json', smTimeout, { logger, maxRetry: 0 });
+const sentientCache = new Cache('https://semlar.com/anomaly.json', smTimeout, { logger });
 
 const fissureKey = (fissure) => `fissures.t${fissure.tierNum}.${(fissure.missionType || '').toLowerCase()}`;
 const acolyteKey = (acolyte) => ({
@@ -122,9 +125,6 @@ const parseNew = (deps) => {
     case 'voidTrader':
     case 'arbitration':
     case 'sentientOutposts':
-      if (deps.key === 'sentientOutposts') {
-        logger.debug(JSON.stringify(deps.data));
-      }
       // pretty straightforward, make sure the activation
       //    is between the last update and current cycle start
       deps.id = checkOverrides(deps.key, deps.data);
@@ -144,10 +144,7 @@ const parseNew = (deps) => {
   }
 };
 
-const wsTimeout = process.env.CACHE_TIMEOUT || 60000;
-const wsRawCaches = {};
 
-const debugEvents = ['arbitration', 'kuva', 'nightwave'];
 
 /**
  * Handler for worldstate data
@@ -185,7 +182,7 @@ class Worldstate {
       const url = `http://content${p === 'pc' ? '' : `.${p}`}.warframe.com/dynamic/worldState.php`;
       worldStates[p] = {};
 
-      locales.forEach((locale) => {
+      locales.forEach(async (locale) => {
         if (!this.locale || this.locale === locale) {
           worldStates[p][locale] = new WSCache({
             platform: p, locale, kuvaCache, sentientCache, eventEmitter: this.emitter,
