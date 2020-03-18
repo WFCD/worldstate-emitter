@@ -61,38 +61,73 @@ const checkOverrides = (key, data) => {
 };
 
 /**
+ * Process kuva fields
+ * @param  {Object} deps    dependencies for processing
+ * @param  {Object[]} packets  packets to emit
+ * @returns {Object|Object[]}  object(s) to emit from kuva stuff
+ */
+const kuvaProcessing = (deps, packets) => {
+  if (!deps.data) {
+    logger.error('no kuva data');
+    return undefined;
+  }
+  const data = groupBy(deps.data, 'type');
+  Object.keys(data).forEach((type) => {
+    deps = {
+      ...deps,
+      data: data[type],
+      id: `kuva.${data[type][0].type.replace(/\s/g, '').toLowerCase()}`,
+      activation: data[type][0].activation,
+      expiry: data[type][0].expiry,
+    };
+    const p = require('./events/objectLike')(deps.data, deps);
+    if (p) {
+      packets.push(p);
+    }
+  });
+  return packets.filter((p) => p);
+};
+
+/**
+ * arrayLike are all just arrays of objectLike
+ * @param  {Object} deps    dependencies for processing
+ * @param  {Object[]} packets  packets to emit
+ * @returns {Object|Object[]}  object(s) to emit from arrayLike processing
+ */
+const arrayLike = (deps, packets) => {
+  deps.data.forEach((arrayItem) => {
+    const k = checkOverrides(deps.key, arrayItem);
+    packets.push(require('./events/objectLike')(arrayItem, {
+      ...deps,
+      id: k,
+    }));
+  });
+  return packets;
+};
+
+/**
+ * Set up current cycle start if it's not been intiated
+ * @param  {Object} deps    dependencies for processing
+ */
+const initCycleStart = (deps) => {
+  if (!lastUpdated[deps.platform][deps.language]) {
+    lastUpdated[deps.platform][deps.language] = deps.cycleStart;
+  }
+};
+
+/**
  * Parse new events from the provided worldstate
  * @param  {Object} deps dependencies to parse out events
  * @returns {Packet|Packet[]}      packet(s) to emit
  */
 const parseNew = (deps) => {
-  if (!lastUpdated[deps.platform][deps.language]) {
-    lastUpdated[deps.platform][deps.language] = deps.cycleStart;
-  }
+  initCycleStart(deps);
 
   // anything in the eKeyOverrides goes first, then anything uniform
   const packets = [];
   switch (deps.key) {
     case 'kuva':
-      if (!deps.data) {
-        logger.error('no kuva data');
-        return undefined;
-      }
-      const data = groupBy(deps.data, 'type');
-      Object.keys(data).forEach((type) => {
-        deps = {
-          ...deps,
-          data: data[type],
-          id: `kuva.${data[type][0].type.replace(/\s/g, '').toLowerCase()}`,
-          activation: data[type][0].activation,
-          expiry: data[type][0].expiry,
-        };
-        const p = require('./events/objectLike')(deps.data, deps);
-        if (p) {
-          packets.push(p);
-        }
-      });
-      return packets.filter((p) => p);
+      return kuvaProcessing(deps, packets);
     case 'events':
       deps = {
         ...deps,
@@ -107,44 +142,32 @@ const parseNew = (deps) => {
     case 'invasions':
     case 'syndicateMissions':
     case 'weeklyChallenges':
-      // arrayLike are all just arrays of objectLike
-      deps.data.forEach((arrayItem) => {
-        const k = checkOverrides(deps.key, arrayItem);
-        packets.push(require('./events/objectLike')(arrayItem, {
-          ...deps,
-          id: k,
-        }));
-      });
-      return packets;
+      packets.push(...arrayLike(deps, packets));
+      break;
     case 'cetusCycle':
     case 'earthCycle':
     case 'vallisCycle':
-      // these need special logic to make sure the extra time events fire
-      return require('./events/cycleLike')(deps.data, deps);
-    case 'sortie':
-    case 'voidTrader':
-    case 'arbitration':
-    case 'sentientOutposts':
-      // pretty straightforward, make sure the activation
-      //    is between the last update and current cycle start
-      deps.id = checkOverrides(deps.key, deps.data);
-      return require('./events/objectLike')(deps.data, deps);
-    case 'nightwave':
-      return require('./events/nightwave')(deps.data, deps);
+      packets.push(require('./events/cycleLike')(deps.data, deps));
+      break;
     case 'persistentEnemies':
-      // uhhh, gotta find a good activation for this....
-      // might just have to send it all the time?
       deps = {
         ...deps,
         ...checkOverrides(deps.key, deps.data),
       };
-      return require('./events/objectLike')(deps.data, deps);
+    case 'sortie':
+    case 'voidTrader':
+    case 'arbitration':
+    case 'sentientOutposts':
+      deps.id = checkOverrides(deps.key, deps.data);
+      packets.push(require('./events/objectLike')(deps.data, deps));
+    case 'nightwave':
+      packets.push(require('./events/nightwave')(deps.data, deps));
     default:
-      return packets;
+      break;
   }
+
+  return packets;
 };
-
-
 
 /**
  * Handler for worldstate data
