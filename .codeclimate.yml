@@ -8,3 +8,6 @@ checks:
       threshold: 10
   similar-code:
     enabled: false
+plugins:
+  eslint:
+    enabled: false
