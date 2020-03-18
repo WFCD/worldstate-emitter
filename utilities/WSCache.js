@@ -52,7 +52,7 @@ class WSCache {
         sentientData: await this.sentientCache.getData(),
       });
       if (!t.timestamp) return;
-      
+
       this.inner = t;
       this.emitter.emit('ws:update:parsed', { language: this.language, platform: this.platform, data: this.inner });
     }, 1000);

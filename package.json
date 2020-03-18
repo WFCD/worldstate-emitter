@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "npx nyc npx mocha test/specs --exit",
-    "lint": "npx eslint index.js",
-    "lint:fix": "npx eslint index.js --fix",
+    "lint": "npx eslint index.js handlers/**.js utilities/**.js",
+    "lint:fix": "npx eslint index.js handlers/**.js utilities/**.js --fix",
     "coverage": "npm test && npx nyc report --reporter=text-lcov | npx coveralls",
     "build-docs": "npx jsdoc -c jsdoc-config.json -d docs",
     "dev": "npx nodemon test/tester.js"

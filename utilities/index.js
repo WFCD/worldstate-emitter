@@ -1,7 +1,5 @@
 'use strict';
 
-const Cache = require('json-fetch-cache');
-
 require('colors');
 const { transports, createLogger, format } = require('winston');
 
@@ -49,9 +47,7 @@ const allowedDeviation = 30000;
  * @param  {Date} c The third Date, should be the start time of this update cycle
  * @returns {boolean}   if the event date is between the server start time and the last update time
  */
-const between = (a, b, c = new Date()) => {
-  ((b + allowedDeviation > a) && (b - allowedDeviation < c))
-};
+const between = (a, b, c = new Date()) => (b + allowedDeviation > a) && (b - allowedDeviation < c);
 
 /**
  * Returns the number of milliseconds between now and a given date
