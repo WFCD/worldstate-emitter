@@ -48,7 +48,7 @@
     "ink-docstrap": "^1.3.2"
   },
   "engines": {
-    "node": ">=8.9.0"
+    "node": ">=10.19.0"
   },
   "nodemonConfig": {
     "delay": 5000,
