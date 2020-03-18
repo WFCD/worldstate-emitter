@@ -6,3 +6,5 @@ checks:
   method-complexity:
     config:
       threshold: 10
+  similar-code:
+    enabled: false
