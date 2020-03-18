@@ -2,10 +2,9 @@ language: node_js
 os: linux
 distro: darwin
 
-# temporarily disable cache
-# cache:
-#  directories:
-#    - ~/.npm
+cache:
+ directories:
+   - ~/.npm
 
 notifications:
   email: false
@@ -29,11 +28,17 @@ stages:
 jobs:
   include:
     - stage: lint
-      script: npm run lint
+      script: 
+        - npm i -g eslint
+        - npm run lint
     - stage: test
-      script: npm test
+      script:
+        - npm i -g mocha nyc
+        - npm test
     - stage: coverage
-      script: npm run coverage
+      script:
+        - npm i -g nyc mocha coveralls
+        - npm run coverage
     - stage: release
       node_js: node
       deploy:
