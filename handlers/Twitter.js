@@ -18,6 +18,41 @@ const determineTweetType = (tweet) => {
   return ('tweet');
 };
 
+const parseAuthor = (tweet) => ({
+  name: tweet.user.name,
+  handle: tweet.user.screen_name,
+  url: `https://twitter.com/${tweet.user.screen_name}`,
+  avatar: `${tweet.user.profile_image_url.replace('_normal.jpg', '.jpg')}`,
+});
+
+const parseQuoted = (tweet, type) => (tweet[type]
+  ? {
+    text: tweet[type].full_text,
+    author: {
+      name: tweet[type].user.name,
+      handle: tweet[type].user.screen_name,
+    },
+  }
+  : undefined);
+
+const parseTweet = (tweets, watchable) => {
+  const [tweet] = tweets;
+  const type = determineTweetType(tweet);
+  return {
+    id: `twitter.${watchable.plain}.${type}`,
+    uniqueId: String(tweets[0].id_str),
+    text: tweet.full_text,
+    url: `https://twitter.com/${tweet.user.screen_name}/status/${tweet.id_str}`,
+    mediaUrl: tweet.entities.media ? tweet.entities.media[0].media_url : undefined,
+    isReply: typeof tweet.in_reply_to_status_id !== 'undefined',
+    author: parseAuthor(tweet),
+    quote: parseQuoted(tweet, 'quoted_status'),
+    retweet: parseQuoted(tweet, 'retweeted_status'),
+    createdAt: new Date(tweet.created_at),
+    tweets,
+  };
+};
+
 /**
  * Twitter event handler
  */
@@ -41,7 +76,10 @@ class TwitterCache {
       && clientInfo.consumer_secret
       && clientInfo.bearer_token;
 
+    this.initClient(clientInfo);
+  }
 
+  initClient(clientInfo) {
     try {
       if (this.clientInfoValid) {
         this.client = new Twitter(clientInfo);
@@ -98,59 +136,31 @@ class TwitterCache {
           tweet_mode: 'extended',
           count: 1,
         });
-        const [tweet] = tweets;
+        const tweet = parseTweet(tweets, watchable);
+        parsedData.push(tweet);
 
-        const type = determineTweetType(tweet);
-        const parsedTweet = {
-          id: `twitter.${watchable.plain}.${type}`,
-          uniqueId: String(tweets[0].id_str),
-          text: tweet.full_text,
-          url: `https://twitter.com/${tweet.user.screen_name}/status/${tweet.id_str}`,
-          mediaUrl: tweet.entities.media ? tweet.entities.media[0].media_url : undefined,
-          isReply: typeof tweet.in_reply_to_status_id !== 'undefined',
-          author: {
-            name: tweet.user.name,
-            handle: tweet.user.screen_name,
-            url: `https://twitter.com/${tweet.user.screen_name}`,
-            avatar: `${tweet.user.profile_image_url.replace('_normal.jpg', '.jpg')}`,
-          },
-          quote: tweet.quoted_status
-            ? {
-              text: tweet.quoted_status.full_text,
-              author: {
-                name: tweet.quoted_status.user.name,
-                handle: tweet.quoted_status.user.screen_name,
-              },
-            }
-            : undefined,
-          retweet: tweet.retweeted_status
-            ? {
-              text: tweet.retweeted_status.full_text,
-              author: {
-                name: tweet.retweeted_status.user.name,
-                handle: tweet.retweeted_status.user.screen_name,
-              },
-            }
-            : undefined,
-          createdAt: new Date(tweet.created_at),
-          tweets,
-        };
-        parsedData.push(parsedTweet);
-
-        if (parsedTweet.createdAt.getTime() > this.lastUpdated) {
-          this.emitter.emit('tweet', parsedTweet);
+        if (tweet.createdAt.getTime() > this.lastUpdated) {
+          this.emitter.emit('tweet', tweet);
         }
       }
     } catch (error) {
-      if (error[0] && error[0].code === 32) {
-        this.clientInfoValid = false;
-        logger.info('wiping twitter client data, could not authenticate...');
-      } else {
-        logger.debug(JSON.stringify(error));
-      }
+      this.onError(error);
     }
     this.lastUpdated = Date.now();
     return parsedData;
+  }
+
+  /**
+   * Handle errors that arise while fetching data from twitter
+   * @param  {[type]} error twitter error
+   */
+  onError(error) {
+    if (error[0] && error[0].code === 32) {
+      this.clientInfoValid = false;
+      logger.info('wiping twitter client data, could not authenticate...');
+    } else {
+      logger.debug(JSON.stringify(error));
+    }
   }
 
   /**
