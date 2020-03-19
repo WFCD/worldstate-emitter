@@ -18,7 +18,6 @@ install: npm install
 
 stages:
   - name: lint
-  - name: test
   - name: coverage
   - name: release
     if: branch = master && type NOT IN (pull_request)
