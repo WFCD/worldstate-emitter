@@ -9,16 +9,21 @@ cache:
 notifications:
   email: false
 node_js:
-  - "10.19.0"
-  - "lts/*"
-  - stable
-  - node
+  - 'node'
+  - 'lts/*'
+  - 13
+  - 12
+  - 11
+  - 10
+  - 9
+  - 8
 
 install: npm install
 
 stages:
-  - name: lint
-  - name: coverage
+  - lint
+  - test
+  - coverage
   - name: release
     if: branch = master && type NOT IN (pull_request)
   - name: docs
