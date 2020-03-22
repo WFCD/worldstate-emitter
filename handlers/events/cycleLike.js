@@ -6,7 +6,7 @@ module.exports = (cycleData, deps) => {
   const packet = {
     ...deps,
     data: cycleData,
-    eventKey: `${deps.key.replace('Cycle', '')}.${cycleData.state}`,
+    id: `${deps.key.replace('Cycle', '')}.${cycleData.state}`,
   };
 
   const last = new Date(lastUpdated[deps.platform][deps.language]);
@@ -20,8 +20,8 @@ module.exports = (cycleData, deps) => {
 
   const timePacket = {
     ...packet,
-    eventKey: `${packet.eventKey}.${Math.round(fromNow(deps.data.expiry) / 60000)}`,
+    id: `${packet.id}.${Math.round(fromNow(deps.data.expiry) / 60000)}`,
   };
-  packets.push(timePacket);
+  // packets.push(timePacket);
   return packets;
 };

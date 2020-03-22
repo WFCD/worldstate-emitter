@@ -2,9 +2,6 @@
 
 require('colors');
 const { transports, createLogger, format } = require('winston');
-const warframeData = require('warframe-worldstate-data');
-const Cache = require('json-fetch-cache');
-const WSCache = require('./WSCache');
 
 const {
   combine, label, printf, colorize,
@@ -16,42 +13,12 @@ const logFormat = printf((info) => `[${info.label}] ${info.level}: ${info.messag
 const logger = createLogger({
   format: combine(
     colorize(),
-    label({ label: 'WS'.cyan }),
+    label({ label: 'WS'.brightBlue }),
     logFormat,
   ),
   transports: [transport],
 });
 logger.level = process.env.LOG_LEVEL || 'error';
-
-const platforms = ['pc', 'ps4', 'xb1', 'swi'];
-const worldStates = {};
-const kuvaCache = new Cache('https://10o.io/kuvalog.json', 300000, {
-  useEmitter: false, logger, delayStart: false, maxRetry: 1,
-});
-
-const wsTimeout = process.env.CACHE_TIMEOUT || 60000;
-const wsRawCaches = {};
-
-platforms.forEach((p) => {
-  const url = `http://content${p === 'pc' ? '' : `.${p}`}.warframe.com/dynamic/worldState.php`;
-  worldStates[p] = {};
-
-  warframeData.locales.forEach((locale) => {
-    worldStates[p][locale] = new WSCache(p, locale, kuvaCache);
-  });
-  wsRawCaches[p] = new Cache(url, wsTimeout, {
-    delayStart: false,
-    parser: (str) => str,
-    useEmitter: true,
-    logger,
-  });
-
-  wsRawCaches[p].on('update', (dataStr) => {
-    warframeData.locales.forEach((locale) => {
-      worldStates[p][locale].data = dataStr;
-    });
-  });
-});
 
 /**
  * Group an array by a field value
@@ -72,6 +39,7 @@ const groupBy = (array, field) => {
   return grouped;
 };
 
+const allowedDeviation = 30000;
 /**
  * Validate that b is between a and c
  * @param  {Date} a The first Date, should be the last time things were updated
@@ -79,7 +47,7 @@ const groupBy = (array, field) => {
  * @param  {Date} c The third Date, should be the start time of this update cycle
  * @returns {boolean}   if the event date is between the server start time and the last update time
  */
-const between = (a, b, c = new Date()) => ((b > a) && (b < c));
+const between = (a, b, c = new Date()) => (b + allowedDeviation > a) && (b - allowedDeviation < c);
 
 /**
  * Returns the number of milliseconds between now and a given date
@@ -91,14 +59,13 @@ function fromNow(d, now = Date.now) {
   return new Date(d).getTime() - now();
 }
 
-
 /**
  * Map of last updated dates/times
  * @type {Object}
  */
 const lastUpdated = {
   pc: {
-    en: Date.now(),
+    en: 0, // Date.now(),
   },
   ps4: {
     en: Date.now(),
@@ -113,9 +80,7 @@ const lastUpdated = {
 
 module.exports = {
   logger,
-  worldStates,
   groupBy,
-  warframeData,
   fromNow,
   between,
   lastUpdated,

@@ -3,20 +3,17 @@
 const { between, lastUpdated, logger } = require('../../utilities');
 
 module.exports = (data, deps) => {
-  // logger.info(`received ${deps.key}`);
-
   if (!data) return undefined;
   const last = new Date(lastUpdated[deps.platform][deps.language]);
   const activation = new Date(data.activation);
-  const start = new Date(deps.cycleStart - 10000000);
-
+  const start = new Date(deps.cycleStart);
   if (between(last, activation, start)) {
-    const packet = {
+    const p = {
       ...deps,
       data,
-      eventKey: deps.eventKey || deps.key,
+      id: deps.id || deps.key,
     };
-    return packet;
+    return p;
   }
   return undefined;
 };

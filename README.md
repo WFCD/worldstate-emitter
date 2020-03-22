@@ -1,4 +1,4 @@
-# warframe-events [![Build Status](https://travis-ci.com/WFCD/worldstate-emitter.svg?branch=master)](https://travis-ci.com/WFCD/worldstate-emitter)
+# Worldstate Emitter [![Build Status](https://travis-ci.com/WFCD/worldstate-emitter.svg?branch=master)](https://travis-ci.com/WFCD/worldstate-emitter)
 
 Suuuper simple emitter for worldstate events.
 
@@ -33,6 +33,7 @@ Tweet | `tweet` | New tweet from one of the selected accounts
  - [WF Discord](https://twitter.com/wfdiscord) (wfdiscord)
 </details>
 
+<br />
 <details> <summary>Twitter Events</summary>
 
  - `tweet`
@@ -42,7 +43,7 @@ Tweet | `tweet` | New tweet from one of the selected accounts
 </details>
 
 <br />
-<details> <summary>RSS Feeds</summary>
+<details><summary>RSS Feeds</summary>
 
  - [Players helping Players](https://forums.warframe.com/forum/38-players-helping-players)
  - [PC Updates](https://forums.warframe.com/forum/3-pc-update-notes)
@@ -55,23 +56,23 @@ Tweet | `tweet` | New tweet from one of the selected accounts
  - [Switch Announcements](https://forums.warframe.com/forum/1198-nintendo-switch-announcements)
  - [News](https://forums.warframe.com/forum/170-announcements-events)
  - [Developers Workshop](https://forums.warframe.com/forum/123-developer-workshop-update-notes)
- - <details>
-  <summary>Staff Replies</summary>
+ 
+ <details><summary>Staff Replies</summary>
 
-  - [[DE]Rebecca](https://forums.warframe.com/discover/839)
-  - [[DE]Danielle](https://forums.warframe.com/discover/840)
-  - [[DE]Drew](https://forums.warframe.com/discover/841)
-  - [[DE]Glen](https://forums.warframe.com/discover/842)
-  - [[DE]Taylor](https://forums.warframe.com/discover/1171)
-  - [[DE]Steve](https://forums.warframe.com/discover/1777)
-  - [[DE]Helen](https://forums.warframe.com/discover/1291)
-  - [[DE]Saske](https://forums.warframe.com/discover/1294)
-  - [[DE]Kaz](https://forums.warframe.com/discover/1295)
-  - [[DE]Pablo](https://forums.warframe.com/discover/1299)
-  - [[DE]Connor](https://forums.warframe.com/discover/1778)
-  - [[DE]Marcus](https://forums.warframe.com/discover/1779)
-  - [[DE]George](https://forums.warframe.com/discover/1780)
-  - [[DE]Bear](https://forums.warframe.com/discover/1781)
+ - [[DE]Rebecca](https://forums.warframe.com/discover/839)
+ - [[DE]Danielle](https://forums.warframe.com/discover/840)
+ - [[DE]Drew](https://forums.warframe.com/discover/841)
+ - [[DE]Glen](https://forums.warframe.com/discover/842)
+ - [[DE]Taylor](https://forums.warframe.com/discover/1171)
+ - [[DE]Steve](https://forums.warframe.com/discover/1777)
+ - [[DE]Helen](https://forums.warframe.com/discover/1291)
+ - [[DE]Saske](https://forums.warframe.com/discover/1294)
+ - [[DE]Kaz](https://forums.warframe.com/discover/1295)
+ - [[DE]Pablo](https://forums.warframe.com/discover/1299)
+ - [[DE]Connor](https://forums.warframe.com/discover/1778)
+ - [[DE]Marcus](https://forums.warframe.com/discover/1779)
+ - [[DE]George](https://forums.warframe.com/discover/1780)
+ - [[DE]Bear](https://forums.warframe.com/discover/1781)
   </details>
 </details>
 

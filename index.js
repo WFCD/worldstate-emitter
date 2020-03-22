@@ -2,20 +2,28 @@
 
 const EventEmitter = require('events');
 
-const { logger, worldStates } = require('./utilities');
+const RSS = require('./handlers/RSS');
+const Worldstate = require('./handlers/Worldstate');
+const Twitter = require('./handlers/Twitter');
+
+const { logger } = require('./utilities');
 
 class WorldstateEmitter extends EventEmitter {
   /**
    * Pull in and instantiate emitters
+   * @param {string} platform platform to restrict events to
    */
-  constructor() {
+  constructor({ platform, locale } = { platform: undefined, locale: undefined }) {
     super();
 
-    this.rss = require('./emitters/RSS');
-    this.worldstate = require('./emitters/Worldstate');
-    this.twitter = require('./emitters/Twitter');
-    this.setupEmissions();
-    logger.verbose('hey look, i started up...');
+    this.platform = platform;
+    this.locale = locale;
+
+    this.rss = new RSS(this);
+    this.worldstate = new Worldstate(this, platform, locale);
+    this.twitter = new Twitter(this);
+
+    logger.silly('hey look, i started up...');
     this.setupLogging();
   }
 
@@ -24,19 +32,13 @@ class WorldstateEmitter extends EventEmitter {
    * @private
    */
   setupLogging() {
-    this.on('rss', (body) => logger.debug(`emitted: ${body.key}`));
-    this.on('ws:update', (body) => logger.debug(`emitted: ${body.eventKey}`));
-    this.on('tweet', (body) => logger.debug(`emitted: ${body.id}`));
-  }
+    this.on('error', logger.error);
 
-  /**
-   * Set up routing from internal emitters to external emissions
-   * @private
-   */
-  setupEmissions() {
-    this.rss.on('rss', (body) => this.emit('rss', body));
-    this.twitter.on('tweet', (tweet) => this.emit('tweet', tweet));
-    this.worldstate.on('update', (packet) => this.emit('ws:update', packet));
+    this.on('rss', (body) => logger.silly(`emitted: ${body.id}`));
+    this.on('ws:update:raw', (body) => logger.silly(`emitted raw: ${body.platform}`));
+    this.on('ws:update:parsed', (body) => logger.silly(`emitted parsed: ${body.platform} in ${body.language}`));
+    this.on('ws:update:event', (body) => logger.silly(`emitted event: ${body.id} ${body.platform} in ${body.language}`));
+    this.on('tweet', (body) => logger.silly(`emitted: ${body.id}`));
   }
 
   /**
@@ -44,18 +46,17 @@ class WorldstateEmitter extends EventEmitter {
    * @returns {Object} [description]
    */
   getRss() {
-    return this.rss.feeder.list().map((i) => ({ url: i.url, items: i.items }));
+    return this.rss.feeder.list.map((i) => ({ url: i.url, items: i.items }));
   }
 
   /**
    * Get a specific worldstate, defaulting to 'pc' for the platform and 'en' for the language
-   * @param  {String} [platform='pc'] platform to get
-   * @param  {String} [locale='en']   locale/languate to fetch
-   * @returns {Object}                 [description]
+   * @param  {string} [platform='pc'] platform to get
+   * @param  {string} [language='en']   locale/languate to fetch
+   * @returns {Object}                 Requested worldstate
    */
-  // eslint-disable-next-line class-methods-use-this
-  getWorldstate(platform = 'pc', locale = 'en') {
-    return worldStates[platform][locale].data;
+  getWorldstate(platform = 'pc', language = 'en') {
+    return this.worldstate.get(platform, language);
   }
 
   /**
@@ -63,7 +64,7 @@ class WorldstateEmitter extends EventEmitter {
    * @returns {Promise} promised twitter data
    */
   async getTwitter() {
-    return this.twitter.getData();
+    return this.twitter.clientInfoValid ? this.twitter.getData() : undefined;
   }
 }
 
