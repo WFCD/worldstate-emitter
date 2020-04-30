@@ -10,7 +10,7 @@
     "coverage": "npm test && npx nyc report --reporter=text-lcov | npx coveralls",
     "build-docs": "npx jsdoc -c jsdoc-config.json -d docs",
     "dev": "npx nodemon test/tester.js",
-    "snyk-protect": "snyk protect",
+    "snyk-protect": "npx snyk protect",
     "prepare": "npm run snyk-protect"
   },
   "directories": {
