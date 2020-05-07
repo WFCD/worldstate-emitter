@@ -9,7 +9,9 @@
     "lint:fix": "npx eslint index.js handlers/**.js utilities/**.js --fix",
     "coverage": "npm test && npx nyc report --reporter=text-lcov | npx coveralls",
     "build-docs": "npx jsdoc -c jsdoc-config.json -d docs",
-    "dev": "npx nodemon test/tester.js"
+    "dev": "npx nodemon test/tester.js",
+    "snyk-protect": "npx snyk protect",
+    "prepare": "npm run snyk-protect"
   },
   "directories": {
     "test": "test/specs"
@@ -57,5 +59,6 @@
       "CACHE_TIMEOUT": 60000,
       "SEMLAR_TIMEOUT": 300000
     }
-  }
+  },
+  "snyk": true
 }
