@@ -39,7 +39,7 @@
     "rss-feed-emitter": "^3.1.2",
     "twitter": "^1.7.1",
     "warframe-worldstate-data": "^1.4.25",
-    "warframe-worldstate-parser": "^2.13.1",
+    "warframe-worldstate-parser": "^2.14.0",
     "winston": "^3.2.1"
   },
   "devDependencies": {
