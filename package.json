@@ -35,7 +35,7 @@
   "dependencies": {
     "@sentry/node": "^5.17.0",
     "colors": "^1.4.0",
-    "json-fetch-cache": "^1.2.4",
+    "json-fetch-cache": "^1.2.5",
     "rss-feed-emitter": "^3.1.2",
     "twitter": "^1.7.1",
     "warframe-worldstate-data": "^1.7.7",
