@@ -12,7 +12,6 @@ const platforms = ['pc', 'ps4', 'xb1', 'swi'];
 const worldStates = {};
 const wsRawCaches = {};
 
-
 const debugEvents = ['arbitration', 'kuva', 'nightwave'];
 
 const smTimeout = process.env.SEMLAR_TIMEOUT || 300000;
