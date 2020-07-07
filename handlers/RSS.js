@@ -27,7 +27,7 @@ class RSS {
     this.logger.debug('RSS Feed active');
 
     this.start = Date.now();
-    this.feeder.on('error', this.logger.error);
+    this.feeder.on('error', this.logger.error.bind(this.logger));
     this.feeder.on('new-item', this.handleNew.bind(this));
   }
 

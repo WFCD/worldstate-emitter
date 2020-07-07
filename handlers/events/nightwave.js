@@ -7,7 +7,7 @@ module.exports = (nightwave, deps) => {
     elite: [],
   };
 
-  nightwave.activeChallenges.forEach((challenge) => {
+  (nightwave.activeChallenges || []).forEach((challenge) => {
     if (challenge.isDaily) {
       groups.daily.push(challenge);
     } else if (challenge.isElite) {

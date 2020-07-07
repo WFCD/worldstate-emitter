@@ -49,7 +49,6 @@ const parseTweet = (tweets, watchable) => {
     quote: parseQuoted(tweet, 'quoted_status'),
     retweet: parseQuoted(tweet, 'retweeted_status'),
     createdAt: new Date(tweet.created_at),
-    tweets,
   };
 };
 
