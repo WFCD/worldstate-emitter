@@ -33,7 +33,7 @@
   },
   "homepage": "https://github.com/wfcd/worldstate-emitter#readme",
   "dependencies": {
-    "@sentry/node": "^5.17.0",
+    "@sentry/node": "^5.18.0",
     "colors": "^1.4.0",
     "json-fetch-cache": "^1.2.4",
     "rss-feed-emitter": "^3.1.2",
