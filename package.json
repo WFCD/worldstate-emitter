@@ -40,7 +40,7 @@
     "twitter": "^1.7.1",
     "warframe-worldstate-data": "^1.7.7",
     "warframe-worldstate-parser": "^2.14.2",
-    "winston": "^3.3.2"
+    "winston": "^3.3.3"
   },
   "devDependencies": {
     "chai": "^4.2.0",
