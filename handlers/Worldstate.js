@@ -15,7 +15,7 @@ const wsRawCaches = {};
 const debugEvents = ['arbitration', 'kuva', 'nightwave'];
 
 const smTimeout = process.env.SEMLAR_TIMEOUT || 300000;
-const kuvaCache = new Cache('https://10o.io/kuvalog.json', smTimeout, { logger, maxRetry: 0 });
+const kuvaCache = new Cache('https://10o.io/arbitrations.json', smTimeout, { logger, maxRetry: 0 });
 const sentientCache = new Cache('https://semlar.com/anomaly.json', smTimeout, { logger });
 
 const fissureKey = (fissure) => `fissures.t${fissure.tierNum}.${(fissure.missionType || '').toLowerCase()}`;
