@@ -36,7 +36,7 @@
     "@sentry/node": "^5.20.1",
     "colors": "^1.4.0",
     "json-fetch-cache": "^1.2.6",
-    "rss-feed-emitter": "^3.2.0",
+    "rss-feed-emitter": "^3.2.1",
     "twitter": "^1.7.1",
     "warframe-worldstate-data": "^1.7.10",
     "warframe-worldstate-parser": "^2.14.2",
