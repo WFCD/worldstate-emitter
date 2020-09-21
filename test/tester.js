@@ -2,14 +2,19 @@
 
 const Emitter = require('../index.js');
 
-const e = new Emitter({ platform: 'pc', language: 'en' });
+const e = new Emitter();
 
 e.on('rss', console.log);
 
-const wsEvents = ['kuva', 'arbitration', 'fissures'];
+const wsEvents = ['news'];
+const locale = 'en';
+const pl = 'pc';
 
-e.on('ws:update:event', ({ id, language, platform, key, data }) => {
-  if (wsEvents.includes(key)) {
+e.on('ws:update:event', ({
+  id, language, platform, key, data,
+}) => {
+  if (wsEvents.includes(key) && language === locale && platform === pl) {
     console.log(`${id}:${language}:${platform}:${key}`);
+    console.log(data[key]);
   }
 });
