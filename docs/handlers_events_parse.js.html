@@ -4,7 +4,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width">
-	<title>Worldstate Emitter Classes</title>
+	<title>Worldstate Emitter Source: handlers/events/parse.js</title>
 
 	<!--[if lt IE 9]>
 	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -67,109 +67,92 @@
 <div class="row">
 
 	
-	<div class="col-md-8">
+	<div class="col-md-12">
 	
 		<div id="main">
 			
 
-	<h1 class="page-title">Classes</h1>
+		<h1 class="page-title">Source: handlers/events/parse.js</h1>
+    
 <section>
+    <article>
+        <pre
+            class="sunlight-highlight-javascript linenums">'use strict';
 
-<header>
-    
-        <h2>
-        
-        </h2>
-        
-    
-</header>
+const checkOverrides = require('./checkOverrides');
+const kuvaProcessing = require('./kuva');
+const arrayLike = require('./arrayLike');
+const eKeyOverrides = require('./eKeyOverrides');
 
+const { lastUpdated } = require('../../utilities');
 
-<article>
-    <div class="container-overview">
-    
-        
+/**
+ * Set up current cycle start if it's not been intiated
+ * @param  {Object} deps    dependencies for processing
+ */
+const initCycleStart = (deps) => {
+  if (!lastUpdated[deps.platform][deps.language]) {
+    lastUpdated[deps.platform][deps.language] = deps.cycleStart;
+  }
+};
 
-        
-<dl class="details">
-    
+/**
+ * Parse new events from the provided worldstate
+ * @param  {Object} deps dependencies to parse out events
+ * @returns {Packet|Packet[]}      packet(s) to emit
+ */
+module.exports = (deps) => {
+  initCycleStart(deps);
 
-	
+  // anything in the eKeyOverrides goes first, then anything uniform
+  const packets = [];
+  switch (deps.key) {
+    case 'kuva':
+      return kuvaProcessing(deps, packets);
+    case 'events':
+      deps = {
+        ...deps,
+        id: eKeyOverrides[deps.key],
+      };
+    case 'alerts':
+    case 'conclaveChallenges':
+    case 'dailyDeals':
+    case 'flashSales':
+    case 'fissures':
+    case 'globalUpgrades':
+    case 'invasions':
+    case 'syndicateMissions':
+    case 'weeklyChallenges':
+      packets.push(...arrayLike(deps, packets));
+      break;
+    case 'cetusCycle':
+    case 'earthCycle':
+    case 'vallisCycle':
+      packets.push(require('./cycleLike')(deps.data, deps));
+      break;
+    case 'persistentEnemies':
+      deps = {
+        ...deps,
+        ...checkOverrides(deps.key, deps.data),
+      };
+    case 'sortie':
+    case 'voidTrader':
+    case 'arbitration':
+    case 'sentientOutposts':
+      deps.id = checkOverrides(deps.key, deps.data);
+      packets.push(require('./objectLike')(deps.data, deps));
+    case 'nightwave':
+      packets.push(require('./nightwave')(deps.data, deps));
+    default:
+      break;
+  }
 
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-        
-    
-    </div>
-
-    
-
-    
-
-    
-        <h3 class="subsection-title">Classes</h3>
-
-        <dl>
-            <dt><a href="RSS.html">RSS</a></dt>
-            <dd></dd>
-        
-            <dt><a href="TwitterCache.html">TwitterCache</a></dt>
-            <dd></dd>
-        
-            <dt><a href="Worldstate.html">Worldstate</a></dt>
-            <dd></dd>
-        
-            <dt><a href="WSCache.html">WSCache</a></dt>
-            <dd></dd>
-        </dl>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</article>
-
+  return packets;
+};
+</pre>
+    </article>
 </section>
+
 
 
 
@@ -179,10 +162,6 @@
 
 	<div class="clearfix"></div>
 
-	
-		<div class="col-md-3">
-			<div id="toc" class="col-md-3 hidden-xs hidden-sm hidden-md"></div>
-		</div>
 	
 
 </div>
