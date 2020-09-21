@@ -106,16 +106,18 @@ class Worldstate {
     const cycleStart = Date.now();
     const packets = [];
     Object.keys(worldstate).forEach(async (key) => {
-      const packet = parseNew({
-        data: worldstate[key], key, language, platform, cycleStart,
-      });
+      if (worldstate && worldstate[key]) {
+        const packet = parseNew({
+          data: worldstate[key], key, language, platform, cycleStart,
+        });
 
-      if (Array.isArray(packet)) {
-        if (packet.length) {
-          packets.push(...(packet.filter((p) => p && p !== null)));
+        if (Array.isArray(packet)) {
+          if (packet.length) {
+            packets.push(...(packet.filter((p) => p && p !== null)));
+          }
+        } else if (packet) {
+          packets.push(packet);
         }
-      } else if (packet) {
-        packets.push(packet);
       }
     });
 
