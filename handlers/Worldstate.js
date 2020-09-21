@@ -52,7 +52,7 @@ class Worldstate {
     platforms.forEach((p) => {
       if (this.platform && this.platform !== p) return;
 
-      const url = `http://content${p === 'pc' ? '' : `.${p}`}.warframe.com/dynamic/worldState.php`;
+      const url = `https://content${p === 'pc' ? '' : `.${p}`}.warframe.com/dynamic/worldState.php`;
       worldStates[p] = {};
 
       locales.forEach(async (locale) => {
