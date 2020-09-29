@@ -2,4 +2,9 @@ node_modules
 .travis.yml
 .nyc_output
 coverage/
-test/
+test/*
+docs/*
+.snyk
+jsdoc-config.json
+.github/
+.codeclimate.yml
