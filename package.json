@@ -7,10 +7,10 @@
     "test": "nyc mocha test/specs --exit",
     "lint": "eslint index.js handlers/**.js utilities/**.js",
     "lint:fix": "eslint index.js handlers/**.js utilities/**.js --fix",
-    "coverage": "npm test && nyc report --reporter=text-lcov | npx coveralls",
-    "build-docs": "npx jsdoc -c jsdoc-config.json -d docs",
-    "dev": "npx nodemon test/tester.js",
-    "snyk-protect": "npx snyk protect",
+    "coverage": "npm test && nyc report --reporter=text-lcov | npx -y coveralls",
+    "build-docs": "npx -y jsdoc -c jsdoc-config.json -d docs",
+    "dev": "npx -y nodemon test/tester.js",
+    "snyk-protect": "npx -y snyk protect",
     "prepare": "npm run snyk-protect"
   },
   "directories": {
