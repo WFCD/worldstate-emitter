@@ -123,7 +123,7 @@ class TwitterCache {
 
   /**
    * Get data able to be parsed from twitter.
-   * @returns {Promise.<Array.<Object>>} Twieets
+   * @returns {Promise.<Array.<Object>>} Tweets
    */
   async getParseableData() {
     logger.silly('Starting Twitter update...');
@@ -151,7 +151,7 @@ class TwitterCache {
 
   /**
    * Handle errors that arise while fetching data from twitter
-   * @param  {[type]} error twitter error
+   * @param  {Error} error twitter error
    */
   onError(error) {
     if (error[0] && error[0].code === 32) {

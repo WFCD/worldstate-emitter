@@ -7,10 +7,10 @@
     "test": "nyc mocha test/specs --exit",
     "lint": "eslint index.js handlers/**.js utilities/**.js",
     "lint:fix": "eslint index.js handlers/**.js utilities/**.js --fix",
-    "coverage": "npm test && nyc report --reporter=text-lcov | npx coveralls",
-    "build-docs": "npx jsdoc -c jsdoc-config.json -d docs",
-    "dev": "npx nodemon test/tester.js",
-    "snyk-protect": "npx snyk protect",
+    "coverage": "npm test && nyc report --reporter=text-lcov | coveralls",
+    "build-docs": "jsdoc -c jsdoc-config.json -d docs",
+    "dev": "nodemon test/tester.js",
+    "snyk-protect": "snyk protect",
     "prepare": "npm run snyk-protect"
   },
   "directories": {
@@ -44,12 +44,16 @@
   },
   "devDependencies": {
     "chai": "^4.2.0",
+    "coveralls": "^3.1.0",
     "eslint": "^6.8.0",
     "eslint-config-airbnb-base": "^14.2.0",
     "eslint-plugin-import": "^2.22.0",
     "ink-docstrap": "^1.3.2",
+    "jsdoc": "^3.6.6",
     "mocha": "^7.2.0",
-    "nyc": "^14.1.1"
+    "nodemon": "^2.0.6",
+    "nyc": "^14.1.1",
+    "snyk": "^1.421.1"
   },
   "engines": {
     "node": ">=10.19.0"
