@@ -32,16 +32,10 @@ stages:
 jobs:
   include:
     - stage: lint
-      script: 
-        - npm i -g eslint
-        - npm run lint
-    - stage: test
       script:
-        - npm i -g mocha nyc
-        - npm test
+        - npm run lint
     - stage: coverage
       script:
-        - npm i -g nyc mocha coveralls
         - npm run coverage
     - stage: release
       node_js: node
