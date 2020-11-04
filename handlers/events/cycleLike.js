@@ -22,6 +22,6 @@ module.exports = (cycleData, deps) => {
     ...packet,
     id: `${packet.id}.${Math.round(fromNow(deps.data.expiry) / 60000)}`,
   };
-  // packets.push(timePacket);
+  packets.push(timePacket);
   return packets;
 };
