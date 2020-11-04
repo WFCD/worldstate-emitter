@@ -4,7 +4,7 @@
   "description": "Event emitter for worldstate & other warframe events",
   "main": "index.js",
   "scripts": {
-    "test": "nyc mocha test/specs --exit",
+    "test": "nyc --reporter=lcov mocha test/specs --exit",
     "lint": "eslint index.js handlers/**.js utilities/**.js",
     "lint:fix": "eslint index.js handlers/**.js utilities/**.js --fix",
     "coverage": "npm test && nyc report --reporter=text-lcov | coveralls",
@@ -58,6 +58,7 @@
   "engines": {
     "node": ">=10.19.0"
   },
+  "eslintIgnore": [".github/**", "docs/**", "resources/**", "types/**"],
   "eslintConfig": {
     "extends": "airbnb-base",
     "parserOptions": {

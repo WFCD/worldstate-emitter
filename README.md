@@ -1,4 +1,4 @@
-# Worldstate Emitter [![Build Status](https://travis-ci.com/WFCD/worldstate-emitter.svg?branch=master)](https://travis-ci.com/WFCD/worldstate-emitter)
+# Worldstate Emitter
 
 Suuuper simple emitter for worldstate events.
 
