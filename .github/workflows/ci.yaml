@@ -68,7 +68,7 @@ jobs:
     needs: [lint, test, report-coverage]
     strategy:
       matrix:
-        node-version: [12.x, 15.x, 11.x, 14.x]
+        node-version: [15.x]
     steps:
       - name: Checkout
         uses: actions/checkout@v2
