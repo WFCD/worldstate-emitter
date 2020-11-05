@@ -4,7 +4,7 @@ const chai = require('chai');
 
 chai.should();
 
-const WSEmitter = require('../../');
+const WSEmitter = require('../..');
 
 const ws = new WSEmitter();
 

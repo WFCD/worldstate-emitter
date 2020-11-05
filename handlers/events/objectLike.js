@@ -1,6 +1,6 @@
 'use strict';
 
-const { between, lastUpdated, logger } = require('../../utilities');
+const { between, lastUpdated } = require('../../utilities');
 
 module.exports = (data, deps) => {
   if (!data) return undefined;
