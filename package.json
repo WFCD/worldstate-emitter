@@ -33,12 +33,12 @@
   },
   "homepage": "https://github.com/wfcd/worldstate-emitter#readme",
   "dependencies": {
-    "@sentry/node": "^5.29.2",
+    "@sentry/node": "^5.30.0",
     "colors": "^1.4.0",
     "json-fetch-cache": "^1.2.6",
     "rss-feed-emitter": "^3.2.2",
     "twitter": "^1.7.1",
-    "warframe-worldstate-data": "^1.10.15",
+    "warframe-worldstate-data": "^1.11.6",
     "warframe-worldstate-parser": "^2.16.4",
     "winston": "^3.3.3"
   },
