@@ -38,7 +38,7 @@
     "json-fetch-cache": "^1.2.6",
     "rss-feed-emitter": "^3.2.2",
     "twitter": "^1.7.1",
-    "warframe-worldstate-data": "^1.14.0",
+    "warframe-worldstate-data": "^1.18.4",
     "warframe-worldstate-parser": "^2.17.4",
     "winston": "^3.3.3"
   },
