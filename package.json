@@ -9,9 +9,7 @@
     "lint:fix": "eslint index.js handlers/**.js utilities/**.js --fix",
     "coverage": "npm test && nyc report --reporter=text-lcov | coveralls",
     "build-docs": "jsdoc -c jsdoc-config.json -d docs",
-    "dev": "nodemon test/tester.js",
-    "snyk-protect": "snyk protect",
-    "prepare": "npm run snyk-protect"
+    "dev": "nodemon test/tester.js"
   },
   "directories": {
     "test": "test/specs"
@@ -50,8 +48,7 @@
     "eslint-plugin-import": "^2.22.1",
     "mocha": "^9.0.2",
     "nodemon": "^2.0.7",
-    "nyc": "^15.1.0",
-    "snyk": "^1.541.0"
+    "nyc": "^15.1.0"
   },
   "engines": {
     "node": ">=10.19.0"
@@ -108,6 +105,5 @@
       "CACHE_TIMEOUT": 60000,
       "SEMLAR_TIMEOUT": 300000
     }
-  },
-  "snyk": true
+  }
 }
