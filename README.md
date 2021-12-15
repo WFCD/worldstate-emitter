@@ -6,11 +6,11 @@ Very opinionated decisions on what events and event names, as well as
 
 ## Emitter Events
 
-Emitter Event | Emit key | description
-:-- | --- | --
-RSS | `rss` | New forum post from DE
-Worldstate | `ws:update` |  New Worldstate event
-Tweet | `tweet` | New tweet from one of the selected accounts
+| Emitter Event | Emit key    | description                                 |
+|:--------------|-------------|---------------------------------------------|
+| RSS           | `rss`       | New forum post from DE                      |
+| Worldstate    | `ws:update` | New Worldstate event                        |
+| Tweet         | `tweet`     | New tweet from one of the selected accounts |
 
 
 <details>
