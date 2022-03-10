@@ -1,6 +1,6 @@
 'use strict';
 
-const Emitter = require('../index.js');
+const Emitter = require('../index');
 
 const e = new Emitter();
 

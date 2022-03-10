@@ -4,9 +4,9 @@
   "description": "Event emitter for worldstate & other warframe events",
   "main": "index.js",
   "scripts": {
-    "test": "nyc --reporter=lcov mocha test/specs --exit",
-    "lint": "eslint index.js handlers/**.js utilities/**.js",
-    "lint:fix": "eslint index.js handlers/**.js utilities/**.js --fix",
+    "test": "nyc mocha",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
     "coverage": "npm test && nyc report --reporter=text-lcov | coveralls",
     "build-docs": "jsdoc -c jsdoc-config.json -d docs",
     "dev": "nodemon test/tester.js"
@@ -29,7 +29,7 @@
   "bugs": {
     "url": "https://github.com/wfcd/worldstate-emitter/issues"
   },
-  "homepage": "https://github.com/wfcd/worldstate-emitter#readme",
+  "homepage": "https://wfcd.github.io/worldstate-emitter/",
   "dependencies": {
     "@sentry/node": "^6.9.0",
     "colors": "^1.4.0",
@@ -105,5 +105,16 @@
       "CACHE_TIMEOUT": 60000,
       "SEMLAR_TIMEOUT": 300000
     }
+  },
+  "mocha": {
+    "exit": true,
+    "spec": "test/specs/**/*.spec.js"
+  },
+  "nyc": {
+    "reporter": [
+      "lcov",
+      "text"
+    ],
+    "skip-full": true
   }
 }
