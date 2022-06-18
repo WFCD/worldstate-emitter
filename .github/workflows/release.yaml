@@ -22,7 +22,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
       - name: Verify
         run: |
-          npm ci --no-optional
+          npm ci --omit=optional
           npm install --no-save warframe-worldstate-parser@^2.x warframe-worldstate-data@^1.x
           npm run lint
           npm test

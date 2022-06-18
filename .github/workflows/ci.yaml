@@ -39,7 +39,7 @@ jobs:
         node-version: ${{ matrix.node-version }}
     - name: Install Dependencies
       run: |
-        npm ci --no-optional
+        npm ci --omit=optional
         npm install --no-save warframe-worldstate-parser@^2.x warframe-worldstate-data@^1.x
     - run: npm test
       env:
@@ -60,7 +60,7 @@ jobs:
         node-version: ${{ matrix.node-version }}
     - name: Install Dependencies
       run: |
-        npm ci --no-optional
+        npm ci --omit=optional
         npm install --no-save warframe-worldstate-parser@^2.x warframe-worldstate-data@^1.x
     - run: npm test
       env:
