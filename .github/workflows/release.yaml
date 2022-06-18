@@ -22,8 +22,8 @@ jobs:
           node-version: ${{ matrix.node-version }}
       - name: Verify
         run: |
-          npm ci
-          npm i warframe-items@latest
+          npm ci --no-optional
+          npm install --no-save warframe-worldstate-parser@^2.x warframe-worldstate-data@^1.x
           npm run lint
           npm test
       - name: Semantic Release
@@ -34,4 +34,4 @@ jobs:
         with:
           semantic_version: 17
           branches: |
-            ['master', 'main']
+            ['master']

@@ -1,24 +1,29 @@
 'use strict';
 
-require('colors');
-const { transports, createLogger, format } = require('winston');
+let logger;
+try {
+  require('colors');
+  const { transports, createLogger, format } = require('winston');
 
-const {
-  combine, label, printf, colorize,
-} = format;
+  const {
+    combine, label, printf, colorize,
+  } = format;
 
-/* Logger setup */
-const transport = new transports.Console({ colorize: true });
-const logFormat = printf((info) => `[${info.label}] ${info.level}: ${info.message}`);
-const logger = createLogger({
-  format: combine(
-    colorize(),
-    label({ label: 'WS'.brightBlue }),
-    logFormat,
-  ),
-  transports: [transport],
-});
-logger.level = process.env.LOG_LEVEL || 'error';
+  /* Logger setup */
+  const transport = new transports.Console({ colorize: true });
+  const logFormat = printf((info) => `[${info.label}] ${info.level}: ${info.message}`);
+  const logger = createLogger({
+    format: combine(
+      colorize(),
+      label({ label: 'WS'.brightBlue }),
+      logFormat,
+    ),
+    transports: [transport],
+  });
+  logger.level = process.env.LOG_LEVEL || 'error';
+} catch (e) {
+  logger = console;
+}
 
 /**
  * Group an array by a field value
