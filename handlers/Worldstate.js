@@ -58,7 +58,11 @@ class Worldstate {
       locales.forEach(async (locale) => {
         if (!this.locale || this.locale === locale) {
           worldStates[p][locale] = new WSCache({
-            platform: p, language: locale, kuvaCache, sentientCache, eventEmitter: this.emitter,
+            platform: p,
+            language: locale,
+            kuvaCache,
+            sentientCache,
+            eventEmitter: this.emitter,
           });
         }
       });
@@ -108,12 +112,16 @@ class Worldstate {
     Object.keys(worldstate).forEach(async (key) => {
       if (worldstate && worldstate[key]) {
         const packet = parseNew({
-          data: worldstate[key], key, language, platform, cycleStart,
+          data: worldstate[key],
+          key,
+          language,
+          platform,
+          cycleStart,
         });
 
         if (Array.isArray(packet)) {
           if (packet.length) {
-            packets.push(...(packet.filter((p) => p && p !== null)));
+            packets.push(...packet.filter((p) => p && p));
           }
         } else if (packet) {
           packets.push(packet);
@@ -123,7 +131,7 @@ class Worldstate {
 
     lastUpdated[platform][language] = Date.now();
     packets
-      .filter((p) => p && p.id && packets !== null)
+      .filter((p) => p && p.id && packets)
       .forEach((packet) => {
         this.emit('ws:update:event', packet);
       });
@@ -154,7 +162,9 @@ class Worldstate {
     if (worldStates[platform] && worldStates[platform][language]) {
       return worldStates[platform][language].data;
     }
-    throw new Error(`Platform (${platform}) or language (${language}) not tracked.\nEnsure that the parameters passed are correct`);
+    throw new Error(
+      `Platform (${platform}) or language (${language}) not tracked.\nEnsure that the parameters passed are correct`
+    );
   }
 }
 

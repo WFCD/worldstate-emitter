@@ -14,10 +14,8 @@ class WSCache {
    * @param {JSONCache}     sentientCache Cache of sentient outpost data, provided by Semlar
    * @param {Eventemitter}  eventEmitter  Emitter to push new worldstate updates to
    */
-  constructor({
-    platform, language, kuvaCache, sentientCache, eventEmitter,
-  }) {
-    this.inner = null;
+  constructor({ platform, language, kuvaCache, sentientCache, eventEmitter }) {
+    this.inner = undefined;
     Object.defineProperty(this, 'inner', { enumerable: false, configurable: false });
 
     this.kuvaCache = kuvaCache;

@@ -7,15 +7,15 @@ const { logger } = require('../utilities');
 
 const determineTweetType = (tweet) => {
   if (tweet.in_reply_to_status_id) {
-    return ('reply');
+    return 'reply';
   }
   if (tweet.quoted_status_id) {
-    return ('quote');
+    return 'quote';
   }
   if (tweet.retweeted_status) {
-    return ('retweet');
+    return 'retweet';
   }
-  return ('tweet');
+  return 'tweet';
 };
 
 const parseAuthor = (tweet) => ({
@@ -25,15 +25,16 @@ const parseAuthor = (tweet) => ({
   avatar: `${tweet.user.profile_image_url.replace('_normal.jpg', '.jpg')}`,
 });
 
-const parseQuoted = (tweet, type) => (tweet[type]
-  ? {
-    text: tweet[type].full_text,
-    author: {
-      name: tweet[type].user.name,
-      handle: tweet[type].user.screen_name,
-    },
-  }
-  : undefined);
+const parseQuoted = (tweet, type) =>
+  tweet[type]
+    ? {
+        text: tweet[type].full_text,
+        author: {
+          name: tweet[type].user.name,
+          handle: tweet[type].user.screen_name,
+        },
+      }
+    : undefined;
 
 const parseTweet = (tweets, watchable) => {
   const [tweet] = tweets;
@@ -71,9 +72,7 @@ class TwitterCache {
       bearer_token: process.env.TWITTER_BEARER_TOKEN,
     };
 
-    this.clientInfoValid = clientInfo.consumer_key
-      && clientInfo.consumer_secret
-      && clientInfo.bearer_token;
+    this.clientInfoValid = clientInfo.consumer_key && clientInfo.consumer_secret && clientInfo.bearer_token;
 
     this.initClient(clientInfo);
   }
@@ -85,7 +84,7 @@ class TwitterCache {
 
         // don't attempt anything else if authentication fails
         this.toWatch = toWatch;
-        this.currentData = null;
+        this.currentData = undefined;
         this.lastUpdated = Date.now() - 60000;
         this.updateInterval = setInterval(() => this.update(), this.timeout);
         this.update();
@@ -129,19 +128,21 @@ class TwitterCache {
     logger.silly('Starting Twitter update...');
     const parsedData = [];
     try {
-      for (const watchable of this.toWatch) {
-        const tweets = await this.client.get('statuses/user_timeline', {
-          screen_name: watchable.acc_name,
-          tweet_mode: 'extended',
-          count: 1,
-        });
-        const tweet = parseTweet(tweets, watchable);
-        parsedData.push(tweet);
+      await Promise.all(
+        this.toWatch.map(async (watchable) => {
+          const tweets = await this.client.get('statuses/user_timeline', {
+            screen_name: watchable.acc_name,
+            tweet_mode: 'extended',
+            count: 1,
+          });
+          const tweet = parseTweet(tweets, watchable);
+          parsedData.push(tweet);
 
-        if (tweet.createdAt.getTime() > this.lastUpdated) {
-          this.emitter.emit('tweet', tweet);
-        }
-      }
+          if (tweet.createdAt.getTime() > this.lastUpdated) {
+            this.emitter.emit('tweet', tweet);
+          }
+        })
+      );
     } catch (error) {
       this.onError(error);
     }
