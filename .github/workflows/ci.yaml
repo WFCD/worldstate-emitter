@@ -20,7 +20,7 @@ jobs:
         node-version: ${{ matrix.node-version }}
     - name: Install Dependencies
       run: |
-        npm ci --no-optional
+        npm ci --omit=optional
         npm install --no-save warframe-worldstate-parser@^2.x warframe-worldstate-data@^1.x
     - name: Run linters
       run: npm run lint
