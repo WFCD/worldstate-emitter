@@ -37,7 +37,9 @@ class WorldstateEmitter extends EventEmitter {
     this.on('rss', (body) => logger.silly(`emitted: ${body.id}`));
     this.on('ws:update:raw', (body) => logger.silly(`emitted raw: ${body.platform}`));
     this.on('ws:update:parsed', (body) => logger.silly(`emitted parsed: ${body.platform} in ${body.language}`));
-    this.on('ws:update:event', (body) => logger.silly(`emitted event: ${body.id} ${body.platform} in ${body.language}`));
+    this.on('ws:update:event', (body) =>
+      logger.silly(`emitted event: ${body.id} ${body.platform} in ${body.language}`)
+    );
     this.on('tweet', (body) => logger.silly(`emitted: ${body.id}`));
   }
 

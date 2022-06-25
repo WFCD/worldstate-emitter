@@ -9,7 +9,8 @@
     "lint:fix": "eslint . --fix",
     "coverage": "npm test && nyc report --reporter=text-lcov | coveralls",
     "build-docs": "jsdoc -c jsdoc-config.json -d docs",
-    "dev": "nodemon test/tester.js"
+    "dev": "nodemon test/tester.js",
+    "postinstall": "install-peerdeps @wfcd/eslint-config@^1.1.6 -S"
   },
   "directories": {
     "test": "test/specs"
@@ -31,24 +32,26 @@
   },
   "homepage": "https://wfcd.github.io/worldstate-emitter/",
   "dependencies": {
-    "@sentry/node": "^6.9.0",
-    "colors": "^1.4.0",
     "json-fetch-cache": "^1.2.6",
     "rss-feed-emitter": "^3.2.2",
-    "twitter": "^1.7.1",
-    "warframe-worldstate-data": "^1.18.15",
-    "warframe-worldstate-parser": "^2.19.0",
-    "winston": "^3.3.3"
+    "twitter": "^1.7.1"
   },
   "devDependencies": {
+    "@wfcd/eslint-config": "^1.1.6",
     "chai": "^4.3.4",
     "coveralls": "^3.1.0",
-    "eslint": "^8.2.0",
-    "eslint-config-airbnb-base": "^15.0.0",
-    "eslint-plugin-import": "^2.22.1",
+    "install-peerdeps": "^2.0.3",
     "mocha": "^9.0.2",
     "nodemon": "^2.0.7",
     "nyc": "^15.1.0"
+  },
+  "peerDependencies": {
+    "warframe-worldstate-data": "^1.x",
+    "warframe-worldstate-parser": "^2.x"
+  },
+  "optionalDependencies": {
+    "colors": "^1.4.0",
+    "winston": "^3.3.3"
   },
   "engines": {
     "node": ">=10.19.0"
@@ -60,7 +63,8 @@
     "types/**"
   ],
   "eslintConfig": {
-    "extends": "airbnb-base",
+    "extends": "@wfcd",
+    "parser": "@babel/eslint-parser",
     "parserOptions": {
       "sourceType": "script"
     },
@@ -85,19 +89,29 @@
         }
       ],
       "no-underscore-dangle": "off",
-      "strict": [
+      "import/no-extraneous-dependencies": [
         "error",
-        "safe"
-      ],
-      "linebreak-style": "off",
-      "no-restricted-syntax": "off",
-      "no-await-in-loop": "off",
-      "global-require": "off",
-      "no-fallthrough": "off",
-      "no-param-reassign": "off",
-      "no-case-declarations": "off"
+        {
+          "peerDependencies": true
+        }
+      ]
     }
   },
+  "babel": {
+    "presets": [
+      "@babel/preset-env"
+    ],
+    "plugins": [
+      "@babel/plugin-proposal-class-properties",
+      "@babel/plugin-proposal-private-methods"
+    ]
+  },
+  "pre-commit": [
+    "lint",
+    "test",
+    "validate"
+  ],
+  "prettier": "@wfcd/eslint-config/prettier",
   "nodemonConfig": {
     "delay": 5000,
     "env": {

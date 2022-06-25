@@ -19,7 +19,9 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
     - name: Install Dependencies
-      run: npm install
+      run: |
+        npm ci --omit=optional
+        npm install --no-save warframe-worldstate-parser@^2.x warframe-worldstate-data@^1.x
     - name: Run linters
       run: npm run lint
   test:
@@ -35,7 +37,10 @@ jobs:
       uses: actions/setup-node@v3
       with:
         node-version: ${{ matrix.node-version }}
-    - run: npm install
+    - name: Install Dependencies
+      run: |
+        npm ci --omit=optional
+        npm install --no-save warframe-worldstate-parser@^2.x warframe-worldstate-data@^1.x
     - run: npm test
       env:
         CI: true
@@ -53,7 +58,10 @@ jobs:
       uses: actions/setup-node@v3
       with:
         node-version: ${{ matrix.node-version }}
-    - run: npm install
+    - name: Install Dependencies
+      run: |
+        npm ci --omit=optional
+        npm install --no-save warframe-worldstate-parser@^2.x warframe-worldstate-data@^1.x
     - run: npm test
       env:
         CI: true

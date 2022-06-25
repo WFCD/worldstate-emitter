@@ -11,10 +11,12 @@ const checkOverrides = require('./checkOverrides');
 module.exports = (deps, packets) => {
   deps.data.forEach((arrayItem) => {
     const k = checkOverrides(deps.key, arrayItem);
-    packets.push(require('./objectLike')(arrayItem, {
-      ...deps,
-      id: k,
-    }));
+    packets.push(
+      require('./objectLike')(arrayItem, {
+        ...deps,
+        id: k,
+      })
+    );
   });
   return packets;
 };
