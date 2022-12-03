@@ -11,7 +11,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - run: npm i
-      - run: npm i ink-docstrap jsdoc
+      - run: npm i ink-docstrap jsdoc taffydb
       - name: Build
         uses: andstor/jsdoc-action@v1
         with:
