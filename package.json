@@ -42,7 +42,7 @@
     "coveralls": "^3.1.0",
     "install-peerdeps": "^2.0.3",
     "mocha": "^10.0.0",
-    "nodemon": "^2.0.7",
+    "nodemon": "^3.0.1",
     "nyc": "^15.1.0"
   },
   "peerDependencies": {
