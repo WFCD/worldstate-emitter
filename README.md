@@ -2,7 +2,9 @@
 
 Suuuper simple emitter for worldstate events.
 
-Very opinionated decisions on what events and event names, as well as
+Very opinionated decisions on what events and event names, as well as.... everything else
+
+[![semantic-release: angular](https://img.shields.io/badge/semantic--release-angular-e10079?logo=semantic-release)](https://github.com/semantic-release/semantic-release)
 
 ## Emitter Events
 
@@ -91,5 +93,5 @@ Method | Params | Output
 </details>
 <br />
 
-Help & Contact
+## Help & Contact
 [![Discord](https://img.shields.io/discord/256087517353213954.svg?logo=discord)](https://discord.gg/jGZxH9f)
