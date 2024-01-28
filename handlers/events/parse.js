@@ -8,8 +8,17 @@ import * as eKeyOverrides from './eKeyOverrides.js';
 import { lastUpdated } from '../../utilities/index.js';
 
 /**
+ * @typedef {Object} Deps
+ * @property {string} key event key being parsed
+ * @property {string} platform platform the event is on
+ * @property {string} language language the event is in
+ * @property {Date} cycleStart start of the current cycle
+ * @property {Object|Array} data data to parse
+ */
+
+/**
  * Set up current cycle start if it's not been initiated
- * @param  {Object} deps    dependencies for processing
+ * @param  {Deps} deps    dependencies for processing
  */
 const initCycleStart = (deps) => {
   if (!lastUpdated[deps.platform][deps.language]) {
@@ -19,7 +28,7 @@ const initCycleStart = (deps) => {
 
 /**
  * Parse new events from the provided worldstate
- * @param  {Object} deps dependencies to parse out events
+ * @param  {Deps} deps dependencies to parse out events
  * @returns {Packet|Packet[]}      packet(s) to emit
  */
 export default (deps) => {

@@ -3,7 +3,7 @@ import objectLike from './objectLike.js';
 
 /**
  * Process kuva fields
- * @param  {Object} deps    dependencies for processing
+ * @param  {Deps} deps    dependencies for processing
  * @param  {Object[]} packets  packets to emit
  * @returns {Object|Object[]}  object(s) to emit from kuva stuff
  */
