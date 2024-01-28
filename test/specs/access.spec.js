@@ -16,12 +16,14 @@ describe('access', function () {
       .that.has.all.keys(
         'alerts',
         'arbitration',
+        'archonHunt',
         'cambionCycle',
         'cetusCycle',
         'conclaveChallenges',
         'constructionProgress',
         'dailyDeals',
         'darkSectors',
+        'duviriCycle',
         'earthCycle',
         'events',
         'fissures',
@@ -41,6 +43,7 @@ describe('access', function () {
         'vallisCycle',
         'vaultTrader',
         'voidTrader',
+        'voidTraders',
         'weeklyChallenges',
         'zarimanCycle'
       );
