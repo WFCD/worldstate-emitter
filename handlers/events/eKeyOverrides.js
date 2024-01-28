@@ -1,28 +1,40 @@
-'use strict';
+import { logger } from '../../utilities/index.js';
 
-const { logger } = require('../../utilities');
+/**
+ * External mission data retrieved from https://10o.io/kuvalog.json
+ * @typedef {Object} ExternalMission
+ * @property {Date} activation start time
+ * @property {Date} expiry end timer
+ * @property {string} node formatted node name with planet
+ * @property {string} enemy Enemy on tile
+ * @property {string} type Mission type of node
+ * @property {boolean} archwing whether or not the tile requires archwing
+ * @property {boolean} sharkwing whether or not the tile requires
+ *    sumbersible archwing
+ */
 
-const fissureKey = (fissure) => `fissures.t${fissure.tierNum}.${(fissure.missionType || '').toLowerCase()}`;
-const acolyteKey = (acolyte) => ({
+export const fissures = (fissure) => `fissures.t${fissure.tierNum}.${(fissure.missionType || '').toLowerCase()}`;
+export const enemies = (acolyte) => ({
   eventKey: `enemies${acolyte.isDiscovered ? '' : '.departed'}`,
   activation: acolyte.lastDiscoveredAt,
 });
-const arbiKey = (arbitration) => {
-  if (!(arbitration && arbitration.enemy)) return '';
+
+/**
+ * Parse an arbitration for its key
+ * @param {ExternalMission} arbi arbitration data to parse
+ * @returns {string}
+ */
+export const arbitration = (arbi) => {
+  if (!arbi?.enemy) return '';
 
   let k;
   try {
-    k = `arbitration.${arbitration.enemy.toLowerCase()}.${arbitration.type.replace(/\s/g, '').toLowerCase()}`;
+    k = `arbitration.${arbi.enemy.toLowerCase()}.${arbi.type.replace(/\s/g, '').toLowerCase()}`;
   } catch (e) {
-    logger.error(`Unable to parse arbitraion: ${JSON.stringify(arbitration)}\n${e}`);
+    logger.error(`Unable to parse arbitraion: ${JSON.stringify(arbi)}\n${e}`);
   }
   return k;
 };
 
-module.exports = {
-  events: 'operations',
-  persistentEnemies: 'enemies',
-  fissures: fissureKey,
-  enemies: acolyteKey,
-  arbitration: arbiKey,
-};
+export const events = 'operations';
+export const persistentEnemies = 'enemies';

@@ -1,8 +1,19 @@
-'use strict';
+import { between, lastUpdated, fromNow } from '../../utilities/index.js';
 
-const { between, lastUpdated, fromNow } = require('../../utilities');
+/**
+ * @typedef {Object} CycleLike
+ * @property {string} state
+ * @property {string} key
+ * @property {Date} activation
+ */
 
-module.exports = (cycleData, deps) => {
+/**
+ * CylceData parser
+ * @param {CycleLike} cycleData data for parsing all cycles like this
+ * @param deps
+ * @returns {*[]}
+ */
+export default (cycleData, deps) => {
   const packet = {
     ...deps,
     data: cycleData,

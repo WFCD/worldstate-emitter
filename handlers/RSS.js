@@ -1,14 +1,12 @@
-'use strict';
+import RssFeedEmitter from 'rss-feed-emitter';
+import feeds from '../resources/rssFeeds.json' assert { type: 'json' };
 
-const RssFeedEmitter = require('rss-feed-emitter');
-const feeds = require('../resources/rssFeeds.json');
-
-const { logger } = require('../utilities');
+import { logger } from '../utilities/index.js';
 
 /**
  * RSS Emitter, leverages [rss-feed-emitter](https://npmjs.org/package/rss-feed-emitter)
  */
-class RSS {
+export default class RSS {
   /**
    * Set up emitting events for warframe forum entries
    * @param {EventEmitter} eventEmitter Emitter to send events from
@@ -66,5 +64,3 @@ class RSS {
     }
   }
 }
-
-module.exports = RSS;

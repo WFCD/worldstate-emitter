@@ -1,8 +1,6 @@
-'use strict';
+import { between, lastUpdated } from '../../utilities/index.js';
 
-const { between, lastUpdated } = require('../../utilities');
-
-module.exports = (data, deps) => {
+export default (data, deps) => {
   if (!data) return undefined;
   const last = new Date(lastUpdated[deps.platform][deps.language]);
   const activation = new Date(data.activation);

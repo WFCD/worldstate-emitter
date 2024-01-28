@@ -1,6 +1,6 @@
-'use strict';
-
-const checkOverrides = require('./checkOverrides');
+import checkOverrides from './checkOverrides.js';
+import objectLike from './objectLike.js';
+import { logger } from '../../utilities/index.js';
 
 /**
  * arrayLike are all just arrays of objectLike
@@ -8,15 +8,19 @@ const checkOverrides = require('./checkOverrides');
  * @param  {Object[]} packets  packets to emit
  * @returns {Object|Object[]}  object(s) to emit from arrayLike processing
  */
-module.exports = (deps, packets) => {
-  deps.data.forEach((arrayItem) => {
-    const k = checkOverrides(deps.key, arrayItem);
-    packets.push(
-      require('./objectLike')(arrayItem, {
-        ...deps,
-        id: k,
-      })
-    );
-  });
-  return packets;
+export default (deps, packets) => {
+  try {
+    deps.data.forEach((arrayItem) => {
+      const k = checkOverrides(deps.key, arrayItem);
+      packets.push(
+        objectLike(arrayItem, {
+          ...deps,
+          id: k,
+        })
+      );
+    });
+    return packets;
+  } catch (err) {
+    logger.error(err);
+  }
 };

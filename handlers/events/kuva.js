@@ -1,6 +1,5 @@
-'use strict';
-
-const { logger, groupBy } = require('../../utilities');
+import { logger, groupBy } from '../../utilities/index.js';
+import objectLike from './objectLike.js';
 
 /**
  * Process kuva fields
@@ -8,7 +7,7 @@ const { logger, groupBy } = require('../../utilities');
  * @param  {Object[]} packets  packets to emit
  * @returns {Object|Object[]}  object(s) to emit from kuva stuff
  */
-module.exports = (deps, packets) => {
+export default (deps, packets) => {
   if (!deps.data) {
     logger.error('no kuva data');
     return undefined;
@@ -22,7 +21,7 @@ module.exports = (deps, packets) => {
       activation: data[type][0].activation,
       expiry: data[type][0].expiry,
     };
-    const p = require('./objectLike')(deps.data, deps);
+    const p = objectLike(deps.data, deps);
     if (p) {
       packets.push(p);
     }
