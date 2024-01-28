@@ -60,5 +60,3 @@ jobs:
         CI: true
     - name: Coveralls
       uses: coverallsapp/github-action@master
-      with:
-        github-token: ${{ secrets.GH_TOKEN }}
