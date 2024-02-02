@@ -1,6 +1,6 @@
-'use strict';
+import objectLike from './objectLike.js';
 
-module.exports = (nightwave, deps) => {
+export default (nightwave, deps) => {
   const groups = {
     daily: [],
     weekly: [],
@@ -19,7 +19,7 @@ module.exports = (nightwave, deps) => {
 
   const packets = [];
   Object.keys(groups).forEach((group) => {
-    const p = require('./objectLike')(
+    const p = objectLike(
       {
         ...nightwave,
         activeChallenges: groups[group],

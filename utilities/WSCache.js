@@ -1,33 +1,31 @@
-'use strict';
-
-const Worldstate = require('warframe-worldstate-parser');
+import Worldstate from 'warframe-worldstate-parser';
+import { logger } from './index.js';
 
 /**
  * Warframe WorldState Cache - store and retrieve current worldstate data
  */
-class WSCache {
+export default class WSCache {
+  #inner;
+  #kuvaCache;
+  #sentientCache;
+  #logger = logger;
+  #emitter;
+  /** @type string */ #platform = 'pc';
+  /** @type string */ #language;
+
   /**
    * Set up a cache checking for data and updates to a specific worldstate set
-   * @param {string}        platform      Platform to track
    * @param {string}        language      Langauge/translation to track
-   * @param {JSONCache}     kuvaCache     Cache of kuva data, provided by Semlar
-   * @param {JSONCache}     sentientCache Cache of sentient outpost data, provided by Semlar
-   * @param {Eventemitter}  eventEmitter  Emitter to push new worldstate updates to
+   * @param {Cache}     kuvaCache     Cache of kuva data, provided by Semlar
+   * @param {Cache}     sentientCache Cache of sentient outpost data, provided by Semlar
+   * @param {EventEmitter}  eventEmitter  Emitter to push new worldstate updates to
    */
-  constructor({ platform, language, kuvaCache, sentientCache, eventEmitter }) {
-    this.inner = undefined;
-    Object.defineProperty(this, 'inner', { enumerable: false, configurable: false });
-
-    this.kuvaCache = kuvaCache;
-    Object.defineProperty(this, 'kuvaCache', { enumerable: false, configurable: false });
-
-    this.sentientCache = sentientCache;
-    Object.defineProperty(this, 'sentientCache', { enumerable: false, configurable: false });
-
-    this.platform = platform;
-    this.language = language;
-
-    this.emitter = eventEmitter;
+  constructor({ language, kuvaCache, sentientCache, eventEmitter }) {
+    this.#inner = undefined;
+    this.#kuvaCache = kuvaCache;
+    this.#sentientCache = sentientCache;
+    this.#language = language;
+    this.#emitter = eventEmitter;
   }
 
   /**
@@ -35,7 +33,7 @@ class WSCache {
    * @returns {Object} Current worldstate data
    */
   get data() {
-    return this.inner;
+    return this.#inner;
   }
 
   /**
@@ -43,21 +41,22 @@ class WSCache {
    * @param  {string} newData New string data to parse
    */
   set data(newData) {
+    logger.debug(`got new data for ${this.#language}, parsing...`);
     setTimeout(async () => {
       const t = new Worldstate(newData, {
-        locale: this.language,
-        kuvaData: await this.kuvaCache.getData(),
-        sentientData: await this.sentientCache.getData(),
+        locale: this.#language,
+        kuvaData: JSON.parse(await this.#kuvaCache.get()),
+        sentientData: JSON.parse(await this.#sentientCache.get()),
       });
       if (!t.timestamp) return;
 
-      this.inner = t;
-      this.emitter.emit('ws:update:parsed', {
-        language: this.language,
-        platform: this.platform,
-        data: this.inner,
+      this.#inner = t;
+      this.#emitter.emit('ws:update:parsed', {
+        language: this.#language,
+        platform: this.#platform,
+        data: t,
       });
-    }, 1000);
+    }, 0);
   }
 
   /**
@@ -66,8 +65,6 @@ class WSCache {
    */
   set twitter(newTwitter) {
     if (!(newTwitter && newTwitter.length)) return;
-    this.inner.twitter = newTwitter;
+    this.#inner.twitter = newTwitter;
   }
 }
-
-module.exports = WSCache;

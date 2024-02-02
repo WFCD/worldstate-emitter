@@ -1,90 +1,77 @@
-'use strict';
+import wsData from 'warframe-worldstate-data';
+import WSCache from '../utilities/WSCache.js';
+import { logger, lastUpdated } from '../utilities/index.js';
+import parseNew from './events/parse.js';
+import Cache from '../utilities/Cache.js';
 
-const Cache = require('json-fetch-cache');
-const { locales } = require('warframe-worldstate-data');
-
-const WSCache = require('../utilities/WSCache');
-
-const { logger, lastUpdated } = require('../utilities');
-
-const parseNew = require('./events/parse');
-
-const wsTimeout = process.env.CACHE_TIMEOUT || 60000;
-const platforms = ['pc', 'ps4', 'xb1', 'swi'];
-const worldStates = {};
-const wsRawCaches = {};
+const { locales } = wsData;
 
 const debugEvents = ['arbitration', 'kuva', 'nightwave'];
-const smTimeout = process.env.SEMLAR_TIMEOUT || 300000;
-const kuvaCache = new Cache('https://10o.io/arbitrations.json', smTimeout, { logger, maxRetry: 0 });
-const sentientCache = new Cache('https://semlar.com/anomaly.json', smTimeout, { logger });
+const smCron = `0 */10 * * * *`;
 
 /**
  * Handler for worldstate data
  */
-class Worldstate {
+export default class Worldstate {
+  #emitter;
+  #locale;
+  #worldStates = {};
+  #wsRawCache;
+  #kuvaCache;
+  #sentientCache;
+
   /**
    * Set up listening for specific platform and locale if provided.
    * @param {EventEmitter} eventEmitter Emitter to push new worldstate events to
-   * @param {string} platform     Platform to watch (optional)
    * @param {string} locale       Locale (actually just language) to watch
    */
-  constructor(eventEmitter, platform, locale) {
-    this.emitter = eventEmitter;
-    this.platform = platform;
-    this.locale = locale;
+  constructor(eventEmitter, locale) {
+    this.#emitter = eventEmitter;
+    this.#locale = locale;
     logger.silly('starting up worldstate listener...');
-    if (platform) {
-      logger.debug(`only listening for ${platform}...`);
-    }
     if (locale) {
       logger.debug(`only listening for ${locale}...`);
     }
+  }
 
-    this.setUpRawEmitters();
+  async init() {
+    this.#wsRawCache = await Cache.make('https://content.warframe.com/dynamic/worldState.php', '*/10 * * * * *');
+    this.#kuvaCache = await Cache.make('https://10o.io/arbitrations.json', smCron);
+    this.#sentientCache = await Cache.make('https://semlar.com/anomaly.json', smCron);
+
+    await this.setUpRawEmitters();
     this.setupParsedEvents();
   }
 
   /**
    * Set up emitting raw worldstate data
    */
-  setUpRawEmitters() {
-    platforms.forEach((p) => {
-      if (this.platform && this.platform !== p) return;
+  async setUpRawEmitters() {
+    this.#worldStates = {};
 
-      const url = `https://content${p === 'pc' ? '' : `.${p}`}.warframe.com/dynamic/worldState.php`;
-      worldStates[p] = {};
+    // eslint-disable-next-line no-restricted-syntax
+    for await (const locale of locales) {
+      if (!this.#locale || this.#locale === locale) {
+        this.#worldStates[locale] = new WSCache({
+          language: locale,
+          kuvaCache: this.#kuvaCache,
+          sentientCache: this.#sentientCache,
+          eventEmitter: this.#emitter,
+        });
+      }
+    }
 
-      locales.forEach(async (locale) => {
-        if (!this.locale || this.locale === locale) {
-          worldStates[p][locale] = new WSCache({
-            platform: p,
-            language: locale,
-            kuvaCache,
-            sentientCache,
-            eventEmitter: this.emitter,
-          });
-        }
-      });
-
-      wsRawCaches[p] = new Cache(url, wsTimeout, {
-        delayStart: false,
-        parser: (str) => str,
-        useEmitter: true,
-        logger,
-      });
-
-      /* listen for the raw cache updates so we can emit them from the super emitter */
-      wsRawCaches[p].on('update', (dataStr) => {
-        this.emitter.emit('ws:update:raw', { platform: p, data: dataStr });
-      });
+    /* listen for the raw cache updates so we can emit them from the super emitter */
+    this.#wsRawCache.on('update', (dataStr) => {
+      this.#emitter.emit('ws:update:raw', { platform: 'pc', data: dataStr });
     });
 
     /* when the raw emits happen, parse them and store them on parsed worldstate caches */
-    this.emitter.on('ws:update:raw', ({ platform, data }) => {
+    this.#emitter.on('ws:update:raw', ({ data }) => {
+      logger.debug('ws:update:raw - updating locales data');
       locales.forEach((locale) => {
-        if (!this.locale || this.locale === locale) {
-          worldStates[platform][locale].data = data;
+        if (!this.#locale || this.#locale === locale) {
+          this.#worldStates[locale].data = data;
         }
       });
     });
@@ -94,9 +81,9 @@ class Worldstate {
    * Set up listeners for the parsed worldstate updates
    */
   setupParsedEvents() {
-    this.emitter.on('ws:update:parsed', ({ language, platform, data }) => {
+    this.#emitter.on('ws:update:parsed', ({ language, platform, data }) => {
       const packet = { platform, worldstate: data, language };
-      this.parseEvents(packet, this.emitter);
+      this.parseEvents(packet);
     });
   }
 
@@ -104,7 +91,7 @@ class Worldstate {
    * Parse new worldstate events
    * @param  {Object} worldstate     worldstate to find packets from
    * @param  {string} platform       platform the worldstate corresponds to
-   * @param  {string} [language='en'] langauge of the worldstate (defaults to 'en')
+   * @param  {string} [language='en'] language of the worldstate (defaults to 'en')
    */
   parseEvents({ worldstate, platform, language = 'en' }) {
     const cycleStart = Date.now();
@@ -147,25 +134,20 @@ class Worldstate {
 
     logger.silly(`ws:update:event - emitting ${packet.id}`);
     delete packet.cycleStart;
-    this.emitter.emit(id, packet);
+    this.#emitter.emit(id, packet);
   }
 
   /**
    * get a specific worldstate version
-   * @param  {string} [platform='pc'] Platform of the worldstate
-   * @param  {string} [locale='en']   Locale of the worldsttate
-   * @returns {Object}                 Worldstate corresponding to provided data
+   * @param  {string} [language='en'] Locale of the worldsttate
+   * @returns {Object}                Worldstate corresponding to provided data
    * @throws {Error} when the platform or locale aren't tracked and aren't updated
    */
-  // eslint-disable-next-line class-methods-use-this
-  get(platform = 'pc', language = 'en') {
-    if (worldStates[platform] && worldStates[platform][language]) {
-      return worldStates[platform][language].data;
+  get(language = 'en') {
+    logger.warn(`getting worldstate ${language}...`);
+    if (this.#worldStates?.[language]) {
+      return this.#worldStates?.[language]?.data;
     }
-    throw new Error(
-      `Platform (${platform}) or language (${language}) not tracked.\nEnsure that the parameters passed are correct`
-    );
+    throw new Error(`Language (${language}) not tracked.\nEnsure that the parameters passed are correct`);
   }
 }
-
-module.exports = Worldstate;

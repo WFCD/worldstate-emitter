@@ -1,18 +1,19 @@
-'use strict';
+import Emitter from '../index.js';
+import Cache from '../utilities/Cache.js';
 
-const Emitter = require('../index');
-
-const e = new Emitter();
-
+const e = await Emitter.make({ locale: 'en' });
+setTimeout(async () => {
+  console.error(typeof e.getWorldstate());
+}, 7000);
 e.on('rss', console.log);
+e.on('ws:update:raw', console.log);
 
-const wsEvents = ['news'];
-const locale = 'en';
-const pl = 'pc';
-
-e.on('ws:update:event', ({ id, language, platform, key, data }) => {
-  if (wsEvents.includes(key) && language === locale && platform === pl) {
-    console.log(`${id}:${language}:${platform}:${key}`);
-    console.log(data[key]);
-  }
+e.on('ws:update:parsed', ({ language, platform, data }) => {
+  // if (wsEvents.includes(key) && language === locale && platform === pl) {
+  console.log(`${language}:${platform}`);
+  console.log(Object.keys(data));
 });
+
+const cache = await Cache.make('https://content.warframe.com/dynamic/worldState.php', '0 * * * * *');
+cache.on('update', (data) => console.error(typeof data));
+console.error(typeof (await cache.get()));

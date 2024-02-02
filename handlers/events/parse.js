@@ -1,15 +1,24 @@
-'use strict';
-
-const checkOverrides = require('./checkOverrides');
-const kuvaProcessing = require('./kuva');
-const arrayLike = require('./arrayLike');
-const eKeyOverrides = require('./eKeyOverrides');
-
-const { lastUpdated } = require('../../utilities');
+import checkOverrides from './checkOverrides.js';
+import kuvaProcessing from './kuva.js';
+import arrayLike from './arrayLike.js';
+import objectLike from './objectLike.js';
+import nightwave from './nightwave.js';
+import cycleLike from './cycleLike.js';
+import * as eKeyOverrides from './eKeyOverrides.js';
+import { lastUpdated } from '../../utilities/index.js';
 
 /**
- * Set up current cycle start if it's not been intiated
- * @param  {Object} deps    dependencies for processing
+ * @typedef {Object} Deps
+ * @property {string} key event key being parsed
+ * @property {string} platform platform the event is on
+ * @property {string} language language the event is in
+ * @property {Date} cycleStart start of the current cycle
+ * @property {Object|Array} data data to parse
+ */
+
+/**
+ * Set up current cycle start if it's not been initiated
+ * @param  {Deps} deps    dependencies for processing
  */
 const initCycleStart = (deps) => {
   if (!lastUpdated[deps.platform][deps.language]) {
@@ -19,10 +28,10 @@ const initCycleStart = (deps) => {
 
 /**
  * Parse new events from the provided worldstate
- * @param  {Object} deps dependencies to parse out events
+ * @param  {Deps} deps dependencies to parse out events
  * @returns {Packet|Packet[]}      packet(s) to emit
  */
-module.exports = (deps) => {
+export default (deps) => {
   initCycleStart(deps);
 
   // anything in the eKeyOverrides goes first, then anything uniform
@@ -49,7 +58,7 @@ module.exports = (deps) => {
     case 'cetusCycle':
     case 'earthCycle':
     case 'vallisCycle':
-      packets.push(require('./cycleLike')(deps.data, deps));
+      packets.push(cycleLike(deps.data, deps));
       break;
     case 'persistentEnemies':
       deps = {
@@ -61,9 +70,9 @@ module.exports = (deps) => {
     case 'arbitration':
     case 'sentientOutposts':
       deps.id = checkOverrides(deps.key, deps.data);
-      packets.push(require('./objectLike')(deps.data, deps));
+      packets.push(objectLike(deps.data, deps));
     case 'nightwave':
-      packets.push(require('./nightwave')(deps.data, deps));
+      packets.push(nightwave(deps.data, deps));
     default:
       break;
   }

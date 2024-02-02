@@ -1,23 +1,25 @@
-'use strict';
+import 'colors';
 
-let logger;
+import { transports, createLogger, format } from 'winston';
+import { LOG_LEVEL } from './env.js';
+
+let tempLogger;
 try {
-  require('colors');
-  const { transports, createLogger, format } = require('winston');
-
   const { combine, label, printf, colorize } = format;
 
   /* Logger setup */
   const transport = new transports.Console({ colorize: true });
   const logFormat = printf((info) => `[${info.label}] ${info.level}: ${info.message}`);
-  logger = createLogger({
+  tempLogger = createLogger({
     format: combine(colorize(), label({ label: 'WS'.brightBlue }), logFormat),
     transports: [transport],
   });
-  logger.level = process.env.LOG_LEVEL || 'error';
+  tempLogger.level = LOG_LEVEL;
 } catch (e) {
-  logger = console;
+  tempLogger = console;
 }
+
+export const logger = tempLogger;
 
 /**
  * Group an array by a field value
@@ -25,7 +27,7 @@ try {
  * @param  {string} field field to group by
  * @returns {Object}       [description]
  */
-const groupBy = (array, field) => {
+export const groupBy = (array, field) => {
   const grouped = {};
   if (!array) return undefined;
   array.forEach((item) => {
@@ -46,7 +48,7 @@ const allowedDeviation = 30000;
  * @param  {Date} c The third Date, should be the start time of this update cycle
  * @returns {boolean}   if the event date is between the server start time and the last update time
  */
-const between = (a, b, c = new Date()) => b + allowedDeviation > a && b - allowedDeviation < c;
+export const between = (a, b, c = new Date()) => b + allowedDeviation > a && b - allowedDeviation < c;
 
 /**
  * Returns the number of milliseconds between now and a given date
@@ -54,7 +56,7 @@ const between = (a, b, c = new Date()) => b + allowedDeviation > a && b - allowe
  * @param   {function} [now] A function that returns the current UNIX time in milliseconds
  * @returns {number}
  */
-function fromNow(d, now = Date.now) {
+export function fromNow(d, now = Date.now) {
   return new Date(d).getTime() - now();
 }
 
@@ -62,7 +64,7 @@ function fromNow(d, now = Date.now) {
  * Map of last updated dates/times
  * @type {Object}
  */
-const lastUpdated = {
+export const lastUpdated = {
   pc: {
     en: 0, // Date.now(),
   },
@@ -75,12 +77,4 @@ const lastUpdated = {
   swi: {
     en: Date.now(),
   },
-};
-
-module.exports = {
-  logger,
-  groupBy,
-  fromNow,
-  between,
-  lastUpdated,
 };

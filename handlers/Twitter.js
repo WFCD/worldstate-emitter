@@ -1,9 +1,7 @@
-'use strict';
-
-const Twitter = require('twitter');
-const toWatch = require('../resources/tweeters.json');
-
-const { logger } = require('../utilities');
+import Twitter from 'twitter';
+import toWatch from '../resources/tweeters.json' assert { type: 'json' };
+import { logger } from '../utilities/index.js';
+import { twiClientInfo, TWITTER_TIMEOUT } from '../utilities/env.js';
 
 const determineTweetType = (tweet) => {
   if (tweet.in_reply_to_status_id) {
@@ -56,25 +54,16 @@ const parseTweet = (tweets, watchable) => {
 /**
  * Twitter event handler
  */
-class TwitterCache {
+export default class TwitterCache {
   /**
    * Create a new Twitter self-updating cache
    * @param {EventEmitter} eventEmitter emitter to push new tweets to
    */
   constructor(eventEmitter) {
     this.emitter = eventEmitter;
-    this.timeout = process.env.TWITTER_TIMEOUT || 60000;
-    this.initTime = Date.now();
-
-    const clientInfo = {
-      consumer_key: process.env.TWITTER_KEY,
-      consumer_secret: process.env.TWITTER_SECRET,
-      bearer_token: process.env.TWITTER_BEARER_TOKEN,
-    };
-
-    this.clientInfoValid = clientInfo.consumer_key && clientInfo.consumer_secret && clientInfo.bearer_token;
-
-    this.initClient(clientInfo);
+    this.timeout = TWITTER_TIMEOUT;
+    this.clientInfoValid = twiClientInfo.consumer_key && twiClientInfo.consumer_secret && twiClientInfo.bearer_token;
+    this.initClient(twiClientInfo);
   }
 
   initClient(clientInfo) {
@@ -177,5 +166,3 @@ class TwitterCache {
     return this.currentData;
   }
 }
-
-module.exports = TwitterCache;

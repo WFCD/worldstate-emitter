@@ -4,13 +4,14 @@
   "description": "Event emitter for worldstate & other warframe events",
   "main": "index.js",
   "scripts": {
-    "test": "nyc mocha",
+    "test": "c8 mocha",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "coverage": "npm test && nyc report --reporter=text-lcov | coveralls",
+    "coverage": "npm test && npm run report | coveralls",
     "build-docs": "jsdoc -c jsdoc-config.json -d docs",
     "dev": "nodemon test/tester.js",
-    "postinstall": "install-peerdeps @wfcd/eslint-config@^1.3.3 -S"
+    "postinstall": "install-peerdeps @wfcd/eslint-config@^1.3.3 -S",
+    "report": "c8 report --reporter=text-lcov"
   },
   "directories": {
     "test": "test/specs"
@@ -32,18 +33,18 @@
   },
   "homepage": "https://wfcd.github.io/worldstate-emitter/",
   "dependencies": {
-    "json-fetch-cache": "^1.2.6",
+    "cron": "^3.1.6",
     "rss-feed-emitter": "^3.2.2",
     "twitter": "^1.7.1"
   },
   "devDependencies": {
     "@wfcd/eslint-config": "^1.3.3",
+    "c8": "^9.1.0",
     "chai": "^4.3.4",
     "coveralls": "^3.1.0",
     "install-peerdeps": "^2.0.3",
     "mocha": "^10.0.0",
-    "nodemon": "^2.0.7",
-    "nyc": "^15.1.0"
+    "nodemon": "^2.0.7"
   },
   "peerDependencies": {
     "warframe-worldstate-data": "^1.x",
@@ -54,7 +55,7 @@
     "winston": "^3.3.3"
   },
   "engines": {
-    "node": ">=10.19.0"
+    "node": ">= 18.19.0"
   },
   "eslintIgnore": [
     ".github/**",
@@ -63,10 +64,14 @@
     "types/**"
   ],
   "eslintConfig": {
-    "extends": "@wfcd",
+    "extends": "@wfcd/eslint-config/esm",
     "parser": "@babel/eslint-parser",
     "parserOptions": {
-      "sourceType": "script"
+      "sourceType": "module",
+      "ecmaVersion": 6,
+      "ecmaFeatures": {
+        "modules": true
+      }
     },
     "rules": {
       "valid-jsdoc": [
@@ -121,14 +126,16 @@
     }
   },
   "mocha": {
+    "timeout": 20000,
     "exit": true,
     "spec": "test/specs/**/*.spec.js"
   },
-  "nyc": {
+  "c8": {
     "reporter": [
       "lcov",
       "text"
     ],
     "skip-full": true
-  }
+  },
+  "type": "module"
 }

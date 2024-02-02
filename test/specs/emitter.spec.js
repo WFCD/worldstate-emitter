@@ -1,12 +1,9 @@
-'use strict';
-
-const chai = require('chai');
+import chai from 'chai';
+import WSEmitter from '../../index.js';
 
 chai.should();
 
-const WSEmitter = require('../..');
-
-const ws = new WSEmitter();
+const ws = await WSEmitter.make();
 
 describe('emitter', function () {
   it('should send tweet data when a tweet happens', (done) => {
