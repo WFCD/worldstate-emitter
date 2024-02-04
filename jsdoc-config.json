@@ -18,7 +18,7 @@
     "monospaceLinks": false,
     "systemName"            : "Worldstate Emitter",
     "footer"                : "",
-    "copyright"             : "©2020, WFCD",
+    "copyright"             : "©2024, WFCD",
     "includeDate"           : true,
     "navType"               : "inline",
     "theme"                 : "cosmo",
@@ -30,6 +30,6 @@
     "dateFormat"            : "dddd, MMMM Do YYYY, HH:mm:ss",
     "syntaxTheme"           : "dark",
     "sort"                  : "longname, version, since",
-    "search"                : true 
+    "search"                : true
   }
 }
