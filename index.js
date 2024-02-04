@@ -12,7 +12,7 @@ export default class WorldstateEmitter extends EventEmitter {
   #twitter;
   #rss;
 
-  static async make({ locale = 'en' } = { locale: 'en' }) {
+  static async make({ locale } = { locale: undefined }) {
     const emitter = new WorldstateEmitter({ locale });
     await emitter.#init();
     return emitter;
