@@ -11,7 +11,7 @@ import { between, lastUpdated, fromNow } from '../../utilities/index.js';
  * CylceData parser
  * @param {CycleLike} cycleData data for parsing all cycles like this
  * @param {Deps} deps dependencies for processing
- * @returns {*[]}
+ * @returns {Object[]}
  */
 export default (cycleData, deps) => {
   const packet = {

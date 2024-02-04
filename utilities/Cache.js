@@ -16,7 +16,7 @@ export default class CronCache extends EventEmitter {
     return cache;
   }
 
-  constructor(/** @type string */ url, /** @type [string] */ pattern) {
+  constructor(/** @type string */ url, /** @type string */ pattern) {
     super();
     this.#url = url;
     if (pattern) this.#pattern = pattern;
