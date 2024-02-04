@@ -25,26 +25,6 @@
     "defaultAttach": "https://i.imgur.com/eY1NkzO.png"
   },
   {
-    "url": "https://forums.warframe.com/forum/2-pc-announcements.xml",
-    "defaultAttach": "https://i.imgur.com/CNrsc7V.png",
-    "key": "forum.announcements.pc"
-  },
-  {
-    "url": "https://forums.warframe.com/forum/151-ps4-announcements.xml",
-    "defaultAttach": "https://i.imgur.com/CNrsc7V.png",
-    "key": "forum.announcements.ps4"
-  },
-  {
-    "url": "https://forums.warframe.com/forum/252-xbox-one-announcements.xml",
-    "defaultAttach": "https://i.imgur.com/CNrsc7V.png",
-    "key": "forum.announcements.xb1"
-  },
-  {
-    "url": "https://forums.warframe.com/forum/1198-nintendo-switch-announcements.xml",
-    "defaultAttach": "https://i.imgur.com/CNrsc7V.png",
-    "key": "forum.announcements.switch"
-  },
-  {
     "url": "https://forums.warframe.com/forum/170-announcements-events.xml",
     "key": "forum.news",
     "defaultAttach": "https://i.imgur.com/CNrsc7V.png"
@@ -153,39 +133,12 @@
     }
   },
   {
-    "url": "https://forums.warframe.com/discover/1778.xml",
-    "key": "forum.staff.connor",
-    "author": {
-      "name": "[DE]Connor",
-      "url": "https://forums.warframe.com/profile/710227-deconnor/",
-      "icon_url": "https://content.invisioncic.com/Mwarframe/monthly_2017_02/nezha_watermarked_120_by_kevin_glint-d9zkt5n.thumb.jpg.c9519505f40a304bece8eb435eb99ddd.jpg"
-    }
-  },
-  {
     "url": "https://forums.warframe.com/discover/1779.xml",
     "key": "forum.staff.marcus",
     "author": {
       "name": "[DE]Marcus",
       "url": "https://forums.warframe.com/profile/3443485-demarcus/",
       "icon_url": "https://content.invisioncic.com/Mwarframe/monthly_2018_01/5a55278d71caa_MarcusIIPrint.thumb.jpg.16cb689d778112333cffb6fe546b89ec.jpg"
-    }
-  },
-  {
-    "url": "https://forums.warframe.com/discover/1780.xml",
-    "key": "forum.staff.george",
-    "author": {
-      "name": "[DE]George",
-      "url": "https://forums.warframe.com/profile/138665-degeorge/",
-      "icon_url": "https://content.invisioncic.com/Mwarframe/monthly_2016_02/George_Forum_Photo.thumb.png.62acd07b2b2e40831eca57a0e230a2b2.png"
-    }
-  },
-  {
-    "url": "https://forums.warframe.com/discover/1781.xml",
-    "key": "forum.staff.bear",
-    "author": {
-      "name": "[DE]Bear",
-      "url": "https://forums.warframe.com/profile/1589-debear/",
-      "icon_url": "https://content.invisioncic.com/Mwarframe/monthly_2018_02/juggerdaddy.thumb.gif.85061b940143c7310801ce00337636ac.gif"
     }
   }
 ]
