@@ -17,8 +17,8 @@ updates:
     pull-request-branch-name:
       separator: "-"
     rebase-strategy: "auto"
-  - package-ecosystem: npm
-    directory: "/"
+  - package-ecosystem: github-actions
+    directory: ".github/workflows/"
     schedule:
       interval: "weekly"
       day: "saturday"
