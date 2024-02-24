@@ -20,7 +20,7 @@ jobs:
       - name: Verify
         run: |
           npm ci --omit=optional
-          npm install --no-save warframe-worldstate-parser@^2.x warframe-worldstate-data@^1.x
+          npm install --no-save warframe-worldstate-parser@^3.x warframe-worldstate-data@^2.x
           npm run lint
           npm test
       - name: Semantic Release
