@@ -3,7 +3,6 @@ import EventEmitter from 'node:events';
 import RSS from './handlers/RSS.js';
 import Worldstate from './handlers/Worldstate.js';
 import Twitter from './handlers/Twitter.js';
-
 import { logger } from './utilities/index.js';
 
 export default class WorldstateEmitter extends EventEmitter {

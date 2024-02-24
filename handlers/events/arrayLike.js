@@ -1,6 +1,7 @@
+import { logger } from '../../utilities/index.js';
+
 import checkOverrides from './checkOverrides.js';
 import objectLike from './objectLike.js';
-import { logger } from '../../utilities/index.js';
 
 /**
  * arrayLike are all just arrays of objectLike

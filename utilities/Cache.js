@@ -1,5 +1,7 @@
 import { EventEmitter } from 'node:events';
+
 import { CronJob } from 'cron';
+
 import { logger } from './index.js';
 
 export default class CronCache extends EventEmitter {

@@ -1,8 +1,10 @@
 import wsData from 'warframe-worldstate-data';
+
 import WSCache from '../utilities/WSCache.js';
 import { logger, lastUpdated } from '../utilities/index.js';
-import parseNew from './events/parse.js';
 import Cache from '../utilities/Cache.js';
+
+import parseNew from './events/parse.js';
 
 const { locales } = wsData;
 

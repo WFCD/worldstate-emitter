@@ -1,3 +1,5 @@
+import { lastUpdated } from '../../utilities/index.js';
+
 import checkOverrides from './checkOverrides.js';
 import kuvaProcessing from './kuva.js';
 import arrayLike from './arrayLike.js';
@@ -5,7 +7,6 @@ import objectLike from './objectLike.js';
 import nightwave from './nightwave.js';
 import cycleLike from './cycleLike.js';
 import * as eKeyOverrides from './eKeyOverrides.js';
-import { lastUpdated } from '../../utilities/index.js';
 
 /**
  * @typedef {Object} Deps

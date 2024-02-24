@@ -1,4 +1,5 @@
 import chai from 'chai';
+
 import WSEmitter from '../../index.js';
 
 chai.should();

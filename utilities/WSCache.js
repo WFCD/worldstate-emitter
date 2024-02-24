@@ -1,4 +1,5 @@
 import Worldstate from 'warframe-worldstate-parser';
+
 import { logger } from './index.js';
 
 /**
