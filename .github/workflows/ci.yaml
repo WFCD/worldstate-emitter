@@ -6,7 +6,23 @@ on:
       - main
 
 jobs:
+  install:
+    name: Install
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-node@v4
+      with:
+        node-version-file: .nvmrc
+    - run: |
+       npm ci --omit=optional
+       npm install --no-save warframe-worldstate-parser@^3.x warframe-worldstate-data@^2.x
+    - uses: actions/cache/save@v4
+      with:
+        path: node_modules
+        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
   lint:
+    needs: install
     name: Lint
     runs-on: ubuntu-latest
     steps:
@@ -15,10 +31,10 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version-file: .nvmrc
-    - name: Install Dependencies
-      run: |
-        npm ci --omit=optional
-        npm install --no-save warframe-worldstate-parser@^3.x warframe-worldstate-data@^2.x
+    - uses: actions/cache/restore@v4
+      with:
+        path: node_modules
+        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
     - name: Run linters
       run: npm run lint
   test:
@@ -34,10 +50,10 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version: ${{ matrix.node-version }}
-    - name: Install Dependencies
-      run: |
-        npm ci --omit=optional
-        npm install --no-save warframe-worldstate-parser@^3.x warframe-worldstate-data@^2.x
+    - uses: actions/cache/restore@v4
+      with:
+        path: node_modules
+        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
     - run: npm test
       env:
         CI: true
@@ -51,10 +67,10 @@ jobs:
     - uses: actions/setup-node@v4
       with:
         node-version-file: .nvmrc
-    - name: Install Dependencies
-      run: |
-        npm ci --omit=optional
-        npm install --no-save warframe-worldstate-parser@^3.x warframe-worldstate-data@^2.x
+    - uses: actions/cache/restore@v4
+      with:
+        path: node_modules
+        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
     - run: npm test
       env:
         CI: true
