@@ -22,13 +22,11 @@ jobs:
       with:
         path: |
           ./node_modules/**/*
-        key: node-${{ hashFiles('**/package-lock.json') }}
+        key: node-ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   lint:
     needs: install
     name: Lint
     runs-on: ubuntu-latest
-    outputs:
-      cache-node-modules: ${{ steps.cache-node-modules.outputs.cache-primary-key }}
     steps:
     - uses: actions/checkout@v4
     - name: Use Node.js
@@ -38,8 +36,8 @@ jobs:
     - uses: actions/cache/restore@v4
       with:
         path: |
-          node_modules
-        key: node-${{ hashFiles('**/package-lock.json') }}
+          ./node_modules/**/*
+        key: node-ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
     - name: Run linters
       run: npm run lint
   test:
@@ -58,8 +56,8 @@ jobs:
     - uses: actions/cache/restore@v4
       with:
         path: |
-          node_modules
-        key: node-${{ hashFiles('**/package-lock.json') }}
+          ./node_modules/**/*
+        key: node-ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
     - run: npm test
       env:
         CI: true
@@ -76,8 +74,8 @@ jobs:
     - uses: actions/cache/restore@v4
       with:
         path: |
-          node_modules
-        key: node-${{ hashFiles('**/package-lock.json') }}
+          ./node_modules/**/*
+        key: node-ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
     - run: npm test
       env:
         CI: true
