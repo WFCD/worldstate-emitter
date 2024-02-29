@@ -39,7 +39,7 @@
     "twitter": "^1.7.1"
   },
   "devDependencies": {
-    "@wfcd/eslint-config": "^1.3.3",
+    "@wfcd/eslint-config": "latest",
     "c8": "^9.1.0",
     "chai": "^4.3.4",
     "coveralls": "^3.1.0",
