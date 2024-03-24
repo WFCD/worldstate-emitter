@@ -2,50 +2,129 @@
   "name": "worldstate-emitter",
   "version": "0.0.0-dev",
   "description": "Event emitter for worldstate & other warframe events",
-  "main": "index.js",
-  "scripts": {
-    "test": "c8 mocha",
-    "lint": "eslint .",
-    "lint:fix": "eslint . --fix",
-    "coverage": "npm test && npm run report | coveralls",
-    "build:docs": "jsdoc -c jsdoc-config.json -d docs",
-    "dev": "nodemon test/tester.js",
-    "postinstall": "install-peerdeps @wfcd/eslint-config@latest -S",
-    "report": "c8 report --reporter=text-lcov",
-    "validate": "npm ls"
-  },
-  "directories": {
-    "test": "test/specs"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/wfcd/worldstate-emitter.git"
-  },
   "keywords": [
     "warframe",
     "worldstate",
     "event",
     "emitter"
   ],
-  "author": "tobiah <tobiah@protonmail.com>",
-  "license": "Apache-2.0",
+  "homepage": "https://wfcd.github.io/worldstate-emitter/",
   "bugs": {
     "url": "https://github.com/wfcd/worldstate-emitter/issues"
   },
-  "homepage": "https://wfcd.github.io/worldstate-emitter/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wfcd/worldstate-emitter.git"
+  },
+  "license": "Apache-2.0",
+  "author": "tobiah <tobiah@protonmail.com>",
+  "type": "module",
+  "main": "index.js",
+  "directories": {
+    "test": "test/specs"
+  },
+  "scripts": {
+    "build:docs": "jsdoc -c jsdoc-config.json -d docs",
+    "coverage": "npm test && npm run report | coveralls",
+    "dev": "nodemon test/tester.js",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "prepare": "husky && install-peerdeps @wfcd/eslint-config@latest -S",
+    "report": "c8 report --reporter=text-lcov",
+    "test": "c8 mocha"
+  },
+  "pre-commit": [
+    "lint",
+    "test",
+    "validate"
+  ],
+  "commitlint": {
+    "extends": [
+      "@commitlint/config-conventional"
+    ]
+  },
+  "lint-staged": {
+    "*.js": [
+      "eslint --cache --fix",
+      "npm test"
+    ],
+    "package*.json": [
+      "prettier --write",
+      "npm dedupe",
+      "npx sort-package-json"
+    ],
+    "*.{json,yml,yaml}": [
+      "prettier --write"
+    ]
+  },
+  "nodemonConfig": {
+    "delay": 5000,
+    "env": {
+      "LOG_LEVEL": "debug",
+      "CACHE_TIMEOUT": 60000,
+      "SEMLAR_TIMEOUT": 300000
+    }
+  },
+  "babel": {
+    "plugins": [
+      "@babel/plugin-transform-class-properties",
+      "@babel/plugin-transform-private-methods"
+    ],
+    "presets": [
+      "@babel/preset-env"
+    ]
+  },
+  "prettier": "@wfcd/eslint-config/prettier",
+  "eslintConfig": {
+    "parser": "@babel/eslint-parser",
+    "parserOptions": {
+      "ecmaFeatures": {
+        "modules": true
+      },
+      "ecmaVersion": 6,
+      "sourceType": "module"
+    },
+    "extends": "@wfcd/eslint-config/esm",
+    "rules": {
+      "no-underscore-dangle": "off"
+    }
+  },
+  "eslintIgnore": [
+    ".github/**",
+    "docs/**",
+    "resources/**",
+    "types/**"
+  ],
+  "mocha": {
+    "exit": true,
+    "spec": "test/specs/**/*.spec.js",
+    "timeout": 20000
+  },
+  "c8": {
+    "reporter": [
+      "lcov",
+      "text"
+    ],
+    "skip-full": true
+  },
   "dependencies": {
     "cron": "^3.1.6",
     "rss-feed-emitter": "^3.2.2",
     "twitter": "^1.7.1"
   },
   "devDependencies": {
+    "@commitlint/cli": "^19.2.1",
+    "@commitlint/config-conventional": "^19.1.0",
     "@wfcd/eslint-config": "latest",
     "c8": "^9.1.0",
     "chai": "^4.3.4",
     "coveralls": "^3.1.0",
+    "husky": "^9.0.11",
     "install-peerdeps": "^3.0.3",
+    "lint-staged": "^15.2.2",
     "mocha": "^10.0.0",
-    "nodemon": "^3.0.3"
+    "nodemon": "^3.0.3",
+    "prettier": "^3.2.5"
   },
   "peerDependencies": {
     "warframe-worldstate-data": "^2.x",
@@ -57,61 +136,5 @@
   },
   "engines": {
     "node": ">= 18.19.0"
-  },
-  "eslintIgnore": [
-    ".github/**",
-    "docs/**",
-    "resources/**",
-    "types/**"
-  ],
-  "eslintConfig": {
-    "extends": "@wfcd/eslint-config/esm",
-    "parser": "@babel/eslint-parser",
-    "parserOptions": {
-      "sourceType": "module",
-      "ecmaVersion": 6,
-      "ecmaFeatures": {
-        "modules": true
-      }
-    },
-    "rules": {
-      "no-underscore-dangle": "off"
-    }
-  },
-  "babel": {
-    "presets": [
-      "@babel/preset-env"
-    ],
-    "plugins": [
-      "@babel/plugin-transform-class-properties",
-      "@babel/plugin-transform-private-methods"
-    ]
-  },
-  "pre-commit": [
-    "lint",
-    "test",
-    "validate"
-  ],
-  "prettier": "@wfcd/eslint-config/prettier",
-  "nodemonConfig": {
-    "delay": 5000,
-    "env": {
-      "LOG_LEVEL": "debug",
-      "CACHE_TIMEOUT": 60000,
-      "SEMLAR_TIMEOUT": 300000
-    }
-  },
-  "mocha": {
-    "timeout": 20000,
-    "exit": true,
-    "spec": "test/specs/**/*.spec.js"
-  },
-  "c8": {
-    "reporter": [
-      "lcov",
-      "text"
-    ],
-    "skip-full": true
-  },
-  "type": "module"
+  }
 }
