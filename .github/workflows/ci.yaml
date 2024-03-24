@@ -11,35 +11,39 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
-    - uses: actions/setup-node@v4
-      with:
-        node-version-file: .nvmrc
-    - run: |
-       npm ci --omit=optional
-       npm install --no-save warframe-worldstate-parser@^3.x warframe-worldstate-data@^2.x
-    - uses: actions/cache/save@v4
-      with:
-        path: |
-          ./node_modules/**/*
-        key: node-ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+      - run: |
+          npm ci --omit=optional
+          npm install --no-save warframe-worldstate-parser@^3.x warframe-worldstate-data@^2.x
+      - uses: actions/cache/save@v4
+        with:
+          path: |
+            ./node_modules/**/*
+          key: node-ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   lint:
     needs: install
     name: Lint
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
-    - name: Use Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version-file: .nvmrc
-    - uses: actions/cache/restore@v4
-      with:
-        path: |
-          ./node_modules/**/*
-        key: node-ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-    - name: Run linters
-      run: npm run lint
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+      - uses: actions/cache/restore@v4
+        with:
+          path: |
+            ./node_modules/**/*
+          key: node-ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+      - name: Run linters
+        run: npm run lint
+      - name: Run commitlint
+        run: npx commitlint --from ${{ github.event.pull_request.head.sha }}~${{ github.event.pull_request.commits }} --to ${{ github.event.pull_request.head.sha }} --verbose
   test:
     name: Test
     runs-on: ubuntu-latest
@@ -48,36 +52,36 @@ jobs:
       matrix:
         node-version: ['lts/*', '20', '18']
     steps:
-    - uses: actions/checkout@v4
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{ matrix.node-version }}
-    - uses: actions/cache/restore@v4
-      with:
-        path: |
-          ./node_modules/**/*
-        key: node-ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-    - run: npm test
-      env:
-        CI: true
-        parallel: true
+      - uses: actions/checkout@v4
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+      - uses: actions/cache/restore@v4
+        with:
+          path: |
+            ./node_modules/**/*
+          key: node-ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+      - run: npm test
+        env:
+          CI: true
+          parallel: true
   coverage:
     name: Coverage
     runs-on: ubuntu-latest
     needs: [lint, install]
     steps:
-    - uses: actions/checkout@v4
-    - uses: actions/setup-node@v4
-      with:
-        node-version-file: .nvmrc
-    - uses: actions/cache/restore@v4
-      with:
-        path: |
-          ./node_modules/**/*
-        key: node-ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-    - run: npm test
-      env:
-        CI: true
-    - name: Coveralls
-      uses: coverallsapp/github-action@master
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+      - uses: actions/cache/restore@v4
+        with:
+          path: |
+            ./node_modules/**/*
+          key: node-ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+      - run: npm test
+        env:
+          CI: true
+      - name: Coveralls
+        uses: coverallsapp/github-action@master
