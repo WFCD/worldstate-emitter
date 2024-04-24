@@ -30,7 +30,7 @@ export default class Worldstate {
   constructor(eventEmitter, locale) {
     this.#emitter = eventEmitter;
     this.#locale = locale;
-    logger.silly('starting up worldstate listener...');
+    logger.debug('starting up worldstate listener...');
     if (locale) {
       logger.debug(`only listening for ${locale}...`);
     }
@@ -134,7 +134,7 @@ export default class Worldstate {
   emit(id, packet) {
     if (debugEvents.includes(packet.key)) logger.warn(packet.key);
 
-    logger.silly(`ws:update:event - emitting ${packet.id}`);
+    logger.debug(`ws:update:event - emitting ${packet.id}`);
     delete packet.cycleStart;
     this.#emitter.emit(id, packet);
   }
@@ -146,7 +146,7 @@ export default class Worldstate {
    * @throws {Error} when the platform or locale aren't tracked and aren't updated
    */
   get(language = 'en') {
-    logger.warn(`getting worldstate ${language}...`);
+    logger.debug(`getting worldstate ${language}...`);
     if (this.#worldStates?.[language]) {
       return this.#worldStates?.[language]?.data;
     }
