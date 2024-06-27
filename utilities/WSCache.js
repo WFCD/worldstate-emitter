@@ -1,4 +1,4 @@
-import Worldstate from 'warframe-worldstate-parser';
+import WorldState from 'warframe-worldstate-parser';
 
 import { logger } from './index.js';
 
@@ -16,7 +16,7 @@ export default class WSCache {
 
   /**
    * Set up a cache checking for data and updates to a specific worldstate set
-   * @param {string}        language      Langauge/translation to track
+   * @param {string}        language      Language/translation to track
    * @param {Cache}     kuvaCache     Cache of kuva data, provided by Semlar
    * @param {Cache}     sentientCache Cache of sentient outpost data, provided by Semlar
    * @param {EventEmitter}  eventEmitter  Emitter to push new worldstate updates to
@@ -28,6 +28,27 @@ export default class WSCache {
     this.#language = language;
     this.#emitter = eventEmitter;
   }
+
+  /**
+   * Update the current data with new data
+   * @param {string} newData updated worldstate data
+   * @returns {Promise<void>}
+   */
+  #update = async (newData) => {
+    const t = await WorldState.build(newData, {
+      locale: this.#language,
+      kuvaData: JSON.parse(await this.#kuvaCache.get()),
+      sentientData: JSON.parse(await this.#sentientCache.get()),
+    });
+    if (!t.timestamp) return;
+
+    this.#inner = t;
+    this.#emitter.emit('ws:update:parsed', {
+      language: this.#language,
+      platform: this.#platform,
+      data: t,
+    });
+  };
 
   /**
    * Get the latest worldstate data from this cache
@@ -43,21 +64,7 @@ export default class WSCache {
    */
   set data(newData) {
     logger.debug(`got new data for ${this.#language}, parsing...`);
-    setTimeout(async () => {
-      const t = new Worldstate(newData, {
-        locale: this.#language,
-        kuvaData: JSON.parse(await this.#kuvaCache.get()),
-        sentientData: JSON.parse(await this.#sentientCache.get()),
-      });
-      if (!t.timestamp) return;
-
-      this.#inner = t;
-      this.#emitter.emit('ws:update:parsed', {
-        language: this.#language,
-        platform: this.#platform,
-        data: t,
-      });
-    }, 0);
+    this.#update(newData);
   }
 
   /**
