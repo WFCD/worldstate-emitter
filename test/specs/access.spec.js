@@ -12,6 +12,7 @@ describe('access', function () {
   });
   it('should return data when requested', async () => {
     const data = ws.getWorldstate();
+
     data.should.be
       .an('object')
       .that.has.all.keys(

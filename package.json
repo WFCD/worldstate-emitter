@@ -43,7 +43,9 @@
       "@commitlint/config-conventional"
     ],
     "rules": {
-      "body-max-line-length": [0]
+      "body-max-line-length": [
+        0
+      ]
     }
   },
   "lint-staged": {
@@ -131,7 +133,7 @@
   },
   "peerDependencies": {
     "warframe-worldstate-data": "^2.x",
-    "warframe-worldstate-parser": "^3.x"
+    "warframe-worldstate-parser": "^4.x"
   },
   "optionalDependencies": {
     "colors": "^1.4.0",
