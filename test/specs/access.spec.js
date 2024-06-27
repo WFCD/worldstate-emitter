@@ -3,6 +3,7 @@ import chai from 'chai';
 import WSEmitter from '../../index.js';
 
 chai.should();
+const { expect } = chai;
 
 const ws = await WSEmitter.make();
 
@@ -49,5 +50,7 @@ describe('access', function () {
         'weeklyChallenges',
         'zarimanCycle'
       );
+
+    data.syndicateMissions.some((mission) => mission.jobs.some((job) => expect(job).to.not.be.empty)).should.be.true;
   });
 });
