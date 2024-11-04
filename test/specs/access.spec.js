@@ -33,6 +33,7 @@ describe('access', function () {
         'flashSales',
         'globalUpgrades',
         'invasions',
+        'kinepage',
         'kuva',
         'news',
         'nightwave',
