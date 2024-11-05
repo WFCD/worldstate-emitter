@@ -19,6 +19,9 @@
   "license": "Apache-2.0",
   "author": "tobiah <tobiah@protonmail.com>",
   "type": "module",
+  "exports": {
+    ".": "./index.js"
+  },
   "main": "index.js",
   "directories": {
     "test": "test/specs"
@@ -29,9 +32,10 @@
     "dev": "nodemon test/tester.js",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "prepare": "husky && install-peerdeps @wfcd/eslint-config@latest -S",
+    "prepare": "husky && npx install-peerdeps @wfcd/eslint-config@latest -S",
     "report": "c8 report --reporter=text-lcov",
-    "test": "c8 mocha"
+    "test": "c8 mocha",
+    "validate": "npm ls"
   },
   "pre-commit": [
     "lint",
@@ -122,7 +126,7 @@
     "@commitlint/config-conventional": "^19.1.0",
     "@wfcd/eslint-config": "latest",
     "c8": "^10.1.2",
-    "chai": "^4.3.4",
+    "chai": "^5.1.2",
     "coveralls": "^3.1.0",
     "husky": "^9.0.11",
     "install-peerdeps": "^3.0.3",
