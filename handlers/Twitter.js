@@ -1,6 +1,6 @@
 import Twitter from 'twitter';
 
-import toWatch from '../resources/tweeters.json' assert { type: 'json' };
+import toWatch from '../resources/tweeters.json' with { type: 'json' };
 import { logger } from '../utilities/index.js';
 import { twiClientInfo, TWITTER_TIMEOUT } from '../utilities/env.js';
 

@@ -1,8 +1,7 @@
-import chai from 'chai';
+import { should } from 'chai';
+import WSEmitter from 'worldstate-emitter';
 
-import WSEmitter from '../../index.js';
-
-chai.should();
+should();
 
 const ws = await WSEmitter.make();
 
