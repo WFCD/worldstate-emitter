@@ -60,11 +60,10 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
-      - uses: actions/cache/restore@v4
-        with:
-          path: |
-            ./node_modules/**/*
-          key: node-ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+      - name: Install Deps
+        run: |
+          npm ci --omit=optional
+          npm install --no-save warframe-worldstate-parser@^4.x warframe-worldstate-data@^2.x
       - run: npm test
         env:
           CI: true
