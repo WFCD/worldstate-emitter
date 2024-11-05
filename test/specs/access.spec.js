@@ -49,6 +49,7 @@ describe('access', () => {
         'zarimanCycle'
       );
 
-    data.syndicateMissions.some((mission) => mission.jobs.some((job) => expect(job).to.not.be.empty)).should.be.true;
+    const some = data.syndicateMissions.some((mission) => mission.jobs.some((job) => expect(job).to.not.be.empty));
+    expect(some).to.be.true;
   });
 });
