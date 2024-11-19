@@ -1,6 +1,6 @@
 import RssFeedEmitter from 'rss-feed-emitter';
 
-import feeds from '../resources/rssFeeds.json' assert { type: 'json' };
+import feeds from '../resources/rssFeeds.json' with { type: 'json' };
 import { logger } from '../utilities/index.js';
 
 /**
