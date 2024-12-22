@@ -20,6 +20,7 @@ describe('access', function () {
         'alerts',
         'arbitration',
         'archonHunt',
+        'calendar',
         'cambionCycle',
         'cetusCycle',
         'conclaveChallenges',
