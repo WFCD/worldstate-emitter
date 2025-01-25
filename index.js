@@ -70,6 +70,14 @@ export default class WorldstateEmitter extends EventEmitter {
     return this.#worldstate?.get(language);
   }
 
+  get debug() {
+    return {
+      rss: this.getRss(),
+      worldstate: this.#worldstate?.get(),
+      twitter: this.#twitter?.clientInfoValid ? this.#twitter.getData() : undefined,
+    };
+  }
+
   /**
    * Get Twitter data
    * @returns {Promise} promised twitter data

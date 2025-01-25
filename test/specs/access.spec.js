@@ -1,21 +1,17 @@
-import chai from 'chai';
-
-import WSEmitter from '../../index.js';
-
-chai.should();
-const { expect } = chai;
+import { expect } from 'chai';
+import WSEmitter from 'worldstate-emitter';
 
 const ws = await WSEmitter.make();
 
-describe('access', function () {
+describe('access', () => {
   before((done) => {
     setTimeout(() => done(), 10000);
   });
   it('should return data when requested', async () => {
     const data = ws.getWorldstate();
 
-    data.should.be
-      .an('object')
+    expect(data)
+      .to.be.an('object')
       .that.has.all.keys(
         'alerts',
         'arbitration',
@@ -53,6 +49,7 @@ describe('access', function () {
         'zarimanCycle'
       );
 
-    data.syndicateMissions.some((mission) => mission.jobs.some((job) => expect(job).to.not.be.empty)).should.be.true;
+    const some = data.syndicateMissions.some((mission) => mission.jobs.some((job) => expect(job).to.not.be.empty));
+    expect(some).to.be.true;
   });
 });
