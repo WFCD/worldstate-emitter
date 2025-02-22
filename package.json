@@ -39,85 +39,11 @@
   },
   "pre-commit": [
     "lint",
-    "test",
-    "validate"
+    "validate",
+    "test"
   ],
-  "commitlint": {
-    "extends": [
-      "@commitlint/config-conventional"
-    ],
-    "rules": {
-      "body-max-line-length": [
-        0
-      ]
-    }
-  },
-  "lint-staged": {
-    "*.js": [
-      "eslint --cache --fix",
-      "npm test"
-    ],
-    "package*.json": [
-      "prettier --write",
-      "npm dedupe",
-      "npx sort-package-json"
-    ],
-    "*.{json,yml,yaml}": [
-      "prettier --write"
-    ]
-  },
-  "nodemonConfig": {
-    "delay": 5000,
-    "env": {
-      "LOG_LEVEL": "debug",
-      "CACHE_TIMEOUT": 60000,
-      "SEMLAR_TIMEOUT": 300000
-    }
-  },
-  "babel": {
-    "plugins": [
-      "@babel/plugin-transform-class-properties",
-      "@babel/plugin-transform-private-methods"
-    ],
-    "presets": [
-      "@babel/preset-env"
-    ]
-  },
-  "prettier": "@wfcd/eslint-config/prettier",
-  "eslintConfig": {
-    "parser": "@babel/eslint-parser",
-    "parserOptions": {
-      "ecmaFeatures": {
-        "modules": true
-      },
-      "ecmaVersion": 6,
-      "sourceType": "module"
-    },
-    "extends": "@wfcd/eslint-config/esm",
-    "rules": {
-      "no-underscore-dangle": "off"
-    }
-  },
-  "eslintIgnore": [
-    ".github/**",
-    "docs/**",
-    "resources/**",
-    "types/**"
-  ],
-  "mocha": {
-    "exit": true,
-    "spec": "test/specs/**/*.spec.js",
-    "timeout": 20000
-  },
-  "c8": {
-    "reporter": [
-      "lcov",
-      "text"
-    ],
-    "skip-full": true
-  },
   "dependencies": {
-    "cron": "^3.1.6",
+    "cron": "^4.0.0",
     "rss-feed-emitter": "^3.2.2",
     "twitter": "^1.7.1"
   },
