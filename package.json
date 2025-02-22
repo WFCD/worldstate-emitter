@@ -117,7 +117,7 @@
     "skip-full": true
   },
   "dependencies": {
-    "cron": "^3.1.6",
+    "cron": "^4.0.0",
     "rss-feed-emitter": "^3.2.2",
     "twitter": "^1.7.1"
   },
