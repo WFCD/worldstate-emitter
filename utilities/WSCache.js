@@ -35,11 +35,23 @@ export default class WSCache {
    * @returns {Promise<void>}
    */
   #update = async (newData) => {
-    const t = await WorldState.build(newData, {
+    const deps = {
       locale: this.#language,
-      kuvaData: JSON.parse(await this.#kuvaCache.get()),
-      sentientData: JSON.parse(await this.#sentientCache.get()),
-    });
+      kuvaData: {},
+      sentientData: {},
+    };
+    try {
+      deps.kuvaData = JSON.parse(await this.#kuvaCache.get());
+    } catch (err) {
+      logger.warn(`Error parsing kuva data for ${this.#language}: ${err}`);
+    }
+    try {
+      deps.sentientData = JSON.parse(await this.#sentientCache.get());
+    } catch (err) {
+      logger.warn(`Error parsing sentient data for ${this.#language}: ${err}`);
+    }
+
+    const t = await WorldState.build(newData, deps);
     if (!t.timestamp) return;
 
     this.#inner = t;
