@@ -33,7 +33,7 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "prepare": "husky && npx install-peerdeps @wfcd/eslint-config@latest -S",
-    "report": "c8 report --reporter=text-lcov",
+    "report": "c8 report --reporter=text-lcov > coverage/lcov.info",
     "test": "c8 mocha",
     "validate": "npm ls"
   },
