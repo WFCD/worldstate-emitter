@@ -12,7 +12,7 @@ describe('access', () => {
 
     expect(data)
       .to.be.an('object')
-      .that.has.all.keys(
+      .that.has.keys(
         'alerts',
         'arbitration',
         'archonHunt',
