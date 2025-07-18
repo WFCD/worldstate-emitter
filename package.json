@@ -62,7 +62,7 @@
     "prettier": "^3.2.5"
   },
   "peerDependencies": {
-    "warframe-worldstate-data": "^2.x",
+    "warframe-worldstate-data": "^3.x",
     "warframe-worldstate-parser": "^4.x"
   },
   "optionalDependencies": {
