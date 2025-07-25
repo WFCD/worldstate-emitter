@@ -10,21 +10,6 @@
     "defaultAttach": "https://i.imgur.com/eY1NkzO.png"
   },
   {
-    "url": "https://forums.warframe.com/forum/152-ps4-update-notes.xml",
-    "key": "forum.updates.ps4",
-    "defaultAttach": "https://i.imgur.com/eY1NkzO.png"
-  },
-  {
-    "url": "https://forums.warframe.com/forum/253-xbox-one-update-notes.xml",
-    "key": "forum.updates.xb1",
-    "defaultAttach": "https://i.imgur.com/eY1NkzO.png"
-  },
-  {
-    "url": "https://forums.warframe.com/forum/1196-nintendo-switch-update-notes.xml",
-    "key": "forum.updates.switch",
-    "defaultAttach": "https://i.imgur.com/eY1NkzO.png"
-  },
-  {
     "url": "https://forums.warframe.com/forum/170-announcements-events.xml",
     "key": "forum.news",
     "defaultAttach": "https://i.imgur.com/CNrsc7V.png"
