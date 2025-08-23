@@ -65,7 +65,6 @@
     "warframe-worldstate-parser": "^4.x"
   },
   "optionalDependencies": {
-    "colors": "^1.4.0",
     "winston": "^3.17.0"
   },
   "engines": {
