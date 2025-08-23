@@ -1,5 +1,3 @@
-import 'colors';
-
 import { transports, createLogger, format } from 'winston';
 
 import { LOG_LEVEL } from './env.js';
@@ -9,7 +7,7 @@ try {
   const { combine, label, printf, colorize } = format;
 
   /* Logger setup */
-  const transport = new transports.Console({ colorize: true });
+  const transport = new transports.Console();
   const logFormat = printf((info) => `[${info.label}] ${info.level}: ${info.message}`);
   tempLogger = createLogger({
     format: combine(colorize(), label({ label: 'WS'.brightBlue }), logFormat),
