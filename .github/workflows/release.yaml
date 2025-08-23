@@ -21,7 +21,7 @@ jobs:
       - name: Install
         run: |
           npm ci --omit=optional
-          npm install --no-save warframe-worldstate-parser@^4.x warframe-worldstate-data@^2.x
+          npm install --no-save warframe-worldstate-parser@^4.x warframe-worldstate-data@^3.x
       - name: Lint
         run: |
           npm run lint
