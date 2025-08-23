@@ -42,22 +42,22 @@
     "test"
   ],
   "dependencies": {
-    "cron": "^4.0.0",
-    "rss-feed-emitter": "^3.2.2",
+    "cron": "^4.3.3",
+    "rss-feed-emitter": "^3.2.3",
     "twitter": "^1.7.1"
   },
   "devDependencies": {
-    "@commitlint/cli": "^19.2.1",
-    "@commitlint/config-conventional": "^19.1.0",
+    "@commitlint/cli": "^19.8.1",
+    "@commitlint/config-conventional": "^19.8.1",
     "@wfcd/eslint-config": "latest",
-    "c8": "^10.1.2",
+    "c8": "^10.1.3",
     "chai": "^5.1.2",
-    "husky": "^9.0.11",
-    "install-peerdeps": "^3.0.3",
-    "lint-staged": "^16.0.0",
-    "mocha": "^11.0.1",
-    "nodemon": "^3.0.3",
-    "prettier": "^3.2.5"
+    "husky": "^9.1.7",
+    "install-peerdeps": "^3.0.7",
+    "lint-staged": "^16.1.5",
+    "mocha": "^11.7.1",
+    "nodemon": "^3.1.10",
+    "prettier": "^3.6.2"
   },
   "peerDependencies": {
     "warframe-worldstate-data": "^3.x",
@@ -65,7 +65,7 @@
   },
   "optionalDependencies": {
     "colors": "^1.4.0",
-    "winston": "^3.3.3"
+    "winston": "^3.17.0"
   },
   "engines": {
     "node": ">= 18.19.0"
