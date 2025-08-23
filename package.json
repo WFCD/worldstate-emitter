@@ -28,7 +28,7 @@
   },
   "scripts": {
     "build:docs": "jsdoc -c jsdoc-config.json -d docs",
-    "coverage": "npm test && npm run report | npx coveralls",
+    "coverage": "npm test && npm run report && npx coveralls < coverage/lcov.info",
     "dev": "nodemon test/tester.js",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
