@@ -28,14 +28,13 @@
   },
   "scripts": {
     "build:docs": "jsdoc -c jsdoc-config.json -d docs",
-    "coverage": "npm test && npm run report | coveralls",
+    "coverage": "npm test && npm run report | npx coveralls",
     "dev": "nodemon test/tester.js",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "prepare": "husky && npx install-peerdeps @wfcd/eslint-config@latest -S",
     "report": "c8 report --reporter=text-lcov > coverage/lcov.info",
-    "test": "c8 mocha",
-    "validate": "npm ls"
+    "test": "c8 mocha"
   },
   "pre-commit": [
     "lint",
@@ -53,7 +52,6 @@
     "@wfcd/eslint-config": "latest",
     "c8": "^10.1.2",
     "chai": "^5.1.2",
-    "coveralls": "^3.1.0",
     "husky": "^9.0.11",
     "install-peerdeps": "^3.0.3",
     "lint-staged": "^16.0.0",
