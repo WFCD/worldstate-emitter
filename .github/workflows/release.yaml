@@ -6,6 +6,29 @@ on:
       - main
 
 jobs:
+  verify:
+    name: Verify
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          token: ${{ secrets.GH_TOKEN }}
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+      - name: Install
+        run: |
+          npm ci --omit=optional
+          npm install --no-save warframe-worldstate-parser@^4.x warframe-worldstate-data@^2.x
+      - name: Lint
+        run: |
+          npm run lint
+          npx commitlint --from=HEAD~1
+      - name: Test + Coverage
+        run: |
+          npm run coverage
   release:
     name: Release
     runs-on: ubuntu-latest
@@ -17,14 +40,11 @@ jobs:
           fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
-          node-version: ${{ matrix.node-version }}
-      - name: Verify
+          node-version-file: '.nvmrc'
+      - name: Install
         run: |
           npm ci --omit=optional
           npm install --no-save warframe-worldstate-parser@^4.x warframe-worldstate-data@^2.x
-          npm run lint
-          npx commitlint --from=HEAD~1
-          npm test
       - name: Semantic Release
         uses: cycjimmy/semantic-release-action@v4
         env:
