@@ -37,11 +37,6 @@
     "pretest": "npm i --no-save warframe-worldstate-data@^3 warframe-worldstate-parser@^4",
     "test": "c8 mocha"
   },
-  "pre-commit": [
-    "lint",
-    "validate",
-    "test"
-  ],
   "dependencies": {
     "cron": "^4.3.3",
     "rss-feed-emitter": "^3.2.3",
