@@ -28,6 +28,7 @@ jobs:
           npx commitlint --from=HEAD~1
       - name: Test + Coverage
         run: |
+          npm i -g coveralls@latest
           npm run coverage
   release:
     name: Release
