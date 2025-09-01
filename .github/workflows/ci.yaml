@@ -17,7 +17,7 @@ jobs:
           node-version-file: .nvmrc
       - run: |
           npm ci --omit=optional
-          npm install --no-save warframe-worldstate-parser@^4.x warframe-worldstate-data@^3.x
+          npm install --no-save warframe-worldstate-parser@^5.x warframe-worldstate-data@^3.x
       - uses: actions/cache/save@v4
         with:
           path: |
@@ -64,7 +64,7 @@ jobs:
       - name: Install Deps
         run: |
           npm ci --omit=optional
-          npm install --no-save warframe-worldstate-parser@^4.x warframe-worldstate-data@^3.x
+          npm install --no-save warframe-worldstate-parser@^5.x warframe-worldstate-data@^3.x
       - run: npm test
         env:
           CI: true
