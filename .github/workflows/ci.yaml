@@ -53,8 +53,6 @@ jobs:
         node-version:
           - 'lts/*'
           - '22'
-          - '20'
-          - '18'
     steps:
       - uses: actions/checkout@v5
       - name: Use Node.js ${{ matrix.node-version }}
