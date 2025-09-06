@@ -68,9 +68,9 @@ jobs:
           CI: true
           parallel: true
       - name: Code Coverage
-        if: matrix.node-version == '20'
         run: |
           npm run report
       - name: Coveralls
-        if: matrix.node-version == '20'
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
         uses: coverallsapp/github-action@master

@@ -26,10 +26,18 @@ jobs:
         run: |
           npm run lint
           npx commitlint --from=HEAD~1
-      - name: Test + Coverage
+      - name: Test
+        run: npm test
+        env:
+          CI: true
+          parallel: true
+      - name: Code Coverage
         run: |
-          npm i -g coveralls@latest
-          npm run coverage
+          npm run report
+      - name: Coveralls
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+        uses: coverallsapp/github-action@master
   release:
     name: Release
     runs-on: ubuntu-latest
