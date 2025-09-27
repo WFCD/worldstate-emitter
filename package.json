@@ -43,7 +43,7 @@
     "twitter": "^1.7.1"
   },
   "devDependencies": {
-    "@commitlint/cli": "^19.8.1",
+    "@commitlint/cli": "^20.0.0",
     "@commitlint/config-conventional": "^20.0.0",
     "@wfcd/eslint-config": "latest",
     "c8": "^10.1.3",
