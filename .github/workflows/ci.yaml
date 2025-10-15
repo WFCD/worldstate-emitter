@@ -48,17 +48,11 @@ jobs:
     name: Test
     runs-on: ubuntu-latest
     needs: [lint]
-    strategy:
-      matrix:
-        node-version:
-          - 'lts/*'
-          - '22'
     steps:
       - uses: actions/checkout@v5
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v5
+      - uses: actions/setup-node@v5
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version-file: .nvmrc
       - name: Install Deps
         run: |
           npm ci --omit=optional
