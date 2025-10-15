@@ -3,6 +3,7 @@ import wsData from 'warframe-worldstate-data';
 import WSCache from '../utilities/WSCache.js';
 import { logger, lastUpdated } from '../utilities/index.js';
 import Cache from '../utilities/Cache.js';
+import { SENTIENT_URL, KUVA_URL, WORLDSTATE_URL } from '../resources/config.js';
 
 import parseNew from './events/parse.js';
 
@@ -37,9 +38,9 @@ export default class Worldstate {
   }
 
   async init() {
-    this.#wsRawCache = await Cache.make('https://content.warframe.com/dynamic/worldState.php', '*/10 * * * * *');
-    this.#kuvaCache = await Cache.make('https://10o.io/arbitrations.json', smCron);
-    this.#sentientCache = await Cache.make('https://semlar.com/anomaly.json', smCron);
+    this.#wsRawCache = await Cache.make(WORLDSTATE_URL, '*/10 * * * * *');
+    this.#kuvaCache = await Cache.make(KUVA_URL, smCron);
+    this.#sentientCache = await Cache.make(SENTIENT_URL, smCron);
 
     await this.setUpRawEmitters();
     this.setupParsedEvents();

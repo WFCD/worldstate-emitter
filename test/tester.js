@@ -1,5 +1,6 @@
 import Emitter from '../index.js';
 import Cache from '../utilities/Cache.js';
+import { WORLDSTATE_URL } from '../resources/config.js';
 
 const e = await Emitter.make({ locale: 'en' });
 setTimeout(async () => {
@@ -14,6 +15,6 @@ e.on('ws:update:parsed', ({ language, platform, data }) => {
   console.log(Object.keys(data));
 });
 
-const cache = await Cache.make('https://content.warframe.com/dynamic/worldState.php', '0 * * * * *');
+const cache = await Cache.make(WORLDSTATE_URL, '0 * * * * *');
 cache.on('update', (data) => console.error(typeof data));
 console.error(typeof (await cache.get()));
