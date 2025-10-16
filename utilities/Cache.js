@@ -1,6 +1,9 @@
 import { EventEmitter } from 'node:events';
+import { randomUUID } from 'node:crypto';
 
 import { CronJob } from 'cron';
+
+import fetch from './FetchProxy.js';
 
 import { logger } from './index.js';
 
@@ -41,7 +44,10 @@ export default class CronCache extends EventEmitter {
 
   async #fetch() {
     logger.silly(`fetching... ${this.#url}`);
-    const updated = await fetch(this.#url);
+    const updated = await fetch(this.#url, {
+      session: `emitter-session-${randomUUID()}`,
+      contentType: 'text/html',
+    });
     this.#data = await updated.text();
     return this.#data;
   }

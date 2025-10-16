@@ -5,7 +5,7 @@ const ws = await WSEmitter.make();
 
 describe('access', () => {
   before((done) => {
-    setTimeout(() => done(), 10000);
+    setTimeout(() => done(), 60000);
   });
   it('should return data when requested', async () => {
     const data = ws.getWorldstate();

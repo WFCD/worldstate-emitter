@@ -4,6 +4,7 @@ import RSS from './handlers/RSS.js';
 import Worldstate from './handlers/Worldstate.js';
 import Twitter from './handlers/Twitter.js';
 import { logger } from './utilities/index.js';
+import { FEATURES } from './resources/config.js';
 
 export default class WorldstateEmitter extends EventEmitter {
   #locale;
@@ -28,10 +29,16 @@ export default class WorldstateEmitter extends EventEmitter {
   }
 
   async #init() {
-    this.#rss = new RSS(this);
-    this.#worldstate = new Worldstate(this, this.#locale);
-    await this.#worldstate.init();
-    this.#twitter = new Twitter(this);
+    if (FEATURES.includes('rss')) {
+      this.#rss = new RSS(this);
+    }
+    if (FEATURES.includes('worldstate')) {
+      this.#worldstate = new Worldstate(this, this.#locale);
+      await this.#worldstate.init();
+    }
+    if (FEATURES.includes('twitter')) {
+      this.#twitter = new Twitter(this);
+    }
 
     logger.silly('hey look, i started up...');
     this.setupLogging();
@@ -58,6 +65,7 @@ export default class WorldstateEmitter extends EventEmitter {
    * @returns {Object} [description]
    */
   getRss() {
+    if (!this.#rss) return undefined;
     return this.#rss.feeder.list.map((i) => ({ url: i.url, items: i.items }));
   }
 
@@ -67,13 +75,14 @@ export default class WorldstateEmitter extends EventEmitter {
    * @returns {Object}                 Requested worldstate
    */
   getWorldstate(language = 'en') {
+    if (!this.#worldstate) return undefined;
     return this.#worldstate?.get(language);
   }
 
   get debug() {
     return {
-      rss: this.getRss(),
-      worldstate: this.#worldstate?.get(),
+      rss: FEATURES.includes('rss') ? this.getRss() : undefined,
+      worldstate: FEATURES.includes('worldstate') ? this.#worldstate?.get() : undefined,
       twitter: this.#twitter?.clientInfoValid ? this.#twitter.getData() : undefined,
     };
   }

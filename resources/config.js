@@ -1,3 +1,6 @@
 export const WORLDSTATE_URL = process.env.WORLDSTATE_URL ?? 'https://api.warframe.com/cdn/worldState.php';
 export const KUVA_URL = process.env.KUVA_URL ?? 'https://10o.io/arbitrations.json';
 export const SENTIENT_URL = process.env.SENTIENT_URL ?? 'https://semlar.com/anomaly.json';
+export const PROXY_URL = process.env.PROXY_URL ?? undefined;
+
+export const FEATURES = process.env.FEATURES ? process.env.FEATURES.split(',') : ['rss', 'twitter', 'worldstate'];
