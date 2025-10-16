@@ -12,7 +12,10 @@
   "bugs": {
     "url": "https://github.com/wfcd/worldstate-emitter/issues"
   },
-  "repository": "https://github.com/WFCD/worldstate-emitter",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/WFCD/worldstate-emitter.git"
+  },
   "license": "Apache-2.0",
   "author": "tobiah <tobiah@protonmail.com>",
   "type": "module",
@@ -62,5 +65,7 @@
   "engines": {
     "node": ">= 18.19.0"
   },
-  "publishConfig": { "provenance": true }
+  "publishConfig": {
+    "provenance": true
+  }
 }

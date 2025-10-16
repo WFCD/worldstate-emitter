@@ -28,7 +28,9 @@ export default class WorldstateEmitter extends EventEmitter {
   }
 
   async #init() {
-    this.#rss = new RSS(this);
+    if (!process.env.CI) {
+      this.#rss = new RSS(this);
+    }
     this.#worldstate = new Worldstate(this, this.#locale);
     await this.#worldstate.init();
     this.#twitter = new Twitter(this);
