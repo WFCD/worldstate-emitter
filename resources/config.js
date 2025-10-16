@@ -3,4 +3,4 @@ export const KUVA_URL = process.env.KUVA_URL ?? 'https://10o.io/arbitrations.jso
 export const SENTIENT_URL = process.env.SENTIENT_URL ?? 'https://semlar.com/anomaly.json';
 export const PROXY_URL = process.env.PROXY_URL ?? undefined;
 
-export const FEATURES = process.env.FEATURES ? process.env.FEATURES.split(',') : ['rss', 'twitter', 'worldstate'];
+export const FEATURES = process.env.WS_EMITTER_FEATURES ? process.env.WS_EMITTER_FEATURES.split(',') : ['rss', 'twitter', 'worldstate'];
