@@ -1,7 +1,7 @@
 import { PROXY_URL } from '../resources/config.js';
 
 const isCI = process.env.CI === 'true';
-const ciTimeout = process.env.CI_TIMEOUT ? parseInt(process.env.CI_TIMEOUT, 10) : 60000;
+const ciTimeout = process.env.CI_TIMEOUT ? parseInt(process.env.CI_TIMEOUT, 10) : 600000;
 const localTimeout = process.env.LOCAL_TIMEOUT ? parseInt(process.env.LOCAL_TIMEOUT, 10) : 12000000;
 
 export default async (
