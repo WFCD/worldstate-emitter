@@ -12,18 +12,36 @@ export default async (
   }
 ) => {
   if (PROXY_URL) {
-    const res = await fetch(`${PROXY_URL}/v1`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        cmd: 'request.get',
-        url,
-        session,
-        maxTimeout: isCI ? ciTimeout : localTimeout,
-        returnOnlyCookies: false,
-        returnPageContent: true,
-      }),
-    });
+    const controller = new AbortController();
+    const timeout = setTimeout(
+      () => {
+        controller.abort();
+      },
+      isCI ? ciTimeout : localTimeout
+    );
+    let res;
+    try {
+      res = await fetch(`${PROXY_URL}/v1`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        signal: controller.signal,
+        body: JSON.stringify({
+          cmd: 'request.get',
+          url,
+          session,
+          maxTimeout: isCI ? ciTimeout : localTimeout,
+          returnOnlyCookies: false,
+          returnPageContent: true,
+        }),
+      });
+    } catch (error) {
+      if (error.name === 'AbortError') {
+        throw new Error(`Request timed out after ${isCI ? ciTimeout : localTimeout}ms`);
+      }
+      throw new Error(`Proxy request failed: ${error.message}`);
+    } finally {
+      clearTimeout(timeout);
+    }
     const text = await res.text();
     const { solution } = JSON.parse(text);
     if (!solution?.response) {
