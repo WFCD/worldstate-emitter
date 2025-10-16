@@ -18,12 +18,9 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version-file: '.nvmrc'
-      - name: Tailscale
-        uses: tailscale/github-action@v3
+      - uses: wenoa/setup-wireguard@main
         with:
-          oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
-          oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
-          tags: tag:ci
+          WG_CONFIG: ${{ secrets.WG_CONFIG }}
       - name: Install
         run: |
           npm ci --omit=optional
@@ -37,7 +34,6 @@ jobs:
         env:
           CI: true
           parallel: true
-          PROXY_URL: ${{ secrets.SOLVERR_PROXY_URL }}
       - name: Code Coverage
         run: |
           npm run report
