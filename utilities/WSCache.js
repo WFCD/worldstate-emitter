@@ -43,7 +43,7 @@ export default class WSCache {
     try {
       deps.kuvaData = JSON.parse(await this.#kuvaCache.get());
     } catch (err) {
-      logger.warn(`Error parsing kuva data for ${this.#language}: ${err}`);
+      logger.debug(`Error parsing kuva data for ${this.#language}: ${err}`);
     }
     try {
       deps.sentientData = JSON.parse(await this.#sentientCache.get());
