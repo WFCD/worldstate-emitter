@@ -51,8 +51,14 @@ export default class WSCache {
       logger.warn(`Error parsing sentient data for ${this.#language}: ${err}`);
     }
 
-    const t = await WorldState.build(newData, deps);
-    if (!t.timestamp) return;
+    let t;
+    try {
+      t = await WorldState.build(newData, deps);
+      if (!t.timestamp) return;
+    } catch (err) {
+      this.#logger.warn(`Error parsing worldstate data for ${this.#language}: ${err}`);
+      return;
+    }
 
     this.#inner = t;
     this.#emitter.emit('ws:update:parsed', {
