@@ -3,14 +3,12 @@ import wsData from 'warframe-worldstate-data';
 import WSCache from '../utilities/WSCache.js';
 import { logger, lastUpdated } from '../utilities/index.js';
 import Cache from '../utilities/Cache.js';
-import { SENTIENT_URL, KUVA_URL, WORLDSTATE_URL } from '../resources/config.js';
+import { sentientUrl, kuvaUrl, worldstateUrl, externalCron, worldstateCron } from '../resources/config.js';
 
 import parseNew from './events/parse.js';
 
 const { locales } = wsData;
-
 const debugEvents = ['arbitration', 'kuva', 'nightwave'];
-const smCron = `0 */10 * * * *`;
 
 /**
  * Handler for worldstate data
@@ -38,9 +36,9 @@ export default class Worldstate {
   }
 
   async init() {
-    this.#wsRawCache = await Cache.make(WORLDSTATE_URL, '*/10 * * * * *');
-    this.#kuvaCache = await Cache.make(KUVA_URL, smCron);
-    this.#sentientCache = await Cache.make(SENTIENT_URL, smCron);
+    this.#wsRawCache = await Cache.make(worldstateUrl, worldstateCron);
+    this.#kuvaCache = await Cache.make(kuvaUrl, externalCron);
+    this.#sentientCache = await Cache.make(sentientUrl, externalCron);
 
     await this.setUpRawEmitters();
     this.setupParsedEvents();
