@@ -35,7 +35,8 @@
     "prepare": "husky && npx install-peerdeps @wfcd/eslint-config@latest -S",
     "report": "c8 report --reporter=text-lcov > coverage/lcov.info",
     "pretest": "npm i --no-save warframe-worldstate-data@^3 warframe-worldstate-parser@^5",
-    "test": "c8 mocha"
+    "test": "c8 mocha",
+    "test:staged": "LINT_STAGED=true npm test"
   },
   "dependencies": {
     "cron": "^4.3.4",

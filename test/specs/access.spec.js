@@ -3,11 +3,15 @@ import WSEmitter from 'worldstate-emitter';
 
 const ws = await WSEmitter.make();
 
-describe.skip('access', () => {
+describe('access', () => {
   before((done) => {
     setTimeout(() => done(), 60000); // wait up to 10 minutes for initial data fetch
   });
-  it('should return data when requested', async () => {
+  it('should return data when requested', function async() {
+    if (process.env.LINT_STAGED === 'true') {
+      this.skip();
+    }
+
     const data = ws.getWorldstate();
 
     expect(data)
