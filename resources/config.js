@@ -5,6 +5,4 @@ export const sentientUrl = process.env.SENTIENT_URL ?? 'https://semlar.com/anoma
 export const worldstateCron = process.env.WORLDSTATE_CRON ?? '25 */5 * * * *';
 export const externalCron = process.env.WS_EXTERNAL_CRON ?? '0 */10 * * * *';
 
-export const FEATURES = process.env.WS_EMITTER_FEATURES
-  ? process.env.WS_EMITTER_FEATURES.split(',')
-  : ['rss', 'twitter', 'worldstate'];
+export const FEATURES = process.env.WS_EMITTER_FEATURES ? process.env.WS_EMITTER_FEATURES.split(',') : [];

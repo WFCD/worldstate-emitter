@@ -1,6 +1,6 @@
 '*.js':
   - eslint --cache --fix
-  - 'npm run test:staged'
+  - npm test
 package*.json:
   - prettier --write
   - npm dedupe

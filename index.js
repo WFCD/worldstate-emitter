@@ -12,9 +12,9 @@ export default class WorldstateEmitter extends EventEmitter {
   #twitter;
   #rss;
 
-  static async make({ locale } = { locale: undefined }) {
+  static async make({ locale, features } = { locale: undefined, features: [] }) {
     const emitter = new WorldstateEmitter({ locale });
-    await emitter.#init();
+    await emitter.#init(features?.length ? features : FEATURES);
     return emitter;
   }
 
@@ -24,19 +24,18 @@ export default class WorldstateEmitter extends EventEmitter {
    */
   constructor({ locale } = { locale: undefined }) {
     super();
-
     this.#locale = locale;
   }
 
-  async #init() {
-    if (FEATURES.includes('rss')) {
+  async #init(/** @type {string[]} */ features) {
+    if (features.includes('rss')) {
       this.#rss = new RSS(this);
     }
-    if (FEATURES.includes('worldstate')) {
+    if (features.includes('worldstate')) {
       this.#worldstate = new Worldstate(this, this.#locale);
       await this.#worldstate.init();
     }
-    if (FEATURES.includes('twitter')) {
+    if (features.includes('twitter')) {
       this.#twitter = new Twitter(this);
     }
 
