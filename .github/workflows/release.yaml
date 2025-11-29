@@ -12,7 +12,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v6
-      - uses: actions/setup-node@v6
+      - name: Setup Node
+        uses: actions/setup-node@v6
         with:
           node-version-file: '.nvmrc'
       - name: Install
@@ -23,9 +24,10 @@ jobs:
         run: |
           npm run lint
           npx commitlint --from=HEAD~1
-      - uses: wenoa/setup-wireguard@main
+      - name: Setup WireGuard
+        uses: niklaskeerl/easy-wireguard-action@v2
         with:
-          WG_CONFIG: ${{ secrets.WG_CONFIG }}
+          WG_CONFIG_FILE: ${{ secrets.WG_CONFIG }}
       - name: Test
         run: npm test
         env:

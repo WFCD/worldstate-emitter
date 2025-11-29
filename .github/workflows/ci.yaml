@@ -28,7 +28,8 @@ jobs:
     name: Lint
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - name: Checkout
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
       - name: Use Node.js
@@ -57,9 +58,10 @@ jobs:
         run: |
           npm ci --omit=optional
           npm install --no-save warframe-worldstate-parser@^5.x warframe-worldstate-data@^3.x
-      - uses: wenoa/setup-wireguard@main
+      - name: Setup WireGuard
+        uses: niklaskeerl/easy-wireguard-action@v2
         with:
-          WG_CONFIG: ${{ secrets.WG_CONFIG }}
+          WG_CONFIG_FILE: ${{ secrets.WG_CONFIG }}
       - run: npm test
         env:
           CI: true
