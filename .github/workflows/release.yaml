@@ -12,6 +12,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
       - name: Setup Node
         uses: actions/setup-node@v6
         with:
@@ -23,7 +25,7 @@ jobs:
       - name: Lint
         run: |
           npm run lint
-          npx commitlint --from=HEAD~1
+          npx commitlint --last --verbose
       - name: Setup WireGuard
         uses: niklaskeerl/easy-wireguard-action@v2
         with:
