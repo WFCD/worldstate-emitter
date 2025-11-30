@@ -50,7 +50,7 @@ describe('access', () => {
             'zarimanCycle'
           );
 
-        const some = data.syndicateMissions.some((mission) => mission.jobs.some((job) => expect(job).to.not.be.empty));
+        const some = data.syndicateMissions.some((mission) => mission.jobs.some((job) => Object.keys(job).length > 0));
         expect(some).to.be.true;
 
         done();
