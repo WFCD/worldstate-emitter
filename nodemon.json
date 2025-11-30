@@ -3,6 +3,7 @@
   "env": {
     "LOG_LEVEL": "debug",
     "CACHE_TIMEOUT": 60000,
-    "SEMLAR_TIMEOUT": 300000
+    "SEMLAR_TIMEOUT": 300000,
+    "FEATURES": "worldstate"
   }
 }
