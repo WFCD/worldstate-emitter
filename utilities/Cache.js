@@ -29,12 +29,20 @@ export default class CronCache extends EventEmitter {
   async #update() {
     this.#updating = this.#fetch();
     this.#logger.debug(`update starting  for ${this.#url}`);
+    let error;
     try {
       this.#data = await this.#updating;
       return this.#updating;
+    } catch (e) {
+      this.#data = undefined;
+      error = e;
     } finally {
-      this.emit('update', this.#data);
-      this.#logger.debug(`update done for ${this.#url}`);
+      if (this.#data) {
+        this.emit('update', this.#data);
+        this.#logger.debug(`update done for ${this.#url}`);
+      } else {
+        this.#logger.debug(`update failed for ${this.#url} : ${error}`);
+      }
       this.#updating = undefined;
     }
   }
