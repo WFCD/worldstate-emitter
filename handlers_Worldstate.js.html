@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width">
+	<title>Worldstate Emitter Source: handlers/Worldstate.js</title>
+
+	<!--[if lt IE 9]>
+	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+	<link type="text/css" rel="stylesheet" href="styles/sunlight.dark.css">
+
+	<link type="text/css" rel="stylesheet" href="styles/site.cosmo.css">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-default navbar-fixed-top navbar-inverse">
+<div class="container">
+	<div class="navbar-header">
+		<a class="navbar-brand" href="index.html">Worldstate Emitter</a>
+		<button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#topNavigation">
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+        </button>
+	</div>
+	<div class="navbar-collapse collapse" id="topNavigation">
+		<ul class="nav navbar-nav">
+			
+			<li class="dropdown">
+				<a href="classes.list.html" class="dropdown-toggle" data-toggle="dropdown">Classes<b class="caret"></b></a>
+				<ul class="dropdown-menu inline">
+					<li><a href="module.html#.exports">module.exports</a></li>
+				</ul>
+			</li>
+			
+			<li class="dropdown">
+				<a href="global.html" class="dropdown-toggle" data-toggle="dropdown">Global<b class="caret"></b></a>
+				<ul class="dropdown-menu inline">
+					<li><a href="global.html#arbitration">arbitration</a></li><li><a href="global.html#between">between</a></li><li><a href="global.html#data">data</a></li><li><a href="global.html#emit">emit</a></li><li><a href="global.html#fromNow">fromNow</a></li><li><a href="global.html#get">get</a></li><li><a href="global.html#getData">getData</a></li><li><a href="global.html#getParseableData">getParseableData</a></li><li><a href="global.html#groupBy">groupBy</a></li><li><a href="global.html#initCycleStart">initCycleStart</a></li><li><a href="global.html#lastUpdated">lastUpdated</a></li><li><a href="global.html#onError">onError</a></li><li><a href="global.html#parseEvents">parseEvents</a></li><li><a href="global.html#setUpRawEmitters">setUpRawEmitters</a></li><li><a href="global.html#setupParsedEvents">setupParsedEvents</a></li><li><a href="global.html#twitter">twitter</a></li><li><a href="global.html#update">update</a></li>
+				</ul>
+			</li>
+			
+		</ul>
+        
+            <div class="col-sm-3 col-md-3">
+                <form class="navbar-form" role="search">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Search" name="q" id="search-input">
+                        <div class="input-group-btn">
+                            <button class="btn btn-default" id="search-submit"><i class="glyphicon glyphicon-search"></i></button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        
+	</div>
+
+</div>
+</div>
+
+
+<div class="container" id="toc-content">
+<div class="row">
+
+	
+	<div class="col-md-12">
+	
+		<div id="main">
+			
+
+		<h1 class="page-title">Source: handlers/Worldstate.js</h1>
+    
+<section>
+    <article>
+        <pre
+            class="sunlight-highlight-javascript linenums">import wsData from 'warframe-worldstate-data';
+
+import WSCache from '../utilities/WSCache.js';
+import { logger, lastUpdated } from '../utilities/index.js';
+import Cache from '../utilities/Cache.js';
+import { sentientUrl, kuvaUrl, worldstateUrl, externalCron, worldstateCron } from '../resources/config.js';
+
+import parseNew from './events/parse.js';
+
+const { locales } = wsData;
+const debugEvents = ['arbitration', 'kuva', 'nightwave'];
+
+/**
+ * Handler for worldstate data
+ */
+export default class Worldstate {
+  #emitter;
+  #locale;
+  #worldStates = {};
+  #wsRawCache;
+  #kuvaCache;
+  #sentientCache;
+
+  /**
+   * Set up listening for specific platform and locale if provided.
+   * @param {EventEmitter} eventEmitter Emitter to push new worldstate events to
+   * @param {string} locale       Locale (actually just language) to watch
+   */
+  constructor(eventEmitter, locale) {
+    this.#emitter = eventEmitter;
+    this.#locale = locale;
+    logger.debug('starting up worldstate listener...');
+    if (locale) {
+      logger.debug(`only listening for ${locale}...`);
+    }
+  }
+
+  async init() {
+    this.#wsRawCache = await Cache.make(worldstateUrl, worldstateCron);
+    this.#kuvaCache = await Cache.make(kuvaUrl, externalCron);
+    this.#sentientCache = await Cache.make(sentientUrl, externalCron);
+
+    await this.setUpRawEmitters();
+    this.setupParsedEvents();
+  }
+
+  /**
+   * Set up emitting raw worldstate data
+   */
+  async setUpRawEmitters() {
+    this.#worldStates = {};
+
+    // eslint-disable-next-line no-restricted-syntax
+    for await (const locale of locales) {
+      if (!this.#locale || this.#locale === locale) {
+        this.#worldStates[locale] = new WSCache({
+          language: locale,
+          kuvaCache: this.#kuvaCache,
+          sentientCache: this.#sentientCache,
+          eventEmitter: this.#emitter,
+        });
+      }
+    }
+
+    /* listen for the raw cache updates so we can emit them from the super emitter */
+    this.#wsRawCache.on('update', (dataStr) => {
+      this.#emitter.emit('ws:update:raw', { platform: 'pc', data: dataStr });
+    });
+
+    /* when the raw emits happen, parse them and store them on parsed worldstate caches */
+    this.#emitter.on('ws:update:raw', ({ data }) => {
+      logger.debug('ws:update:raw - updating locales data');
+      locales.forEach((locale) => {
+        if (!this.#locale || this.#locale === locale) {
+          this.#worldStates[locale].data = data;
+        }
+      });
+    });
+  }
+
+  /**
+   * Set up listeners for the parsed worldstate updates
+   */
+  setupParsedEvents() {
+    this.#emitter.on('ws:update:parsed', ({ language, platform, data }) => {
+      const packet = { platform, worldstate: data, language };
+      this.parseEvents(packet);
+    });
+  }
+
+  /**
+   * Parse new worldstate events
+   * @param  {Object} worldstate     worldstate to find packets from
+   * @param  {string} platform       platform the worldstate corresponds to
+   * @param  {string} [language='en'] language of the worldstate (defaults to 'en')
+   */
+  parseEvents({ worldstate, platform, language = 'en' }) {
+    const cycleStart = Date.now();
+    const packets = [];
+    Object.keys(worldstate).forEach(async (key) => {
+      if (worldstate &amp;&amp; worldstate[key]) {
+        const packet = parseNew({
+          data: worldstate[key],
+          key,
+          language,
+          platform,
+          cycleStart,
+        });
+
+        if (Array.isArray(packet)) {
+          if (packet.length) {
+            packets.push(...packet.filter((p) => p &amp;&amp; p));
+          }
+        } else if (packet) {
+          packets.push(packet);
+        }
+      }
+    });
+
+    lastUpdated[platform][language] = Date.now();
+    packets
+      .filter((p) => p &amp;&amp; p.id &amp;&amp; packets)
+      .forEach((packet) => {
+        this.emit('ws:update:event', packet);
+      });
+  }
+
+  /**
+   * Emit an event with given id
+   * @param  {string} id     Id of the event to emit
+   * @param  {Object} packet Data packet to emit
+   */
+  emit(id, packet) {
+    if (debugEvents.includes(packet.key)) logger.warn(packet.key);
+
+    logger.debug(`ws:update:event - emitting ${packet.id}`);
+    delete packet.cycleStart;
+    this.#emitter.emit(id, packet);
+  }
+
+  /**
+   * get a specific worldstate version
+   * @param  {string} [language='en'] Locale of the worldsttate
+   * @returns {Object}                Worldstate corresponding to provided data
+   * @throws {Error} when the platform or locale aren't tracked and aren't updated
+   */
+  get(language = 'en') {
+    logger.debug(`getting worldstate ${language}...`);
+    if (this.#worldStates?.[language]) {
+      return this.#worldStates?.[language]?.data;
+    }
+    throw new Error(`Language (${language}) not tracked.\nEnsure that the parameters passed are correct`);
+  }
+}
+</pre>
+    </article>
+</section>
+
+
+
+
+
+		</div>
+	</div>
+
+	<div class="clearfix"></div>
+
+	
+
+</div>
+</div>
+
+
+    <div class="modal fade" id="searchResults">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title">Search results</h4>
+          </div>
+          <div class="modal-body"></div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          </div>
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal-dialog -->
+    </div>
+
+
+<footer>
+
+
+	<span class="copyright">
+	©2024, WFCD
+	</span>
+
+<span class="jsdoc-message">
+	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 4.0.5</a>
+	
+		on Saturday, January 3rd 2026, 00:16:53
+	
+	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
+</span>
+</footer>
+
+<script src="scripts/docstrap.lib.js"></script>
+<script src="scripts/toc.js"></script>
+
+    <script type="text/javascript" src="scripts/fulltext-search-ui.js"></script>
+
+
+<script>
+$( function () {
+	$( "[id*='$']" ).each( function () {
+		var $this = $( this );
+
+		$this.attr( "id", $this.attr( "id" ).replace( "$", "__" ) );
+	} );
+
+	$( ".tutorial-section pre, .readme-section pre, pre.prettyprint.source" ).each( function () {
+		var $this = $( this );
+
+		var example = $this.find( "code" );
+		exampleText = example.html();
+		var lang = /{@lang (.*?)}/.exec( exampleText );
+		if ( lang && lang[1] ) {
+			exampleText = exampleText.replace( lang[0], "" );
+			example.html( exampleText );
+			lang = lang[1];
+		} else {
+			var langClassMatch = example.parent()[0].className.match(/lang\-(\S+)/);
+			lang = langClassMatch ? langClassMatch[1] : "javascript";
+		}
+
+		if ( lang ) {
+
+			$this
+			.addClass( "sunlight-highlight-" + lang )
+			.addClass( "linenums" )
+			.html( example.html() );
+
+		}
+	} );
+
+	Sunlight.highlightAll( {
+		lineNumbers : true,
+		showMenu : true,
+		enableDoclinks : true
+	} );
+
+	$.catchAnchorLinks( {
+        navbarOffset: 10
+	} );
+	$( "#toc" ).toc( {
+		anchorName  : function ( i, heading, prefix ) {
+			return $( heading ).attr( "id" ) || ( prefix + i );
+		},
+		selectors   : "#toc-content h1,#toc-content h2,#toc-content h3,#toc-content h4",
+		showAndHide : false,
+		smoothScrolling: true
+	} );
+
+	$( "#main span[id^='toc']" ).addClass( "toc-shim" );
+	$( '.dropdown-toggle' ).dropdown();
+
+    $( "table" ).each( function () {
+      var $this = $( this );
+      $this.addClass('table');
+    } );
+
+} );
+</script>
+
+
+
+<!--Navigation and Symbol Display-->
+
+<script>
+	$( function () {
+		$( '#main' ).localScroll( {
+			offset : { top : 60 } //offset by the height of your header (give or take a few px, see what works for you)
+		} );
+		$( "dt.name" ).each( function () {
+			var $this = $( this ).find("h4");
+			var icon = $( "<i/>" ).addClass( "icon-plus-sign" ).addClass( "pull-right" ).addClass( "icon-white" );
+			var dt = $(this);
+			var children = dt.next( "dd" );
+
+			dt.prepend( icon ).css( {cursor : "pointer"} );
+			dt.addClass( "member-collapsed" ).addClass( "member" );
+
+
+			children.hide();
+
+			dt.children().on( "click", function () {
+				children = dt.next( "dd" );
+				children.slideToggle( "fast", function () {
+
+					if ( children.is( ":visible" ) ) {
+						icon.addClass( "icon-minus-sign" ).removeClass( "icon-plus-sign" ).removeClass( "icon-white" );
+						dt.addClass( "member-open" ).animate( "member-collapsed" );
+					} else {
+						icon.addClass( "icon-plus-sign" ).removeClass( "icon-minus-sign" ).addClass( "icon-white" );
+						dt.addClass( "member-collapsed" ).removeClass( "member-open" );
+					}
+				} );
+			} );
+
+		} );
+	} );
+</script>
+
+
+<!--Google Analytics-->
+
+
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+            SearcherDisplay.init();
+        });
+    </script>
+
+
+</body>
+</html>
