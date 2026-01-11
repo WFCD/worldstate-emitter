@@ -59,7 +59,7 @@ export default (deps: ParseDeps): EventPacket[] | undefined => {
         data: arrayData,
         id: eventsOverride,
       };
-      packets.push(...arrayLike(updatedDeps, packets));
+      arrayLike(updatedDeps, packets);
       break;
     }
 
@@ -74,7 +74,7 @@ export default (deps: ParseDeps): EventPacket[] | undefined => {
     case 'weeklyChallenges': {
       const arrayData = Array.isArray(deps.data) ? deps.data : [deps.data];
       const arrayDeps: ArrayEventDeps = { ...deps, data: arrayData };
-      packets.push(...arrayLike(arrayDeps, packets));
+      arrayLike(arrayDeps, packets);
       break;
     }
 

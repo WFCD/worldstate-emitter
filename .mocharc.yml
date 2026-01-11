@@ -1,5 +1,5 @@
 exit: true
 spec: test/specs/**/*.spec.ts
-timeout: 250000
+timeout: 10000
 node-option:
   - import=tsx
