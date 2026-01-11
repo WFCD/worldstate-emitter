@@ -1,5 +1,6 @@
 import { expect } from 'chai';
-import WSEmitter from 'worldstate-emitter';
+import type { SyndicateJob, SyndicateMission } from 'warframe-worldstate-parser';
+import WSEmitter from '../../index';
 
 const ws = await WSEmitter.make({
   locale: 'en',
@@ -47,10 +48,12 @@ describe('access', () => {
             'voidTrader',
             'voidTraders',
             'weeklyChallenges',
-            'zarimanCycle'
+            'zarimanCycle',
           );
 
-        const some = data.syndicateMissions.some((mission) => mission.jobs.some((job) => Object.keys(job).length > 0));
+        const some = data.syndicateMissions.some((mission: SyndicateMission) =>
+          mission.jobs.some((job: SyndicateJob) => Object.keys(job).length > 0),
+        );
         expect(some).to.be.true;
 
         done();

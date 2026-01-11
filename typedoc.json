@@ -1,0 +1,15 @@
+{
+  "entryPoints": ["index.ts"],
+  "out": "docs",
+  "exclude": ["**/node_modules/**", "**/test/**", "**/dist/**"],
+  "excludePrivate": true,
+  "excludeProtected": false,
+  "excludeExternals": true,
+  "skipErrorChecking": false,
+  "plugin": [],
+  "validation": {
+    "notExported": false,
+    "invalidLink": true,
+    "notDocumented": false
+  }
+}
