@@ -1,6 +1,5 @@
 import type { Logger } from 'winston';
 import { createLogger, format, transports } from 'winston';
-
 import { LOG_LEVEL } from '@/utilities/env';
 
 let tempLogger: Logger;
@@ -30,10 +29,7 @@ export const logger = tempLogger;
  * @param field - field to group by
  * @returns Grouped object
  */
-export const groupBy = <T extends Record<string, object>>(
-  array: T[] | undefined,
-  field: keyof T,
-): Record<string, T[]> | undefined => {
+export const groupBy = <T extends object>(array: T[] | undefined, field: keyof T): Record<string, T[]> | undefined => {
   const grouped: Record<string, T[]> = {};
   if (!array) return undefined;
   for (const item of array) {

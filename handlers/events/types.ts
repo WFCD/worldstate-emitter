@@ -5,9 +5,6 @@ import type { CambionCycle, CetusCycle, EarthCycle, WorldStateObject } from 'war
 
 export interface BaseEventData {
   activation: Date | string | number;
-  expiry?: Date | string | number;
-  id?: string;
-  [key: string]: unknown;
 }
 
 export type CycleLike = CambionCycle | CetusCycle | EarthCycle;

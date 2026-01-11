@@ -11,7 +11,7 @@ export default (data: BaseEventData, deps: EventDeps): EventPacket | undefined =
   if (!data) return undefined;
   const last = new Date(lastUpdated[deps.platform][deps.language]);
   const activation = new Date(data.activation);
-  const start = new Date(deps.cycleStart);
+  const start = new Date(deps.cycleStart! ?? 0);
   if (between(last.getTime(), activation.getTime(), start.getTime())) {
     const p: EventPacket = {
       ...deps,
