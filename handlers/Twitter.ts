@@ -1,10 +1,9 @@
 import type EventEmitter from 'node:events';
-import type { MediaEntity, Status } from 'twitter';
-import Twitter from 'twitter';
+import Twitter, { type BearerTokenOptions, type MediaEntity, type Status, type TwitterClient } from 'twitter';
 
 import toWatch from '@/resources/tweeters.json';
+import { logger } from '@/utilities';
 import { TWITTER_TIMEOUT, twiClientInfo } from '@/utilities/env';
-import { logger } from '@/utilities/index';
 
 interface Watchable {
   acc_name: string;
@@ -40,12 +39,6 @@ interface ParsedTweet {
 }
 
 type TweetType = 'reply' | 'quote' | 'retweet' | 'tweet';
-
-interface TwitterClientInfo {
-  consumer_key?: string;
-  consumer_secret?: string;
-  bearer_token?: string;
-}
 
 const determineTweetType = (tweet: Status): TweetType => {
   if (tweet.in_reply_to_status_id) {
@@ -102,7 +95,7 @@ export default class TwitterCache {
   private emitter: EventEmitter;
   private timeout: number;
   public clientInfoValid: boolean;
-  private client?: Twitter;
+  private client?: TwitterClient;
   private toWatch?: Watchable[];
   private currentData?: ParsedTweet[];
   private lastUpdated: number;
@@ -122,7 +115,7 @@ export default class TwitterCache {
     this.initClient(twiClientInfo);
   }
 
-  private initClient(clientInfo: TwitterClientInfo): void {
+  private initClient(clientInfo: Partial<BearerTokenOptions>): void {
     try {
       if (this.clientInfoValid && clientInfo.consumer_key && clientInfo.consumer_secret && clientInfo.bearer_token) {
         this.client = new Twitter({
