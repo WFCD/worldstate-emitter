@@ -1,39 +1,22 @@
+import type { ExternalMission, Fissure, PersistentEnemy, WorldStateObject } from 'warframe-worldstate-parser';
+import type { OverrideFunction, OverrideMap } from '@/handlers/events/types';
 import { logger } from '@/utilities';
 
-interface ExternalMission {
-  activation: Date;
-  expiry: Date;
-  node: string;
-  enemy: string;
-  type: string;
-  archwing: boolean;
-  sharkwing: boolean;
-}
+export const fissures: OverrideFunction = (data: WorldStateObject): string => {
+  const fissure = data as Fissure;
+  return `fissures.t${fissure.tierNum}.${(fissure.missionType || '').toLowerCase()}`;
+};
 
-interface Fissure {
-  tierNum: number;
-  missionType?: string;
-}
+export const enemies: OverrideFunction = (data: WorldStateObject): { eventKey: string; activation: Date } => {
+  const enemy = data as PersistentEnemy;
+  return {
+    eventKey: `enemies${enemy.isDiscovered ? '' : '.departed'}`,
+    activation: new Date(enemy.lastDiscoveredAt),
+  };
+};
 
-interface Acolyte {
-  isDiscovered: boolean;
-  lastDiscoveredAt: Date;
-}
-
-export const fissures = (fissure: Fissure): string =>
-  `fissures.t${fissure.tierNum}.${(fissure.missionType || '').toLowerCase()}`;
-
-export const enemies = (acolyte: Acolyte): { eventKey: string; activation: Date } => ({
-  eventKey: `enemies${acolyte.isDiscovered ? '' : '.departed'}`,
-  activation: acolyte.lastDiscoveredAt,
-});
-
-/**
- * Parse an arbitration for its key
- * @param arbi - arbitration data to parse
- * @returns Event key string
- */
-export const arbitration = (arbi: ExternalMission): string => {
+export const arbitration: OverrideFunction = (data: WorldStateObject): string => {
+  const arbi = data as unknown as ExternalMission;
   if (!arbi?.enemy) return '';
 
   let k: string;
@@ -48,3 +31,11 @@ export const arbitration = (arbi: ExternalMission): string => {
 
 export const events = 'operations';
 export const persistentEnemies = 'enemies';
+
+export const overrides: OverrideMap = {
+  fissures,
+  enemies,
+  arbitration,
+  events,
+  persistentEnemies,
+};

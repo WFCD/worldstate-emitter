@@ -1,5 +1,5 @@
-import * as eKeyOverrides from '@/handlers/events/eKeyOverrides';
-import type { BaseEventData, OverrideMap, OverrideResult } from '@/handlers/events/types';
+import { overrides } from '@/handlers/events/eKeyOverrides';
+import type { BaseEventData, OverrideResult } from '@/handlers/events/types';
 
 /**
  * Find overrides for the provided key
@@ -8,8 +8,7 @@ import type { BaseEventData, OverrideMap, OverrideResult } from '@/handlers/even
  * @returns overrided key or object
  */
 export default (key: string, data: BaseEventData): OverrideResult => {
-  const overrideMap = eKeyOverrides as unknown as OverrideMap;
-  const override = overrideMap[key];
+  const override = overrides[key];
 
   if (typeof override === 'string') {
     return override;

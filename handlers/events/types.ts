@@ -1,6 +1,7 @@
 /**
  * Shared type definitions for worldstate event handling
  */
+import type { CambionCycle, CetusCycle, EarthCycle, WorldStateObject } from 'warframe-worldstate-parser';
 
 export interface BaseEventData {
   activation: Date | string | number;
@@ -9,13 +10,7 @@ export interface BaseEventData {
   [key: string]: unknown;
 }
 
-export interface CycleLike extends BaseEventData {
-  state: string;
-}
-
-export interface KuvaData extends BaseEventData {
-  type: string;
-}
+export type CycleLike = CambionCycle | CetusCycle | EarthCycle;
 
 export interface BaseDeps {
   key: string;
@@ -42,7 +37,7 @@ export interface EventPacket extends BaseDeps {
   [key: string]: unknown;
 }
 
-export type OverrideFunction = (data: BaseEventData) => string | { eventKey: string; activation: Date };
+export type OverrideFunction = (data: WorldStateObject) => string | { eventKey: string; activation: Date };
 export type OverrideValue = string | OverrideFunction;
 export type OverrideResult = string | { eventKey: string; activation: Date };
 
