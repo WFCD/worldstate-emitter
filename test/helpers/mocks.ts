@@ -69,14 +69,16 @@ export function createSpy<T extends (...args: unknown[]) => unknown>(): T & {
  */
 export function waitForEvent<T = unknown>(emitter: EventEmitter, event: string, timeout = 5000): Promise<T> {
   return new Promise((resolve, reject) => {
+    const handler = (data: T) => {
+      clearTimeout(timer);
+      resolve(data);
+    };
     const timer = setTimeout(() => {
+      emitter.off(event, handler);
       reject(new Error(`Event "${event}" not emitted within ${timeout}ms`));
     }, timeout);
 
-    emitter.once(event, (data: T) => {
-      clearTimeout(timer);
-      resolve(data);
-    });
+    emitter.once(event, handler);
   });
 }
 
