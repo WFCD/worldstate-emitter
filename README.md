@@ -243,7 +243,7 @@ npm run build:docs
 
 ## Project Structure
 
-```
+```haskell
 worldstate-emitter/
 ├── handlers/          # Event handlers
 │   ├── events/       # Event processors

@@ -86,7 +86,7 @@ jobs:
             const { data: issues } = await github.rest.issues.listForRepo({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              state: 'open'
+              state: 'open',
               labels: 'integration-test-failure',
               per_page: 100
             });
