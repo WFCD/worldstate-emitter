@@ -65,6 +65,23 @@ jobs:
           script: |
             const issueTitle = 'Daily Integration Tests Failing';
             
+            // Compute safe branch string for scheduled/manual runs
+            let branch;
+            if (context.ref && context.ref.startsWith('refs/heads/')) {
+              // Branch push: strip the refs/heads/ prefix
+              branch = context.ref.replace('refs/heads/', '');
+            } else if (context.ref) {
+              // Other ref types (tags, etc.): use as-is
+              branch = context.ref;
+            } else {
+              // Scheduled or manual run with no ref: fetch default branch
+              const { data: repo } = await github.rest.repos.get({
+                owner: context.repo.owner,
+                repo: context.repo.repo
+              });
+              branch = repo.default_branch;
+            }
+            
             // Check if there's already an open issue with this exact title
             const { data: issues } = await github.rest.issues.listForRepo({
               owner: context.repo.owner,
@@ -81,7 +98,7 @@ jobs:
             **Date:** ${new Date().toISOString().split('T')[0]}
             **Workflow Run:** ${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}
             **Commit:** \`${context.sha.substring(0, 7)}\`
-            **Branch:** \`${context.ref.replace('refs/heads/', '')}\`
+            **Branch:** \`${branch}\`
             
             The daily integration test run has failed. Please investigate and fix the failing tests.
             
