@@ -72,6 +72,9 @@ const parseQuoted = (tweet: Status, type: 'quoted_status' | 'retweeted_status'):
     : undefined;
 
 const parseTweet = (tweets: Status[], watchable: Watchable): ParsedTweet => {
+  if (!tweets.length) {
+    throw new Error(`No tweets found for ${watchable.acc_name}`);
+  }
   const [tweet] = tweets;
   const type = determineTweetType(tweet);
   return {
@@ -132,11 +135,11 @@ export default class TwitterCache {
         this.update();
       } else {
         logger.warn(`Twitter client not initialized... invalid token: ${clientInfo.bearer_token}`);
+        this.dispose();
       }
     } catch (err) {
-      this.client = undefined;
-      this.clientInfoValid = false;
       logger.error(err);
+      this.dispose();
     }
   }
 
@@ -145,7 +148,8 @@ export default class TwitterCache {
    * @returns The currently updating promise
    */
   async update(): Promise<ParsedTweet[] | undefined> {
-    if (!this.clientInfoValid) return undefined;
+    // Don't proceed if disposed or client is invalid
+    if (!this.clientInfoValid || !this.updateInterval) return undefined;
 
     if (!this.toWatch) {
       logger.verbose('Not processing twitter, no data to watch.');
@@ -185,10 +189,12 @@ export default class TwitterCache {
           }
         }),
       );
+      // Update cached data and timestamp after successful fetch
+      this.currentData = parsedData;
+      this.lastUpdated = Date.now();
     } catch (error) {
       this.onError(error);
     }
-    this.lastUpdated = Date.now();
     return parsedData;
   }
 
@@ -198,8 +204,8 @@ export default class TwitterCache {
    */
   private onError(error: unknown): void {
     if (Array.isArray(error) && error[0] && error[0].code === 32) {
-      this.clientInfoValid = false;
       logger.info('wiping twitter client data, could not authenticate...');
+      this.dispose();
     } else {
       logger.debug(JSON.stringify(error));
     }
@@ -215,6 +221,19 @@ export default class TwitterCache {
     if (this.updating) {
       return this.updating;
     }
-    return this.currentData;
+    return this.currentData || [];
+  }
+
+  /**
+   * Stop polling and clean up resources
+   */
+  dispose(): void {
+    if (this.updateInterval) {
+      clearInterval(this.updateInterval);
+      this.updateInterval = undefined;
+    }
+    this.client = undefined;
+    this.clientInfoValid = false;
+    logger.verbose('Twitter polling stopped and resources cleaned up');
   }
 }

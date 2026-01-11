@@ -74,7 +74,7 @@ export default class RSS {
       const feed = (feeds as Feed[]).find((feedEntry) => feedEntry.url === item.meta.link);
       if (!feed) return;
 
-      let firstImg = ((item.description || '').match(/<img.*src="(.*)".*>/i) || [])[1];
+      let firstImg: string | undefined = ((item.description || '').match(/<img.*src="(.*)".*>/i) || [])[1];
       if (!firstImg) {
         firstImg = feed.defaultAttach;
       } else if (firstImg.startsWith('//')) {
