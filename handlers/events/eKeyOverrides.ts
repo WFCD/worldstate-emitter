@@ -1,4 +1,4 @@
-import { logger } from '@/utilities/index';
+import { logger } from '@/utilities';
 
 interface ExternalMission {
   activation: Date;

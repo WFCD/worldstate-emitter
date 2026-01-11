@@ -7,7 +7,7 @@ import RSS from '@/handlers/RSS';
 import Twitter from '@/handlers/Twitter';
 import Worldstate from '@/handlers/Worldstate';
 import { FEATURES } from '@/resources/config';
-import { logger } from '@/utilities/index';
+import { logger } from '@/utilities';
 
 interface WorldstateEmitterOptions {
   locale?: string;

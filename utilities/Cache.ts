@@ -3,7 +3,7 @@ import { EventEmitter } from 'node:events';
 import type { CronJob as CronJobType } from 'cron';
 import { CronJob } from 'cron';
 
-import { logger } from '@/utilities/index';
+import { logger } from '@/utilities';
 
 /**
  * Cron-based cache that periodically fetches data from a URL

@@ -1,5 +1,5 @@
 import type { BaseEventData, EventDeps, EventPacket } from '@/handlers/events/types';
-import { between, lastUpdated } from '@/utilities/index';
+import { between, lastUpdated } from '@/utilities';
 
 /**
  * Process object-like worldstate events

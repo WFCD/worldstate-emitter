@@ -13,7 +13,7 @@ import type {
   EventPacket,
   KuvaData,
 } from '@/handlers/events/types';
-import { lastUpdated } from '@/utilities/index';
+import { lastUpdated } from '@/utilities';
 
 interface ParseDeps {
   key: string;
@@ -59,7 +59,7 @@ export default (deps: ParseDeps): EventPacket[] | undefined => {
         data: arrayData,
         id: eventsOverride,
       };
-      arrayLike(updatedDeps, packets);
+      packets.push(...arrayLike(updatedDeps));
       break;
     }
 
@@ -74,7 +74,7 @@ export default (deps: ParseDeps): EventPacket[] | undefined => {
     case 'weeklyChallenges': {
       const arrayData = Array.isArray(deps.data) ? deps.data : [deps.data];
       const arrayDeps: ArrayEventDeps = { ...deps, data: arrayData };
-      arrayLike(arrayDeps, packets);
+      packets.push(...arrayLike(arrayDeps));
       break;
     }
 

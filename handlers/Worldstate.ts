@@ -5,8 +5,8 @@ import type WorldState from 'warframe-worldstate-parser';
 import parseNew from '@/handlers/events/parse';
 import type { BaseEventData, EventPacket } from '@/handlers/events/types';
 import { externalCron, kuvaUrl, sentientUrl, worldstateCron, worldstateUrl } from '@/resources/config';
+import { lastUpdated, logger } from '@/utilities';
 import Cache from '@/utilities/Cache';
-import { lastUpdated, logger } from '@/utilities/index';
 import WSCache from '@/utilities/WSCache';
 
 const { locales } = wsData;

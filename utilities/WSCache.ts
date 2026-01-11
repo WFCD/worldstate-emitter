@@ -1,9 +1,8 @@
 import type EventEmitter from 'node:events';
 
 import type WorldState from 'warframe-worldstate-parser';
-
+import { logger } from '@/utilities';
 import type CronCache from '@/utilities/Cache';
-import { logger } from '@/utilities/index';
 
 interface WSCacheOptions {
   language: string;

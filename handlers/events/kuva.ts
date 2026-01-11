@@ -1,6 +1,6 @@
 import objectLike from '@/handlers/events/objectLike';
 import type { BaseEventData, EventPacket } from '@/handlers/events/types';
-import { groupBy, logger } from '@/utilities/index';
+import { groupBy, logger } from '@/utilities';
 
 interface KuvaData extends BaseEventData {
   type: string;

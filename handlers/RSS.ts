@@ -3,7 +3,7 @@ import type { RSSItem } from 'rss-feed-emitter';
 import RssFeedEmitter from 'rss-feed-emitter';
 
 import feeds from '@/resources/rssFeeds.json';
-import { logger } from '@/utilities/index';
+import { logger } from '@/utilities';
 
 interface FeedAuthor {
   name: string;

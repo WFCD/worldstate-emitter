@@ -1,4 +1,4 @@
-import { between, fromNow, lastUpdated } from '@/utilities/index';
+import { between, fromNow, lastUpdated } from '@/utilities';
 
 interface CycleLike {
   state: string;
