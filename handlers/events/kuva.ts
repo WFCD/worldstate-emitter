@@ -1,6 +1,6 @@
 import type { ExternalMission } from 'warframe-worldstate-parser';
 import objectLike from '@/handlers/events/objectLike';
-import type { EventPacket } from '@/handlers/events/types';
+import type { BaseEventData, EventPacket } from '@/handlers/events/types';
 import { groupBy, logger } from '@/utilities';
 
 interface KuvaDeps {
@@ -30,6 +30,7 @@ export default (deps: KuvaDeps, packets: EventPacket[]): EventPacket[] | undefin
 
   for (const type of Object.keys(data)) {
     const typeData: ExternalMission[] = data[type];
+    if (!data[type]?.length) continue;
     const updatedDeps = {
       ...deps,
       data: typeData[0],
@@ -37,7 +38,7 @@ export default (deps: KuvaDeps, packets: EventPacket[]): EventPacket[] | undefin
       activation: typeData[0].activation,
       expiry: typeData[0].expiry,
     };
-    const p = objectLike(typeData[0], updatedDeps);
+    const p = objectLike(typeData[0] as unknown as BaseEventData, updatedDeps);
     if (p) {
       packets.push(p);
     }
