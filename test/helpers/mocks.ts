@@ -112,3 +112,52 @@ export function createMockRssFeedEmitter() {
     },
   };
 }
+
+/**
+ * Create a silent mock logger that doesn't output to console
+ */
+export function createMockLogger() {
+  // Store log messages for testing/inspection if needed
+  const logs: { level: string; message: string; args: unknown[] }[] = [];
+
+  const noop = (...args: unknown[]) => {
+    // Silent - do nothing
+  };
+
+  const logWithCapture =
+    (level: string) =>
+    (...args: unknown[]) => {
+      const message = args[0] as string;
+      logs.push({ level, message, args });
+    };
+
+  return {
+    // Standard log levels - all silent
+    error: noop,
+    warn: noop,
+    info: noop,
+    http: noop,
+    verbose: noop,
+    debug: noop,
+    silly: noop,
+
+    // Utility to capture logs if needed for assertions
+    _logs: logs,
+    _clearLogs: () => {
+      logs.length = 0;
+    },
+    _withCapture: () => ({
+      error: logWithCapture('error'),
+      warn: logWithCapture('warn'),
+      info: logWithCapture('info'),
+      http: logWithCapture('http'),
+      verbose: logWithCapture('verbose'),
+      debug: logWithCapture('debug'),
+      silly: logWithCapture('silly'),
+      _logs: logs,
+      _clearLogs: () => {
+        logs.length = 0;
+      },
+    }),
+  };
+}

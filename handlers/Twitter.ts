@@ -104,18 +104,41 @@ export default class TwitterCache {
   private lastUpdated: number;
   private updateInterval?: NodeJS.Timeout;
   private updating?: Promise<ParsedTweet[] | undefined>;
+  private disposed: boolean;
 
   /**
    * Create a new Twitter self-updating cache
    * @param eventEmitter - Emitter to push new tweets to
+   * @param options - Optional configuration
+   * @param options.autoStart - Whether to automatically start polling (default: true)
+   * @param options.clientInfo - Custom Twitter client credentials
+   * @param options.watchList - Custom list of Twitter accounts to watch
+   * @param options.timeout - Polling interval in milliseconds
    */
-  constructor(eventEmitter: EventEmitter) {
+  constructor(
+    eventEmitter: EventEmitter,
+    options: {
+      autoStart?: boolean;
+      clientInfo?: Partial<BearerTokenOptions>;
+      watchList?: Watchable[];
+      timeout?: number;
+    } = {},
+  ) {
     this.emitter = eventEmitter;
-    this.timeout = TWITTER_TIMEOUT;
-    this.clientInfoValid =
-      !!twiClientInfo.consumer_key && !!twiClientInfo.consumer_secret && !!twiClientInfo.bearer_token;
+    this.timeout = options.timeout ?? TWITTER_TIMEOUT;
     this.lastUpdated = Date.now() - 60000;
-    this.initClient(twiClientInfo);
+    this.disposed = false;
+
+    const clientInfo = options.clientInfo ?? twiClientInfo;
+    this.clientInfoValid = !!clientInfo.consumer_key && !!clientInfo.consumer_secret && !!clientInfo.bearer_token;
+
+    if (options.watchList) {
+      this.toWatch = options.watchList;
+    }
+
+    if (options.autoStart !== false) {
+      this.initClient(clientInfo);
+    }
   }
 
   private initClient(clientInfo: Partial<BearerTokenOptions>): void {
@@ -128,7 +151,9 @@ export default class TwitterCache {
         });
 
         // don't attempt anything else if authentication fails
-        this.toWatch = toWatch as Watchable[];
+        if (!this.toWatch) {
+          this.toWatch = toWatch as Watchable[];
+        }
         this.currentData = undefined;
         this.lastUpdated = Date.now() - 60000;
         this.updateInterval = setInterval(() => this.update(), this.timeout);
@@ -144,14 +169,26 @@ export default class TwitterCache {
   }
 
   /**
+   * Set a mock Twitter client for testing
+   * @param mockClient - Mock Twitter client
+   * @internal
+   */
+  setClient(mockClient: TwitterClient): void {
+    this.client = mockClient;
+    if (!this.toWatch) {
+      this.toWatch = toWatch as Watchable[];
+    }
+  }
+
+  /**
    * Force the cache to update
    * @returns The currently updating promise
    */
   async update(): Promise<ParsedTweet[] | undefined> {
     // Don't proceed if disposed or client is invalid
-    if (!this.clientInfoValid || !this.updateInterval) return undefined;
+    if (this.disposed || !this.clientInfoValid) return undefined;
 
-    if (!this.toWatch) {
+    if (!this.toWatch || this.toWatch.length === 0) {
       logger.verbose('Not processing twitter, no data to watch.');
       return undefined;
     }
@@ -228,6 +265,7 @@ export default class TwitterCache {
    * Stop polling and clean up resources
    */
   dispose(): void {
+    this.disposed = true;
     if (this.updateInterval) {
       clearInterval(this.updateInterval);
       this.updateInterval = undefined;

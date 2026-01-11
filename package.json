@@ -47,9 +47,9 @@
     "prepublishOnly": "npm run build",
     "report": "c8 report --reporter=text-lcov > coverage/lcov.info",
     "pretest": "npm i --no-save warframe-worldstate-data@^3 warframe-worldstate-parser@^5 && npm run build",
-    "test": "c8 mocha",
+    "test": "LOG_LEVEL=silent c8 mocha",
     "test:all": "npm test && npm run test:integration",
-    "test:integration": "mocha --config .mocharc.integration.yml"
+    "test:integration": "LOG_LEVEL=silent mocha --config .mocharc.integration.yml"
   },
   "dependencies": {
     "cron": "^4.3.4",

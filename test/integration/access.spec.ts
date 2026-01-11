@@ -1,5 +1,11 @@
 import { expect } from 'chai';
 import WSEmitter from '../../index';
+import { logger } from '../../utilities';
+
+// Silence all logger transports to prevent RSS error spam
+logger.transports.forEach((t) => {
+  t.silent = true;
+});
 
 const ws = await WSEmitter.make({
   locale: 'en',

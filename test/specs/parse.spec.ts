@@ -224,4 +224,181 @@ describe('Event Parsing', () => {
       }
     });
   });
+
+  describe('array-like event keys', () => {
+    const testArrayKeys = [
+      'alerts',
+      'conclaveChallenges',
+      'dailyDeals',
+      'flashSales',
+      'fissures',
+      'globalUpgrades',
+      'invasions',
+      'syndicateMissions',
+      'weeklyChallenges',
+    ];
+
+    for (const key of testArrayKeys) {
+      it(`should handle ${key} events`, () => {
+        const eventData: BaseEventData[] = [
+          {
+            id: `${key}1`,
+            activation: new Date(),
+            expiry: new Date(Date.now() + 3600000),
+          },
+        ];
+
+        const result = parseNew({
+          ...baseDeps,
+          key,
+          data: eventData,
+        });
+
+        expect(result).to.be.an('array');
+        if (result) {
+          expect(result.length).to.be.greaterThan(0);
+          expect(result[0]).to.have.property('key');
+        }
+      });
+    }
+  });
+
+  describe('cycle-like event keys', () => {
+    it('should handle cetusCycle events', () => {
+      const cycleData: CycleLike = {
+        id: 'cetusCycle',
+        activation: new Date(),
+        expiry: new Date(Date.now() + 3600000),
+        state: 'day',
+      };
+
+      const result = parseNew({
+        ...baseDeps,
+        key: 'cetusCycle',
+        data: cycleData,
+      });
+
+      expect(result).to.be.an('array');
+      if (result) {
+        expect(result.length).to.be.greaterThan(0);
+      }
+    });
+
+    it('should handle vallisCycle events', () => {
+      const cycleData: CycleLike = {
+        id: 'vallisCycle',
+        activation: new Date(),
+        expiry: new Date(Date.now() + 1600000),
+        state: 'warm',
+      };
+
+      const result = parseNew({
+        ...baseDeps,
+        key: 'vallisCycle',
+        data: cycleData,
+      });
+
+      expect(result).to.be.an('array');
+      if (result) {
+        expect(result.length).to.be.greaterThan(0);
+      }
+    });
+  });
+
+  describe('object-like event keys', () => {
+    it('should handle voidTrader events', () => {
+      const eventData: BaseEventData = {
+        id: 'voidTrader123',
+        activation: new Date(),
+        expiry: new Date(Date.now() + 172800000),
+      };
+
+      const result = parseNew({
+        ...baseDeps,
+        key: 'voidTrader',
+        data: eventData,
+      });
+
+      expect(result).to.be.an('array');
+      if (result) {
+        expect(result.length).to.be.greaterThan(0);
+      }
+    });
+
+    it('should handle arbitration events', () => {
+      const eventData: BaseEventData = {
+        id: 'arbitration123',
+        activation: new Date(),
+        expiry: new Date(Date.now() + 3600000),
+      };
+
+      const result = parseNew({
+        ...baseDeps,
+        key: 'arbitration',
+        data: eventData,
+      });
+
+      expect(result).to.be.an('array');
+      if (result) {
+        expect(result.length).to.be.greaterThan(0);
+      }
+    });
+
+    it('should handle sentientOutposts events', () => {
+      const eventData: BaseEventData = {
+        id: 'sentientOutpost123',
+        activation: new Date(),
+        expiry: new Date(Date.now() + 7200000),
+      };
+
+      const result = parseNew({
+        ...baseDeps,
+        key: 'sentientOutposts',
+        data: eventData,
+      });
+
+      expect(result).to.be.an('array');
+      if (result) {
+        expect(result.length).to.be.greaterThan(0);
+      }
+    });
+
+    it('should handle persistentEnemies events', () => {
+      const eventData: BaseEventData = {
+        id: 'persistentEnemy123',
+        activation: new Date(),
+        expiry: new Date(Date.now() + 3600000),
+      };
+
+      const result = parseNew({
+        ...baseDeps,
+        key: 'persistentEnemies',
+        data: eventData,
+      });
+
+      expect(result).to.be.an('array');
+      if (result) {
+        expect(result.length).to.be.greaterThan(0);
+      }
+    });
+  });
+
+  describe('default case handling', () => {
+    it('should handle unknown event keys gracefully', () => {
+      const eventData: BaseEventData = {
+        id: 'unknown123',
+        activation: new Date(),
+        expiry: new Date(Date.now() + 3600000),
+      };
+
+      const result = parseNew({
+        ...baseDeps,
+        key: 'unknownEventType',
+        data: eventData,
+      });
+
+      expect(result).to.be.an('array');
+      expect(result).to.have.length(0);
+    });
+  });
 });

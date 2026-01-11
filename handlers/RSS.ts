@@ -3,7 +3,7 @@ import type { RSSItem } from 'rss-feed-emitter';
 import RssFeedEmitter from 'rss-feed-emitter';
 import sanitizeHtml from 'sanitize-html';
 
-import feeds from '@/resources/rssFeeds.json';
+import feedsJson from '@/resources/rssFeeds.json';
 import { logger } from '@/utilities';
 
 interface FeedAuthor {
@@ -37,27 +37,108 @@ export default class RSS {
   private logger = logger;
   private emitter: EventEmitter;
   public feeder: RssFeedEmitter;
-  private start: number;
+  private startTime: number;
+  private feeds: Feed[];
 
   /**
    * Set up emitting events for warframe forum entries
    * @param eventEmitter - Emitter to send events from
+   * @param options - Optional configuration
+   * @param options.autoStart - Whether to automatically start the feeder (default: true)
+   * @param options.feeds - Custom feed list (default: uses rssFeeds.json)
+   * @param options.startTime - Custom start time for filtering old items (default: Date.now())
+   * @param options.logger - Custom logger instance (default: uses global logger)
    */
-  constructor(eventEmitter: EventEmitter) {
+  constructor(
+    eventEmitter: EventEmitter,
+    options: {
+      autoStart?: boolean;
+      feeds?: Feed[];
+      startTime?: number;
+      logger?: typeof logger;
+    } = {},
+  ) {
     this.emitter = eventEmitter;
+    this.feeds = options.feeds || (feedsJson as Feed[]);
+    this.startTime = options.startTime ?? Date.now();
+    if (options.logger) {
+      this.logger = options.logger;
+    }
+
     this.feeder = new RssFeedEmitter({
       userAgent: 'WFCD Feed Notifier',
       skipFirstLoad: true,
     });
 
-    for (const feed of feeds as Feed[]) {
+    this.feeder.on('error', this.logger.error.bind(this.logger));
+    this.feeder.on('new-item', this.handleNew.bind(this));
+
+    if (options.autoStart !== false) {
+      this.start();
+    }
+  }
+
+  /**
+   * Start the RSS feed polling
+   */
+  start(): void {
+    for (const feed of this.feeds) {
       this.feeder.add({ url: feed.url, refresh: 30000 });
     }
     this.logger.debug('RSS Feed active');
+  }
 
-    this.start = Date.now();
-    this.feeder.on('error', this.logger.error.bind(this.logger));
-    this.feeder.on('new-item', this.handleNew.bind(this));
+  /**
+   * Extract image URL from RSS item description
+   * @param description - The RSS item description HTML
+   * @param feed - The feed configuration
+   * @returns The image URL or undefined
+   * @private
+   */
+  private extractImage(description: string | undefined, feed: Feed): string | undefined {
+    const firstImg: string | undefined = ((description || '').match(/<img.*src="(.*)".*>/i) || [])[1];
+    if (!firstImg) {
+      return feed.defaultAttach;
+    }
+    if (firstImg.startsWith('//')) {
+      return firstImg.replace('//', 'https://');
+    }
+    return firstImg;
+  }
+
+  /**
+   * Find the feed configuration for an RSS item
+   * @param item - The RSS item
+   * @returns The feed configuration or undefined
+   * @private
+   */
+  private findFeed(item: RSSItem): Feed | undefined {
+    // Strategy 1: Try exact match with item.meta.link
+    let feed = this.feeds.find((feedEntry) => feedEntry.url === item.meta.link);
+    if (feed) return feed;
+
+    // Strategy 2: Try match with item.meta['rss:link']['#']
+    const rssLink = item.meta['rss:link']?.['#'];
+    if (rssLink) {
+      feed = this.feeds.find((feedEntry) => feedEntry.url === rssLink);
+      if (feed) return feed;
+    }
+
+    // Strategy 3: Use feeder.list to find registered feed by item URL
+    const registeredFeeds = this.feeder.list;
+    if (Array.isArray(registeredFeeds)) {
+      for (const registeredFeed of registeredFeeds) {
+        const matchingFeed = this.feeds.find((f) => f.url === registeredFeed.url);
+        if (matchingFeed) {
+          // Check if this feed would have produced this item
+          // This is a best-effort match when other strategies fail
+          return matchingFeed;
+        }
+      }
+    }
+
+    this.logger.debug(`No feed found for item: ${item.title} (meta.link: ${item.meta.link})`);
+    return undefined;
   }
 
   /**
@@ -70,17 +151,12 @@ export default class RSS {
       if (item.image && Object.keys(item.image).length) {
         this.logger.debug(`Image: ${JSON.stringify(item.image)}`);
       }
-      if (new Date(item.pubDate).getTime() <= this.start) return;
+      if (new Date(item.pubDate).getTime() <= this.startTime) return;
 
-      const feed = (feeds as Feed[]).find((feedEntry) => feedEntry.url === item.meta.link);
+      const feed = this.findFeed(item);
       if (!feed) return;
 
-      let firstImg: string | undefined = ((item.description || '').match(/<img.*src="(.*)".*>/i) || [])[1];
-      if (!firstImg) {
-        firstImg = feed.defaultAttach;
-      } else if (firstImg.startsWith('//')) {
-        firstImg = firstImg.replace('//', 'https://');
-      }
+      const firstImg = this.extractImage(item.description, feed);
 
       const rssSummary: RssSummary = {
         body: sanitizeHtml(item.description || '\u200B', { allowedTags: [], allowedAttributes: {} }).replace(

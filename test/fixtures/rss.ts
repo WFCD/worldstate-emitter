@@ -71,6 +71,30 @@ export const mockRSSItemWithRelativeImage: RSSItem = {
   description: 'This is a test with <img src="//example.com/relative.png" /> relative image',
 };
 
+export const mockRSSItemWithDefaultAttach: RSSItem = {
+  ...mockRSSItem,
+  description: 'This is a test RSS item with no image in description',
+  image: undefined,
+};
+
+export const mockRSSItemWithRssLink: RSSItem = {
+  ...mockRSSItem,
+  meta: {
+    ...mockRSSItem.meta,
+    link: 'https://unknown-feed.com/feed.xml', // Different from feed URL
+    'rss:link': {
+      '#': 'https://forums.warframe.com/forum/3-pc-update-notes.xml', // Matches via rss:link
+    },
+  },
+};
+
+export const mockRSSItemOldDate: RSSItem = {
+  ...mockRSSItem,
+  date: new Date(Date.now() - 100000), // Old date
+  pubdate: new Date(Date.now() - 100000),
+  pubDate: new Date(Date.now() - 100000),
+};
+
 export const mockTwitterData = [
   {
     id: 123456789,
