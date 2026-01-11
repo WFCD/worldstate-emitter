@@ -94,4 +94,12 @@ export default class CronCache extends EventEmitter {
     logger.silly('returning cached data');
     return this.#data;
   }
+
+  /**
+   * Stop the cron job and cleanup
+   */
+  stop(): void {
+    this.#job.stop();
+    this.#logger.debug(`Cron job stopped for ${this.#url}`);
+  }
 }

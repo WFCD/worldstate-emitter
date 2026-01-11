@@ -116,19 +116,18 @@ describe('arrayLike', () => {
   });
 
   it('should catch and log errors during processing', () => {
+    // Create a Proxy that throws when accessed
+    const throwingProxy = new Proxy([], {
+      get() {
+        throw new Error('Test error');
+      },
+    });
+
     const deps: ArrayEventDeps = {
       key: 'fissures',
       platform: 'pc',
       language: 'en',
-      // Create a data structure that will throw during processing
-      data: [
-        {
-          get tierNum() {
-            throw new Error('Test error');
-          },
-          missionType: 'Capture',
-        } as never,
-      ],
+      data: throwingProxy as never,
     };
 
     // Should not throw, but return empty array

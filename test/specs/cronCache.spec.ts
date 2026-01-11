@@ -6,14 +6,27 @@ describe('CronCache', () => {
   const mockUrl = 'https://httpbin.org/status/200';
   const failUrl = 'https://httpbin.org/status/500';
 
+  // Track all created CronCache instances for cleanup
+  let cacheInstances: CronCache[] = [];
+
+  afterEach(() => {
+    // Stop all cron jobs and clear the array
+    cacheInstances.forEach((cache) => {
+      cache.stop();
+    });
+    cacheInstances = [];
+  });
+
   describe('constructor', () => {
     it('should create a cache instance', () => {
       const cache = new CronCache(mockUrl);
+      cacheInstances.push(cache);
       expect(cache).to.be.instanceOf(CronCache);
     });
 
     it('should accept custom cron pattern', () => {
       const cache = new CronCache(mockUrl, '0 */5 * * * *');
+      cacheInstances.push(cache);
       expect(cache).to.be.instanceOf(CronCache);
     });
   });
@@ -22,6 +35,7 @@ describe('CronCache', () => {
     it('should fetch data when cache is empty', async function () {
       this.timeout(10000); // Increase timeout for network request
       const cache = new CronCache(mockUrl);
+      cacheInstances.push(cache);
       const data = await cache.get();
       expect(data).to.be.a('string');
     });
@@ -29,6 +43,7 @@ describe('CronCache', () => {
     it('should return in-progress update when updating', async function () {
       this.timeout(10000);
       const cache = new CronCache(mockUrl);
+      cacheInstances.push(cache);
 
       // Trigger get() twice quickly - second call should return in-progress promise
       const promise1 = cache.get();
@@ -41,6 +56,7 @@ describe('CronCache', () => {
     it('should return cached data on subsequent calls', async function () {
       this.timeout(10000);
       const cache = new CronCache(mockUrl);
+      cacheInstances.push(cache);
 
       const data1 = await cache.get();
       const data2 = await cache.get();
@@ -54,6 +70,7 @@ describe('CronCache', () => {
       this.timeout(10000);
       // Use an invalid URL that will cause a network error
       const cache = new CronCache('https://invalid-domain-that-does-not-exist-12345.com/test');
+      cacheInstances.push(cache);
 
       try {
         const data = await cache.get();
@@ -76,6 +93,7 @@ describe('CronCache', () => {
       // We need to set up listener before make() completes
       // So we'll create with constructor and force an update via get() when empty
       const cache = new CronCache(mockUrl);
+      cacheInstances.push(cache);
 
       const promise = new Promise<void>((resolve) => {
         cache.on('update', (data) => {
@@ -98,6 +116,7 @@ describe('CronCache', () => {
     it('should not emit update event on failed fetch', async function () {
       this.timeout(10000);
       const cache = new CronCache('https://invalid-domain-that-does-not-exist-12345.com/test');
+      cacheInstances.push(cache);
 
       let eventEmitted = false;
       cache.on('update', () => {
@@ -120,6 +139,7 @@ describe('CronCache', () => {
     it('should create and initialize cache', async function () {
       this.timeout(10000);
       const cache = await CronCache.make(mockUrl);
+      cacheInstances.push(cache);
 
       expect(cache).to.be.instanceOf(CronCache);
 
@@ -131,6 +151,7 @@ describe('CronCache', () => {
     it('should accept custom pattern', async function () {
       this.timeout(10000);
       const cache = await CronCache.make(mockUrl, '0 */5 * * * *');
+      cacheInstances.push(cache);
 
       expect(cache).to.be.instanceOf(CronCache);
     });
