@@ -57,7 +57,7 @@ const parseAuthor = (tweet: Status): TweetAuthor => ({
   name: tweet.user.name,
   handle: tweet.user.screen_name,
   url: `https://twitter.com/${tweet.user.screen_name}`,
-  avatar: `${tweet.user.profile_image_url.replace('_normal.jpg', '.jpg')}`,
+  avatar: tweet.user.profile_image_url ? tweet.user.profile_image_url.replace('_normal.jpg', '.jpg') : '',
 });
 
 const parseQuoted = (tweet: Status, type: 'quoted_status' | 'retweeted_status'): QuotedTweet | undefined =>
