@@ -23,7 +23,7 @@ export const arbitration: OverrideFunction = (data: WorldStateObject): string =>
   try {
     k = `arbitration.${arbi.enemy.toLowerCase()}.${arbi.type.replace(/\s/g, '').toLowerCase()}`;
   } catch (e) {
-    logger.error(`Unable to parse arbitraion: ${JSON.stringify(arbi)}\n${e}`);
+    logger.error(`Unable to parse arbitration: ${JSON.stringify(arbi)}\n${e}`);
     return '';
   }
   return k;
