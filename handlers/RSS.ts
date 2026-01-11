@@ -1,6 +1,7 @@
 import type EventEmitter from 'node:events';
 import type { RSSItem } from 'rss-feed-emitter';
 import RssFeedEmitter from 'rss-feed-emitter';
+import sanitizeHtml from 'sanitize-html';
 
 import feeds from '@/resources/rssFeeds.json';
 import { logger } from '@/utilities';
@@ -82,7 +83,10 @@ export default class RSS {
       }
 
       const rssSummary: RssSummary = {
-        body: (item.description || '\u200B').replace(/<(?:.|\n)*?>/gm, '').replace(/\n\n+\s*/gm, '\n\n'),
+        body: sanitizeHtml(item.description || '\u200B', { allowedTags: [], allowedAttributes: {} }).replace(
+          /\n\n+\s*/gm,
+          '\n\n',
+        ),
         url: item.link,
         timestamp: item.pubDate,
         description: item.meta.description,
