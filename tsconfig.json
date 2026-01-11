@@ -1,0 +1,21 @@
+{
+  "exclude": ["node_modules", "test", "dist"],
+  "compilerOptions": {
+    "module": "esnext",
+    "target": "es2024",
+    "strict": true,
+    "moduleResolution": "bundler",
+    "esModuleInterop": true,
+    "isolatedModules": true,
+    "skipLibCheck": true,
+    "baseUrl": "./",
+    "paths": {
+      "@/handlers/*": ["./handlers/*"],
+      "@/handlers": ["./handlers/index"],
+      "@/utilities/*": ["./utilities/*"],
+      "@/utilities": ["./utilities/index"],
+      "@/resources/*": ["./resources/*"],
+      "@/*": ["./*"]
+    }
+  }
+}

@@ -1,5 +1,0 @@
-.github/**
-docs/**
-resources/**
-!resources/config.js
-types/**
