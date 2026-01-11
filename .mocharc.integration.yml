@@ -1,5 +1,5 @@
 exit: true
-spec: test/integration/**/*.spec.ts
+spec: test/**/*.spec.ts
 require: test/setup.ts
 timeout: 250000
 node-option:

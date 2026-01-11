@@ -39,7 +39,7 @@
   "scripts": {
     "build": "tsdown",
     "build:docs": "typedoc",
-    "coverage": "npm test && npm run report && npx coveralls < coverage/lcov.info",
+    "coverage": "c8 mocha --config .mocha.integration.yml && npm run report && npx coveralls < coverage/lcov.info",
     "dev": "nodemon --exec tsx test/tester.ts",
     "lint": "biome check",
     "lint:fix": "biome check --write",
@@ -47,7 +47,7 @@
     "prepublishOnly": "npm run build",
     "report": "c8 report --reporter=text-lcov > coverage/lcov.info",
     "pretest": "npm i --no-save warframe-worldstate-data@^3 warframe-worldstate-parser@^5 && npm run build",
-    "test": "LOG_LEVEL=silent c8 mocha",
+    "test": "LOG_LEVEL=silent mocha",
     "test:all": "npm test && npm run test:integration",
     "test:integration": "LOG_LEVEL=silent mocha --config .mocharc.integration.yml"
   },
