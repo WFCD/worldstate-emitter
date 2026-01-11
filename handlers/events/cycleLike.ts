@@ -31,7 +31,7 @@ export default (cycleData: CycleLike, deps: Deps): Packet[] => {
     id: `${deps.key.replace('Cycle', '')}.${cycleData.state}`,
   };
 
-  const last = new Date(lastUpdated[deps.platform][deps.language]);
+  const last = new Date(lastUpdated[deps.platform]?.[deps.language] ?? 0);
   const activation = new Date(cycleData.activation);
   const start = new Date(deps.cycleStart);
 

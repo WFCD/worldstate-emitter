@@ -88,6 +88,11 @@ export default class RSS {
     this.logger.debug('RSS Feed active');
   }
 
+  destroy(): void {
+    this.feeder.destroy();
+    this.logger.debug('RSS Feed destroyed');
+  }
+
   /**
    * Extract image URL from RSS item description
    * @param description - The RSS item description HTML

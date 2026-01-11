@@ -12,9 +12,17 @@ import { createMockEmitter, createMockLogger } from '../helpers/mocks';
 
 describe('RSS Handler', () => {
   describe('constructor', () => {
+    let rss: RSS | undefined;
+    afterEach(() => {
+      if (rss) {
+        rss.destroy();
+        rss = undefined;
+      }
+    });
+
     it('should initialize with an event emitter', () => {
       const emitter = createMockEmitter();
-      const rss = new RSS(emitter, { autoStart: false });
+      rss = new RSS(emitter, { autoStart: false });
 
       expect(rss).to.be.instanceOf(RSS);
       expect(rss.feeder).to.exist;
@@ -22,7 +30,7 @@ describe('RSS Handler', () => {
 
     it('should add RSS feeds when started', () => {
       const emitter = createMockEmitter();
-      const rss = new RSS(emitter, { autoStart: false });
+      rss = new RSS(emitter, { autoStart: false });
 
       expect(rss.feeder.list).to.be.an('array');
       expect(rss.feeder.list.length).to.equal(0);
@@ -34,7 +42,7 @@ describe('RSS Handler', () => {
 
     it('should auto-start by default', () => {
       const emitter = createMockEmitter();
-      const rss = new RSS(emitter);
+      rss = new RSS(emitter);
 
       expect(rss.feeder.list).to.be.an('array');
       expect(rss.feeder.list.length).to.be.greaterThan(0);
@@ -48,7 +56,7 @@ describe('RSS Handler', () => {
           key: 'test',
         },
       ];
-      const rss = new RSS(emitter, { autoStart: false, feeds: customFeeds });
+      rss = new RSS(emitter, { autoStart: false, feeds: customFeeds });
 
       rss.start();
 
@@ -58,16 +66,25 @@ describe('RSS Handler', () => {
     it('should accept custom start time', () => {
       const emitter = createMockEmitter();
       const startTime = Date.now() - 10000;
-      const rss = new RSS(emitter, { autoStart: false, startTime });
+      rss = new RSS(emitter, { autoStart: false, startTime });
 
       expect(rss).to.be.instanceOf(RSS);
     });
   });
 
   describe('RSS feed handling', () => {
+    let rss: RSS | undefined;
+
+    afterEach(() => {
+      if (rss) {
+        rss.destroy();
+        rss = undefined;
+      }
+    });
+
     it('should emit RSS event when new item is received', (done) => {
       const emitter = createMockEmitter();
-      const rss = new RSS(emitter, { autoStart: false, startTime: 0 });
+      rss = new RSS(emitter, { autoStart: false, startTime: 0 });
 
       emitter.on('rss', (data) => {
         expect(data).to.be.an('object');
@@ -86,7 +103,7 @@ describe('RSS Handler', () => {
 
     it('should extract image from description', (done) => {
       const emitter = createMockEmitter();
-      const rss = new RSS(emitter, { autoStart: false, startTime: 0 });
+      rss = new RSS(emitter, { autoStart: false, startTime: 0 });
 
       emitter.on('rss', (data) => {
         expect(data).to.have.property('image');
@@ -99,7 +116,7 @@ describe('RSS Handler', () => {
 
     it('should handle RSS items without images', (done) => {
       const emitter = createMockEmitter();
-      const rss = new RSS(emitter, { autoStart: false, startTime: 0 });
+      rss = new RSS(emitter, { autoStart: false, startTime: 0 });
 
       emitter.on('rss', (data) => {
         // Image should either be undefined or a default image
@@ -114,7 +131,7 @@ describe('RSS Handler', () => {
 
     it('should convert relative image URLs to absolute', (done) => {
       const emitter = createMockEmitter();
-      const rss = new RSS(emitter, { autoStart: false, startTime: 0 });
+      rss = new RSS(emitter, { autoStart: false, startTime: 0 });
 
       emitter.on('rss', (data) => {
         expect(data).to.have.property('image');
@@ -128,7 +145,7 @@ describe('RSS Handler', () => {
 
     it('should strip HTML from description', (done) => {
       const emitter = createMockEmitter();
-      const rss = new RSS(emitter, { autoStart: false, startTime: 0 });
+      rss = new RSS(emitter, { autoStart: false, startTime: 0 });
 
       emitter.on('rss', (data) => {
         expect(data.body).to.be.a('string');
@@ -141,7 +158,7 @@ describe('RSS Handler', () => {
 
     it('should use feed author or provide default', (done) => {
       const emitter = createMockEmitter();
-      const rss = new RSS(emitter, { autoStart: false, startTime: 0 });
+      rss = new RSS(emitter, { autoStart: false, startTime: 0 });
 
       emitter.on('rss', (data) => {
         expect(data.author).to.be.an('object');
@@ -157,7 +174,7 @@ describe('RSS Handler', () => {
     it('should filter items older than start time', () => {
       const emitter = createMockEmitter();
       const startTime = Date.now() + 10000; // 10 seconds in future
-      const rss = new RSS(emitter, { autoStart: false, startTime });
+      rss = new RSS(emitter, { autoStart: false, startTime });
 
       let eventEmitted = false;
       emitter.on('rss', () => {
@@ -172,19 +189,28 @@ describe('RSS Handler', () => {
   });
 
   describe('error handling', () => {
+    let rss: RSS | undefined;
+
+    afterEach(() => {
+      if (rss) {
+        rss.destroy();
+        rss = undefined;
+      }
+    });
+
     it('should handle errors gracefully', () => {
       const emitter = createMockEmitter();
-      const rss = new RSS(emitter, { autoStart: false });
+      rss = new RSS(emitter, { autoStart: false });
 
       // Should not throw when emitting invalid item
       expect(() => {
-        rss.feeder.emit('new-item', null);
+        rss!.feeder.emit('new-item', null);
       }).to.not.throw();
     });
 
     it('should handle malformed RSS items', () => {
       const emitter = createMockEmitter();
-      const rss = new RSS(emitter, { autoStart: false });
+      rss = new RSS(emitter, { autoStart: false });
 
       const malformedItem = {
         ...mockRSSItem,
@@ -192,7 +218,7 @@ describe('RSS Handler', () => {
       };
 
       expect(() => {
-        rss.feeder.emit('new-item', malformedItem);
+        rss!.feeder.emit('new-item', malformedItem);
       }).to.not.throw();
     });
 
@@ -207,7 +233,7 @@ describe('RSS Handler', () => {
           }
         },
       };
-      const rss = new RSS(emitter, { autoStart: false, startTime: 0, logger: mockLogger as never });
+      rss = new RSS(emitter, { autoStart: false, startTime: 0, logger: mockLogger as never });
 
       const itemWithImageObject = {
         ...mockRSSItem,
@@ -227,7 +253,7 @@ describe('RSS Handler', () => {
 
     it('should handle items with empty image object', (done) => {
       const emitter = createMockEmitter();
-      const rss = new RSS(emitter, { autoStart: false, startTime: 0 });
+      rss = new RSS(emitter, { autoStart: false, startTime: 0 });
 
       const itemWithEmptyImageObject = {
         ...mockRSSItem,
@@ -250,7 +276,7 @@ describe('RSS Handler', () => {
           key: 'test',
         },
       ];
-      const rss = new RSS(emitter, { autoStart: false, feeds: customFeeds, startTime: 0 });
+      rss = new RSS(emitter, { autoStart: false, feeds: customFeeds, startTime: 0 });
 
       let eventEmitted = false;
       emitter.on('rss', () => {
@@ -273,10 +299,19 @@ describe('RSS Handler', () => {
   });
 
   describe('custom logger', () => {
+    let rss: RSS | undefined;
+
+    afterEach(() => {
+      if (rss) {
+        rss.destroy();
+        rss = undefined;
+      }
+    });
+
     it('should use custom logger when provided', () => {
       const emitter = createMockEmitter();
       const customLogger = createMockLogger();
-      const rss = new RSS(emitter, { autoStart: false, logger: customLogger as never });
+      rss = new RSS(emitter, { autoStart: false, logger: customLogger as never });
 
       expect(rss).to.be.instanceOf(RSS);
     });
@@ -290,7 +325,7 @@ describe('RSS Handler', () => {
           debugCalled = true;
         },
       };
-      const rss = new RSS(emitter, { autoStart: false, logger: customLogger as never });
+      rss = new RSS(emitter, { autoStart: false, logger: customLogger as never });
 
       // Start should trigger debug logging
       rss.start();
@@ -299,6 +334,15 @@ describe('RSS Handler', () => {
   });
 
   describe('image extraction', () => {
+    let rss: RSS | undefined;
+
+    afterEach(() => {
+      if (rss) {
+        rss.destroy();
+        rss = undefined;
+      }
+    });
+
     it('should use defaultAttach when no image in description', (done) => {
       const emitter = createMockEmitter();
       const customFeeds = [
@@ -308,7 +352,7 @@ describe('RSS Handler', () => {
           defaultAttach: 'https://default-image.com/image.png',
         },
       ];
-      const rss = new RSS(emitter, { autoStart: false, feeds: customFeeds, startTime: 0 });
+      rss = new RSS(emitter, { autoStart: false, feeds: customFeeds, startTime: 0 });
 
       emitter.on('rss', (data) => {
         expect(data.image).to.equal('https://default-image.com/image.png');
@@ -320,7 +364,7 @@ describe('RSS Handler', () => {
 
     it('should handle image URLs starting with //', (done) => {
       const emitter = createMockEmitter();
-      const rss = new RSS(emitter, { autoStart: false, startTime: 0 });
+      rss = new RSS(emitter, { autoStart: false, startTime: 0 });
 
       emitter.on('rss', (data) => {
         expect(data.image).to.equal('https://example.com/relative.png');
@@ -332,7 +376,7 @@ describe('RSS Handler', () => {
 
     it('should return regular image URLs as-is', (done) => {
       const emitter = createMockEmitter();
-      const rss = new RSS(emitter, { autoStart: false, startTime: 0 });
+      rss = new RSS(emitter, { autoStart: false, startTime: 0 });
 
       emitter.on('rss', (data) => {
         expect(data.image).to.equal('https://example.com/image.png');
@@ -344,9 +388,18 @@ describe('RSS Handler', () => {
   });
 
   describe('feed finding strategies', () => {
+    let rss: RSS | undefined;
+
+    afterEach(() => {
+      if (rss) {
+        rss.destroy();
+        rss = undefined;
+      }
+    });
+
     it('should find feed by exact meta.link match', (done) => {
       const emitter = createMockEmitter();
-      const rss = new RSS(emitter, { autoStart: false, startTime: 0 });
+      rss = new RSS(emitter, { autoStart: false, startTime: 0 });
 
       emitter.on('rss', (data) => {
         expect(data).to.have.property('id');
@@ -358,7 +411,7 @@ describe('RSS Handler', () => {
 
     it('should find feed by rss:link match', (done) => {
       const emitter = createMockEmitter();
-      const rss = new RSS(emitter, { autoStart: false, startTime: 0 });
+      rss = new RSS(emitter, { autoStart: false, startTime: 0 });
 
       emitter.on('rss', (data) => {
         expect(data).to.have.property('id');
@@ -370,7 +423,7 @@ describe('RSS Handler', () => {
 
     it('should use feeder.list as fallback for feed matching', (done) => {
       const emitter = createMockEmitter();
-      const rss = new RSS(emitter, { autoStart: false, startTime: 0 });
+      rss = new RSS(emitter, { autoStart: false, startTime: 0 });
 
       // Start feeds to populate feeder.list
       rss.start();
@@ -382,7 +435,7 @@ describe('RSS Handler', () => {
 
       // Emit with a registered feed
       setTimeout(() => {
-        rss.feeder.emit('new-item', mockRSSItem);
+        rss!.feeder.emit('new-item', mockRSSItem);
       }, 100);
     });
 
@@ -403,7 +456,7 @@ describe('RSS Handler', () => {
           key: 'test',
         },
       ];
-      const rss = new RSS(emitter, {
+      rss = new RSS(emitter, {
         autoStart: false,
         feeds: customFeeds,
         startTime: 0,
@@ -432,9 +485,18 @@ describe('RSS Handler', () => {
   });
 
   describe('RSS item fields', () => {
+    let rss: RSS | undefined;
+
+    afterEach(() => {
+      if (rss) {
+        rss.destroy();
+        rss = undefined;
+      }
+    });
+
     it('should include url and timestamp fields', (done) => {
       const emitter = createMockEmitter();
-      const rss = new RSS(emitter, { autoStart: false, startTime: 0 });
+      rss = new RSS(emitter, { autoStart: false, startTime: 0 });
 
       emitter.on('rss', (data) => {
         expect(data).to.have.property('url');
@@ -449,7 +511,7 @@ describe('RSS Handler', () => {
 
     it('should include description from meta', (done) => {
       const emitter = createMockEmitter();
-      const rss = new RSS(emitter, { autoStart: false, startTime: 0 });
+      rss = new RSS(emitter, { autoStart: false, startTime: 0 });
 
       emitter.on('rss', (data) => {
         expect(data).to.have.property('description');
@@ -469,7 +531,7 @@ describe('RSS Handler', () => {
           // No author field
         },
       ];
-      const rss = new RSS(emitter, { autoStart: false, feeds: customFeeds, startTime: 0 });
+      rss = new RSS(emitter, { autoStart: false, feeds: customFeeds, startTime: 0 });
 
       emitter.on('rss', (data) => {
         expect(data.author.name).to.equal('Warframe Forums');
@@ -494,7 +556,7 @@ describe('RSS Handler', () => {
           },
         },
       ];
-      const rss = new RSS(emitter, { autoStart: false, feeds: customFeeds, startTime: 0 });
+      rss = new RSS(emitter, { autoStart: false, feeds: customFeeds, startTime: 0 });
 
       emitter.on('rss', (data) => {
         expect(data.author.name).to.equal('Custom Author');
@@ -508,7 +570,7 @@ describe('RSS Handler', () => {
 
     it('should include image in spread when image exists', (done) => {
       const emitter = createMockEmitter();
-      const rss = new RSS(emitter, { autoStart: false, startTime: 0 });
+      rss = new RSS(emitter, { autoStart: false, startTime: 0 });
 
       emitter.on('rss', (data) => {
         expect(data).to.have.property('image');
@@ -521,9 +583,18 @@ describe('RSS Handler', () => {
   });
 
   describe('error handling edge cases', () => {
+    let rss: RSS | undefined;
+
+    afterEach(() => {
+      if (rss) {
+        rss.destroy();
+        rss = undefined;
+      }
+    });
+
     it('should catch and log errors during item processing', () => {
       const emitter = createMockEmitter();
-      const rss = new RSS(emitter, { autoStart: false, startTime: 0 });
+      rss = new RSS(emitter, { autoStart: false, startTime: 0 });
 
       // Create an item that will cause an error during processing
       const malformedItem = {
@@ -536,13 +607,13 @@ describe('RSS Handler', () => {
       };
 
       expect(() => {
-        rss.feeder.emit('new-item', malformedItem);
+        rss!.feeder.emit('new-item', malformedItem);
       }).to.not.throw();
     });
 
     it('should handle items with undefined description', (done) => {
       const emitter = createMockEmitter();
-      const rss = new RSS(emitter, { autoStart: false, startTime: 0 });
+      rss = new RSS(emitter, { autoStart: false, startTime: 0 });
 
       const itemWithNoDescription = {
         ...mockRSSItem,
@@ -567,7 +638,7 @@ describe('RSS Handler', () => {
           expect(err).to.exist;
         },
       };
-      const rss = new RSS(emitter, { autoStart: false, startTime: 0, logger: mockLogger as never });
+      rss = new RSS(emitter, { autoStart: false, startTime: 0, logger: mockLogger as never });
 
       // Create an item that will throw during processing
       const badItem = {
@@ -579,7 +650,7 @@ describe('RSS Handler', () => {
       };
 
       expect(() => {
-        rss.feeder.emit('new-item', badItem);
+        rss!.feeder.emit('new-item', badItem);
       }).to.not.throw();
 
       expect(errorLogged).to.be.true;
