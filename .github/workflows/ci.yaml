@@ -76,10 +76,6 @@ jobs:
         run: |
           npm ci --omit=optional
           npm install --no-save warframe-worldstate-parser@^5 warframe-worldstate-data@^3
-      - name: Setup WireGuard
-        uses: niklaskeerl/easy-wireguard-action@v2
-        with:
-          WG_CONFIG_FILE: ${{ secrets.WG_CONFIG }}
       - run: npm test
         env:
           CI: true
