@@ -33,7 +33,7 @@ jobs:
         with:
           WG_CONFIG_FILE: ${{ secrets.WG_CONFIG }}
       - name: Test
-        run: npm test
+        run: npm run coverage
         env:
           CI: true
           parallel: true

@@ -39,6 +39,7 @@
   "scripts": {
     "build": "tsdown",
     "build:docs": "typedoc",
+    "precoverage": "npm run build",
     "coverage": "c8 mocha --config .mocharc.integration.yml && npm run report && npx coveralls < coverage/lcov.info",
     "dev": "nodemon --exec tsx test/tester.ts",
     "lint": "biome check",

@@ -80,7 +80,7 @@ jobs:
         uses: niklaskeerl/easy-wireguard-action@v2
         with:
           WG_CONFIG_FILE: ${{ secrets.WG_CONFIG }}
-      - run: npm run coverage
+      - run: npm test
         env:
           CI: true
           parallel: true
