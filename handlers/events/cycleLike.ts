@@ -2,7 +2,7 @@ import { between, fromNow, lastUpdated } from '@/utilities';
 
 interface CycleLike {
   state: string;
-  activation: Date | string | number;
+  activation?: Date;
   expiry?: Date | string | number;
 }
 
@@ -32,7 +32,7 @@ export default (cycleData: CycleLike, deps: Deps): Packet[] => {
   };
 
   const last = new Date(lastUpdated[deps.platform]?.[deps.language] ?? 0);
-  const activation = new Date(cycleData.activation);
+  const activation = new Date(cycleData.activation ?? 0);
   const start = new Date(deps.cycleStart);
 
   const packets: Packet[] = [];

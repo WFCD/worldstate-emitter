@@ -4,7 +4,7 @@
 import type { CambionCycle, CetusCycle, EarthCycle, WorldStateObject } from 'warframe-worldstate-parser';
 
 export interface BaseEventData {
-  activation: Date | string | number;
+  activation?: Date;
 }
 
 export type CycleLike = CambionCycle | CetusCycle | EarthCycle;
