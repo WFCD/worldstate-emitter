@@ -7,3 +7,4 @@ dist/
 .jshintignore
 .jshintrc
 .eslintcache
+docs/

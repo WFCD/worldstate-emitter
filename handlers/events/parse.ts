@@ -1,3 +1,4 @@
+import type { ExternalMission } from 'warframe-worldstate-parser';
 import arrayLike from '@/handlers/events/arrayLike';
 import checkOverrides from '@/handlers/events/checkOverrides';
 import cycleLike from '@/handlers/events/cycleLike';
@@ -5,14 +6,7 @@ import * as eKeyOverrides from '@/handlers/events/eKeyOverrides';
 import kuvaProcessing from '@/handlers/events/kuva';
 import nightwave from '@/handlers/events/nightwave';
 import objectLike from '@/handlers/events/objectLike';
-import type {
-  ArrayEventDeps,
-  BaseEventData,
-  CycleLike,
-  EventDeps,
-  EventPacket,
-  KuvaData,
-} from '@/handlers/events/types';
+import type { ArrayEventDeps, BaseEventData, CycleLike, EventDeps, EventPacket } from '@/handlers/events/types';
 import { lastUpdated } from '@/utilities';
 
 interface ParseDeps {
@@ -47,7 +41,7 @@ export default (deps: ParseDeps): EventPacket[] | undefined => {
 
   switch (deps.key) {
     case 'kuva': {
-      const kuvaData = (Array.isArray(deps.data) ? deps.data : [deps.data]) as KuvaData[];
+      const kuvaData = (Array.isArray(deps.data) ? deps.data : [deps.data]) as ExternalMission[];
       return kuvaProcessing({ ...deps, data: kuvaData }, packets);
     }
 

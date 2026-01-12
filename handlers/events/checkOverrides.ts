@@ -1,3 +1,4 @@
+import type { WorldStateObject } from 'warframe-worldstate-parser';
 import { overrides } from '@/handlers/events/eKeyOverrides';
 import type { BaseEventData, OverrideResult } from '@/handlers/events/types';
 
@@ -14,7 +15,7 @@ export default (key: string, data: BaseEventData): OverrideResult => {
     return override;
   }
   if (typeof override === 'function') {
-    return override(data);
+    return override(data as WorldStateObject);
   }
   return key;
 };
