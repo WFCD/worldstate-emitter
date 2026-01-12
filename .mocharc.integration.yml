@@ -1,6 +1,6 @@
 exit: true
-spec: test/specs/**/*.spec.ts
+spec: test/**/*.spec.ts
 require: test/setup.ts
-timeout: 10000
+timeout: 250000
 node-option:
   - import=tsx

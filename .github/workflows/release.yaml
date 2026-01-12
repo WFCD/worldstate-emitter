@@ -17,11 +17,13 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v6
         with:
-          node-version-file: '.nvmrc'
+          node-version-file: ".nvmrc"
       - name: Install
         run: |
           npm ci --omit=optional
           npm install --no-save warframe-worldstate-parser@^5.x warframe-worldstate-data@^3.x
+      - name: Build
+        run: npm run build
       - name: Lint
         run: |
           npm run lint
@@ -31,7 +33,7 @@ jobs:
         with:
           WG_CONFIG_FILE: ${{ secrets.WG_CONFIG }}
       - name: Test
-        run: npm test
+        run: npm run coverage
         env:
           CI: true
           parallel: true
@@ -57,11 +59,13 @@ jobs:
           fetch-depth: 0
       - uses: actions/setup-node@v6
         with:
-          node-version-file: '.nvmrc'
+          node-version-file: ".nvmrc"
       - name: Install
         run: |
           npm ci --omit=optional
           npm install --no-save warframe-worldstate-parser@^5.x warframe-worldstate-data@^3.x
+      - name: Build
+        run: npm run build
       - name: Semantic Release
         run: npx semantic-release
         env:

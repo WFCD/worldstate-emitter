@@ -1,0 +1,137 @@
+name: Integration Tests
+
+on:
+  # Run daily at 4am Chicago time (9am UTC)
+  schedule:
+    - cron: '0 9 * * *'
+
+  # Allow manual triggering from GitHub UI
+  workflow_dispatch:
+
+  # Optional: Run on pushes to master (can be removed if too frequent)
+  push:
+    branches: [master]
+    paths:
+      - 'handlers/**'
+      - 'test/integration/**'
+      - 'package.json'
+      - '.github/workflows/integration-tests.yml'
+
+jobs:
+  integration-tests:
+    name: Run Integration Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    strategy:
+      matrix:
+        node-version: [20.x]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: |
+          npm ci --omit=optional
+          npm install --no-save warframe-worldstate-parser@^5 warframe-worldstate-data@^3
+
+      - name: Run integration tests
+        run: npm run test:integration
+        timeout-minutes: 20
+        env:
+          NODE_ENV: test
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: integration-test-results
+          path: |
+            coverage/
+            *.log
+          retention-days: 30
+
+      - name: Notify on failure
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const issueTitle = 'Daily Integration Tests Failing';
+            
+            // Compute safe branch string for scheduled/manual runs
+            let branch;
+            if (context.ref && context.ref.startsWith('refs/heads/')) {
+              // Branch push: strip the refs/heads/ prefix
+              branch = context.ref.replace('refs/heads/', '');
+            } else if (context.ref) {
+              // Other ref types (tags, etc.): use as-is
+              branch = context.ref;
+            } else {
+              // Scheduled or manual run with no ref: fetch default branch
+              const { data: repo } = await github.rest.repos.get({
+                owner: context.repo.owner,
+                repo: context.repo.repo
+              });
+              branch = repo.default_branch;
+            }
+            
+            // Check if there's already an open issue with this exact title
+            const { data: issues } = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: 'integration-test-failure',
+              per_page: 100
+            });
+            
+            // Find issue by exact title match (case-sensitive)
+            const existingIssue = issues.find(issue => issue.title === issueTitle);
+            
+            // Prepare the failure report body
+            const body = `### Integration Test Failure Report
+            
+            **Date:** ${new Date().toISOString().split('T')[0]}
+            **Workflow Run:** ${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}
+            **Commit:** \`${context.sha.substring(0, 7)}\`
+            **Branch:** \`${branch}\`
+            
+            The daily integration test run has failed. Please investigate and fix the failing tests.
+            
+            <details>
+            <summary>How to run locally</summary>
+            
+            \`\`\`bash
+            npm install
+            npm run test:integration
+            \`\`\`
+            </details>`;
+            
+            if (existingIssue) {
+              console.log(`Found existing open issue #${existingIssue.number} with title "${issueTitle}"`);
+              // Add a comment to existing issue instead of creating a new one
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: existingIssue.number,
+                body: `### Another Failure\n\n${body}`
+              });
+              console.log(`✅ Added comment to existing issue #${existingIssue.number} - no new issue created`);
+            } else {
+              console.log(`No existing open issue found with title "${issueTitle}"`);
+              // Create new issue only if none exists
+              const { data: newIssue } = await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: issueTitle,
+                body: body,
+                labels: ['integration-test-failure', 'bug']
+              });
+              console.log(`✅ Created new issue #${newIssue.number}`);
+            }

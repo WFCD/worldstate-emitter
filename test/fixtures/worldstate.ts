@@ -1,0 +1,196 @@
+/**
+ * Mock worldstate data for testing
+ */
+
+export const mockWorldstateData = {
+  timestamp: new Date('2026-01-11T12:00:00Z'),
+  news: [],
+  events: [],
+  alerts: [],
+  sortie: {
+    id: 'sortie123',
+    activation: new Date('2026-01-11T00:00:00Z'),
+    expiry: new Date('2026-01-12T00:00:00Z'),
+    rewardPool: 'sortie_rewards',
+    variants: [],
+    boss: 'TestBoss',
+    faction: 'Grineer',
+  },
+  syndicateMissions: [],
+  fissures: [],
+  globalUpgrades: [],
+  flashSales: [],
+  invasions: [],
+  voidTrader: {
+    id: 'baro123',
+    activation: new Date('2026-01-15T14:00:00Z'),
+    expiry: new Date('2026-01-17T14:00:00Z'),
+    character: "Baro Ki'Teer",
+    location: 'Relay',
+    inventory: [],
+  },
+  dailyDeals: [],
+  simaris: {
+    target: 'TestTarget',
+    isDiscovered: false,
+  },
+  conclaveChallenges: [],
+  persistentEnemies: [],
+  earthCycle: {
+    id: 'earthCycle',
+    activation: new Date('2026-01-11T12:00:00Z'),
+    expiry: new Date('2026-01-11T16:00:00Z'),
+    state: 'day',
+    timeLeft: '4h 0m 0s',
+  },
+  cetusCycle: {
+    id: 'cetusCycle',
+    activation: new Date('2026-01-11T12:00:00Z'),
+    expiry: new Date('2026-01-11T13:40:00Z'),
+    state: 'day',
+    timeLeft: '1h 40m 0s',
+  },
+  vallisCycle: {
+    id: 'vallisCycle',
+    activation: new Date('2026-01-11T12:00:00Z'),
+    expiry: new Date('2026-01-11T12:27:00Z'),
+    state: 'warm',
+    timeLeft: '27m 0s',
+  },
+  cambionCycle: {
+    id: 'cambionCycle',
+    activation: new Date('2026-01-11T12:00:00Z'),
+    expiry: new Date('2026-01-11T12:52:00Z'),
+    state: 'vome',
+    timeLeft: '52m 0s',
+  },
+  zarimanCycle: {
+    id: 'zarimanCycle',
+    activation: new Date('2026-01-11T12:00:00Z'),
+    expiry: new Date('2026-01-11T12:30:00Z'),
+    state: 'grineer',
+    timeLeft: '30m 0s',
+  },
+  constructionProgress: {
+    id: 'construction',
+    fomorianProgress: '50.5',
+    razorbackProgress: '25.3',
+    unknownProgress: '0.0',
+  },
+  nightwave: {
+    id: 'nightwave123',
+    activation: new Date('2026-01-01T00:00:00Z'),
+    expiry: new Date('2026-02-01T00:00:00Z'),
+    season: 5,
+    tag: 'NightwaveSeason5',
+    phase: 1,
+    params: {},
+    possibleChallenges: [],
+    activeChallenges: [],
+  },
+  arbitration: {
+    id: 'arbitration123',
+    activation: new Date('2026-01-11T12:00:00Z'),
+    expiry: new Date('2026-01-11T13:00:00Z'),
+    node: 'TestNode',
+    enemy: 'Grineer',
+    type: 'Survival',
+    archwing: false,
+    sharkwing: false,
+  },
+  kuva: [],
+  sentientOutposts: {
+    mission: {
+      id: 'sentient123',
+      activation: new Date('2026-01-11T12:00:00Z'),
+      expiry: new Date('2026-01-11T15:00:00Z'),
+      node: 'SentientNode',
+      faction: 'Sentient',
+      type: 'Exterminate',
+    },
+    discovery: new Date('2026-01-11T10:00:00Z'),
+    id: 'sentient123',
+    activation: new Date('2026-01-11T12:00:00Z'),
+    expiry: new Date('2026-01-11T15:00:00Z'),
+  },
+  darkSectors: [],
+  steelPath: {
+    currentReward: {
+      name: 'TestReward',
+      cost: 25,
+    },
+    activation: new Date('2026-01-11T00:00:00Z'),
+    expiry: new Date('2026-01-12T00:00:00Z'),
+    remaining: '12h 0m 0s',
+    rotation: [],
+    evergreens: [],
+    incursions: {
+      id: 'incursion123',
+      activation: new Date('2026-01-11T00:00:00Z'),
+      expiry: new Date('2026-01-11T12:00:00Z'),
+    },
+  },
+  voidTraders: [],
+  calendar: [],
+  archonHunt: {
+    id: 'archon123',
+    activation: new Date('2026-01-11T00:00:00Z'),
+    expiry: new Date('2026-01-18T00:00:00Z'),
+    boss: 'Archon',
+    faction: 'Narmer',
+    missions: [],
+  },
+  weeklyChallenges: [],
+  kinepage: [],
+  duviriCycle: {
+    id: 'duviriCycle',
+    activation: new Date('2026-01-11T00:00:00Z'),
+    expiry: new Date('2026-01-12T00:00:00Z'),
+    state: 'joy',
+    choices: [],
+  },
+};
+
+export const mockWorldstateString = JSON.stringify({
+  Timestamp: Date.now(),
+  News: [],
+  Events: [],
+  Alerts: [],
+  Sorties: [
+    {
+      _id: { $oid: 'sortie123' },
+      Activation: { $date: { $numberLong: '1736596800000' } },
+      Expiry: { $date: { $numberLong: '1736683200000' } },
+    },
+  ],
+  SyndicateMissions: [],
+  ActiveMissions: [],
+  GlobalUpgrades: [],
+  FlashSales: [],
+  Invasions: [],
+  VoidTraders: [],
+  DailyDeals: [],
+  PersistentEnemies: [],
+  NodeOverrides: [],
+});
+
+export const mockKuvaData = {
+  '1736596800000': {
+    solnode: 'SolNode1',
+    node: 'Sedna',
+    tile: 'Grineer Galleon',
+    planet: 'Sedna',
+    enemy: 'Grineer',
+    type: 'Survival',
+  },
+};
+
+export const mockSentientData = {
+  '1736596800000': {
+    mission: {
+      node: 'Veil Proxima',
+      type: 'Exterminate',
+      faction: 'Sentient',
+    },
+  },
+};
