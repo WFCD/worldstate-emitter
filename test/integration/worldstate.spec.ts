@@ -19,18 +19,19 @@ describe('Worldstate Integration Tests', () => {
   });
 
   describe('initialization', () => {
-    it('should create emitter with default options', () => {
-      emitter = new WorldstateEmitter();
+    it('should create emitter with default options', async () => {
+      emitter = await WorldstateEmitter.make();
       expect(emitter).to.be.instanceOf(EventEmitter);
     });
 
-    it('should create emitter for specific locale', () => {
-      emitter = new WorldstateEmitter({ locale: 'de' });
+    it('should create emitter for specific locale', async () => {
+      emitter = await WorldstateEmitter.make({ locale: 'de' });
       expect(emitter).to.be.instanceOf(EventEmitter);
     });
 
-    it('should create emitter with worldstate feature', () => {
-      emitter = new WorldstateEmitter({
+    it('should create emitter with worldstate feature', async () => {
+      emitter = await WorldstateEmitter.make({
+        locale: 'en',
         features: ['worldstate'],
       });
       expect(emitter).to.be.instanceOf(EventEmitter);
