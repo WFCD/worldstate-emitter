@@ -82,6 +82,41 @@ describe('CronCache', () => {
       }
     });
 
+    it('should not cache non-2xx HTTP responses', async function () {
+      this.timeout(10000);
+      // Use httpbin.org status endpoint to get a 500 response
+      const cache = new CronCache(failUrl);
+      cacheInstances.push(cache);
+
+      // First call should fail and return undefined
+      const data1 = await cache.get();
+      expect(data1).to.be.undefined;
+
+      // Second call should also fail (not return cached error response)
+      const data2 = await cache.get();
+      expect(data2).to.be.undefined;
+    });
+
+    it('should not cache data from failed HTTP responses', async function () {
+      this.timeout(10000);
+      const cache = new CronCache(failUrl);
+      cacheInstances.push(cache);
+
+      try {
+        await cache.get();
+      } catch {
+        // Expected to fail
+      }
+
+      // Second call should also fail (not return cached error response)
+      try {
+        await cache.get();
+        expect.fail('Expected error to be thrown on second call');
+      } catch (error) {
+        expect(error).to.exist;
+      }
+    });
+
     it.skip('should emit update event on successful fetch', async function () {
       this.timeout(10000);
 

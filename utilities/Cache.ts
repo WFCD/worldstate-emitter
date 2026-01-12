@@ -73,8 +73,16 @@ export default class CronCache extends EventEmitter {
    */
   async #fetch(): Promise<string> {
     logger.silly(`fetching... ${this.#url}`);
-    const updated = await fetch(this.#url);
-    this.#data = await updated.text();
+    const response = await fetch(this.#url);
+
+    if (!response.ok) {
+      const responseText = await response.text();
+      const errorMessage = `Failed to fetch ${this.#url}: ${response.status} ${response.statusText}`;
+      logger.error(errorMessage, { responseText });
+      throw new Error(errorMessage);
+    }
+
+    this.#data = await response.text();
     return this.#data;
   }
 
