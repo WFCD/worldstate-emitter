@@ -64,7 +64,7 @@
     "@commitlint/config-conventional": "^20.0.0",
     "@types/chai": "^5.2.3",
     "@types/mocha": "^10.0.10",
-    "@types/node": "^20.19.28",
+    "@types/node": "^25.0.9",
     "@types/sanitize-html": "^2.16.0",
     "@types/sinon": "^21.0.0",
     "@types/twitter": "^1.7.4",
