@@ -16,7 +16,7 @@ jobs:
       - name: Install dependencies
         run: |
           npm ci --omit=optional
-          npm install --no-save warframe-worldstate-parser@^5.x warframe-worldstate-data@^3.x
+          npm install --no-save warframe-worldstate-parser@^5.x warframe-worldstate-data@^3.x winston@^3
       - name: Build documentation
         run: npm run build:docs
       - name: Deploy

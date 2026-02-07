@@ -21,7 +21,7 @@ jobs:
       - name: Install
         run: |
           npm ci --omit=optional
-          npm install --no-save warframe-worldstate-parser@^5.x warframe-worldstate-data@^3.x
+          npm install --no-save warframe-worldstate-parser@^5.x warframe-worldstate-data@^3.x winston@^3
       - name: Build
         run: npm run build
       - name: Lint
@@ -70,7 +70,7 @@ jobs:
       - name: Install
         run: |
           npm ci --omit=optional
-          npm install --no-save warframe-worldstate-parser@^5.x warframe-worldstate-data@^3.x
+          npm install --no-save warframe-worldstate-parser@^5.x warframe-worldstate-data@^3.x winston@^3
       - name: Build
         run: npm run build
       - name: Semantic Release

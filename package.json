@@ -82,10 +82,8 @@
   },
   "peerDependencies": {
     "warframe-worldstate-data": "^3.x",
-    "warframe-worldstate-parser": "^5.2.14"
-  },
-  "optionalDependencies": {
-    "winston": "^3.18.3"
+    "warframe-worldstate-parser": "^5.2.14",
+    "winston": "^3.19.0"
   },
   "engines": {
     "node": ">=20.10.0"

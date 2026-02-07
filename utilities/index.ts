@@ -1,5 +1,4 @@
-import type { Logger } from 'winston';
-import { createLogger, format, transports } from 'winston';
+import { createLogger, format, type Logger, transports } from 'winston';
 import { LOG_LEVEL } from '@/utilities/env';
 
 let tempLogger: Logger;
