@@ -137,4 +137,19 @@ export default class WorldstateEmitter extends EventEmitter {
   async getTwitter(): Promise<unknown> {
     return this.#twitter?.clientInfoValid ? this.#twitter.getData() : undefined;
   }
+
+  destroy(): void {
+    if (this.#rss) {
+      this.#rss.destroy();
+      this.#rss = undefined;
+    }
+    if (this.#worldstate) {
+      this.#worldstate.destroy();
+      this.#worldstate = undefined;
+    }
+    if (this.#twitter) {
+      this.#twitter.dispose();
+      this.#twitter = undefined;
+    }
+  }
 }

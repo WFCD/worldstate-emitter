@@ -6,36 +6,41 @@ describe('WorldstateEmitter', () => {
     it('should create emitter with default options', async () => {
       const ws = await WSEmitter.make();
       expect(ws).to.be.instanceOf(WSEmitter);
+      ws.destroy();
     });
 
     it('should create emitter with specific locale', async () => {
       const ws = await WSEmitter.make({ locale: 'en' });
       expect(ws).to.be.instanceOf(WSEmitter);
+      ws.destroy();
     });
 
     it('should create emitter with specific features', async () => {
       const ws = await WSEmitter.make({ features: ['worldstate'] });
       expect(ws).to.be.instanceOf(WSEmitter);
+      ws.destroy();
     });
 
     it('should create emitter with multiple features', async () => {
       const ws = await WSEmitter.make({ features: ['worldstate', 'rss'] });
       expect(ws).to.be.instanceOf(WSEmitter);
+      ws.destroy();
     });
   });
 
   describe('event emission', () => {
-    it('should emit and receive tweet events', (done) => {
-      WSEmitter.make().then((ws) => {
+    it('should emit and receive tweet events', async () => {
+      const ws = await WSEmitter.make();
+      const promise = new Promise<void>((resolve) => {
         ws.on('tweet', (d: Record<string, unknown>) => {
           expect(d).to.be.an('object').that.has.all.keys('eventKey', 'tweets');
           expect(d.eventKey).to.be.a('string').and.to.equal('twitter.retweet.tobitenno');
           expect(d.tweets).to.be.an('array').with.lengthOf(0);
-          done();
+          resolve();
         });
-
-        ws.emit('tweet', { eventKey: 'twitter.retweet.tobitenno', tweets: [] });
       });
+      ws.emit('tweet', { eventKey: 'twitter.retweet.tobitenno', tweets: [] });
+      await promise;
     });
 
     it('should emit and receive rss events', (done) => {

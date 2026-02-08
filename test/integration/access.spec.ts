@@ -7,6 +7,9 @@ const ws = await WSEmitter.make({
 });
 
 describe('access', () => {
+  after(() => {
+    ws.destroy();
+  });
   it('should return data when requested', (done) => {
     const interval = setInterval(() => {
       const data = ws.getWorldstate();

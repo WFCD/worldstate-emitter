@@ -160,4 +160,10 @@ export default class Worldstate {
     }
     throw new Error(`Language (${language}) not tracked.\nEnsure that the parameters passed are correct`);
   }
+
+  destroy(): void {
+    this.#wsRawCache?.stop();
+    this.#kuvaCache?.stop();
+    this.#sentientCache?.stop();
+  }
 }
