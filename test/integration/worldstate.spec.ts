@@ -1,6 +1,6 @@
 import { EventEmitter } from 'node:events';
 import { expect } from 'chai';
-import WorldstateEmitter from '../../index';
+import WorldstateEmitter from 'worldstate-emitter';
 import { lastUpdated } from '../../utilities';
 
 /**
@@ -13,6 +13,7 @@ describe('Worldstate Integration Tests', () => {
 
   afterEach(async () => {
     if (emitter) {
+      emitter.destroy();
       // Clean up any running intervals/timers
       emitter = undefined;
     }
@@ -22,10 +23,11 @@ describe('Worldstate Integration Tests', () => {
     it('should create emitter with default options', async () => {
       emitter = await WorldstateEmitter.make();
       expect(emitter).to.be.instanceOf(EventEmitter);
+      emitter.destroy();
     });
 
     it('should create emitter for specific locale', async () => {
-      emitter = await WorldstateEmitter.make({ locale: 'de' });
+      emitter = await WorldstateEmitter.make({ locale: 'de', features: ['worldstate'] });
       expect(emitter).to.be.instanceOf(EventEmitter);
     });
 
