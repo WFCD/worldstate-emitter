@@ -62,7 +62,8 @@ declare module 'rss-feed-emitter' {
 
   export default class RssFeedEmitter extends EventEmitter {
     constructor(options?: { userAgent?: string; skipFirstLoad?: boolean });
-    add(feed: RSSFeedItem): void;
+
+    add(feed: { url: string; refresh: number; eventName?: string }): void;
     remove(url: string): void;
     destroy(): void;
     list: RSSFeedList[];

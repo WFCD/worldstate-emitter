@@ -6,6 +6,8 @@ import sanitizeHtml from 'sanitize-html';
 import feedsJson from '@/resources/rssFeeds.json';
 import { logger } from '@/utilities';
 
+const FEED_DEFAULT_REFRESH = 30000; // 30 seconds in MS
+
 interface FeedAuthor {
   name: string;
   url: string;
@@ -17,6 +19,7 @@ interface Feed {
   key: string;
   defaultAttach?: string;
   author?: FeedAuthor;
+  refresh?: number;
 }
 
 interface RssSummary {
@@ -83,7 +86,10 @@ export default class RSS {
    */
   start(): void {
     for (const feed of this.feeds) {
-      this.feeder.add({ url: feed.url, refresh: 30000 });
+      this.feeder.add({
+        url: feed.url,
+        refresh: feed?.refresh ?? FEED_DEFAULT_REFRESH,
+      });
     }
     this.logger.debug('RSS Feed active');
   }

@@ -2,21 +2,25 @@
   {
     "url": "https://forums.warframe.com/forum/38-players-helping-players.xml",
     "key": "players_helping_players",
-    "defaultAttach": "https://i.imgur.com/cuk4ro9.png"
+    "defaultAttach": "https://i.imgur.com/cuk4ro9.png",
+    "refresh": 3600000
   },
   {
     "url": "https://forums.warframe.com/forum/3-pc-update-notes.xml",
     "key": "forum.updates.pc",
-    "defaultAttach": "https://i.imgur.com/eY1NkzO.png"
+    "defaultAttach": "https://i.imgur.com/eY1NkzO.png",
+    "refresh": 300000
   },
   {
     "url": "https://forums.warframe.com/forum/170-announcements-events.xml",
     "key": "forum.news",
-    "defaultAttach": "https://i.imgur.com/CNrsc7V.png"
+    "defaultAttach": "https://i.imgur.com/CNrsc7V.png",
+    "refresh": 300000
   },
   {
     "url": "https://forums.warframe.com/forum/123-developer-workshop-update-notes.xml",
-    "key": "forum.workshop"
+    "key": "forum.workshop",
+    "refresh": 300000
   },
   {
     "url": "https://forums.warframe.com/discover/837.xml",
@@ -25,7 +29,8 @@
       "name": "[DE]Megan",
       "url": "https://forums.warframe.com/profile/384139-demegan/",
       "icon_url": "https://content.invisioncic.com/Mwarframe/monthly_2017_06/ezgif.com-crop.thumb.gif.e510920610e8489a54dd5dbe8b9fd4db.gif"
-    }
+    },
+    "refresh": 3600000
   },
   {
     "url": "https://forums.warframe.com/discover/839.xml",
@@ -34,7 +39,8 @@
       "name": "[DE]Rebecca",
       "url": "https://forums.warframe.com/profile/4-derebecca/",
       "icon_url": "https://content.invisioncic.com/Mwarframe/pages_media/1_PlayerAvatarsInkary.png"
-    }
+    },
+    "refresh": 3600000
   },
   {
     "url": "https://forums.warframe.com/discover/840.xml",
@@ -43,7 +49,8 @@
       "name": "[DE]Danielle",
       "url": "https://forums.warframe.com/profile/869879-dedanielle/",
       "icon_url": "https://content.invisioncic.com/Mwarframe/monthly_2018_04/profile.thumb.jpg.fe072e16d5b54892b95030ea410264e7.jpg"
-    }
+    },
+    "refresh": 3600000
   },
   {
     "url": "https://forums.warframe.com/discover/841.xml",
@@ -52,7 +59,8 @@
       "name": "[DE]Drew",
       "url": "https://forums.warframe.com/profile/488958-dedrew/",
       "icon_url": "https://content.invisioncic.com/Mwarframe/monthly_2016_06/576c323f14e92_AnimatedAvatarMirrored.thumb.gif.f12f2373d0d4b91363647f35b30026e0.gif"
-    }
+    },
+    "refresh": 3600000
   },
   {
     "url": "https://forums.warframe.com/discover/842.xml",
@@ -61,7 +69,8 @@
       "name": "[DE]Glen",
       "url": "https://forums.warframe.com/profile/10-deglen/",
       "icon_url": "https://content.invisioncic.com/Mwarframe/monthly_2016_05/57474a4312a72_GlensHorse.thumb.png.7b47cb0660f5af2e6101ed84d3192c03.png"
-    }
+    },
+    "refresh": 3600000
   },
   {
     "url": "https://forums.warframe.com/discover/1171.xml",
@@ -70,7 +79,8 @@
       "name": "[DE]taylor",
       "url": "https://forums.warframe.com/profile/1943322-detaylor/",
       "icon_url": "https://content.invisioncic.com/Mwarframe/monthly_2017_07/596ceb9b4e182_6FUC4s3%281%29.thumb.png.7045d25fc7b057c70ddcffe14cd1f43e.png"
-    }
+    },
+    "refresh": 3600000
   },
   {
     "url": "https://forums.warframe.com/discover/1777.xml",
@@ -79,7 +89,8 @@
       "name": "[DE]Steve",
       "url": "https://forums.warframe.com/profile/24-desteve/",
       "icon_url": "https://content.invisioncic.com/Mwarframe/monthly_2016_06/575f13eaf3080_Pastedimageat2016_06_1304_11PM.thumb.png.fb98af24931a1820d00293a55c05baef.png"
-    }
+    },
+    "refresh": 3600000
   },
   {
     "url": "https://forums.warframe.com/discover/1291.xml",
@@ -88,7 +99,8 @@
       "name": "[DE]Helen",
       "url": "https://forums.warframe.com/profile/2522846-dehelen/",
       "icon_url": "https://content.invisioncic.com/Mwarframe/monthly_2017_06/590e937e598f2_Helen-Icon.jpg.0ac6d3d86c1d48f3f3e1a035344ab87a.thumb.jpg.d2225fb0dcd980f081ddddbf46458072.jpg"
-    }
+    },
+    "refresh": 3600000
   },
   {
     "url": "https://forums.warframe.com/discover/1294.xml",
@@ -97,7 +109,8 @@
       "name": "[DE]Saske",
       "url": "https://forums.warframe.com/profile/4513168-nswdesaske/",
       "icon_url": "https://content.invisioncic.com/Mwarframe/pages_media/1_TennoCon2018Glyph.png"
-    }
+    },
+    "refresh": 3600000
   },
   {
     "url": "https://forums.warframe.com/discover/1295.xml",
@@ -106,7 +119,8 @@
       "name": "[DE]Syncrasis",
       "url": "https://forums.warframe.com/profile/2514676-desyncrasis//",
       "icon_url": "https://content.invisioncic.com/Mwarframe/monthly_2017_02/aladv.thumb.jpg.a06cbfa091579eb9ce2ae96eb0b42e34.jpg"
-    }
+    },
+    "refresh": 3600000
   },
   {
     "url": "https://forums.warframe.com/discover/1299.xml",
@@ -115,7 +129,8 @@
       "name": "[DE]Pablo",
       "url": "https://forums.warframe.com/profile/217656-depablo/",
       "icon_url": "https://content.invisioncic.com/Mwarframe/monthly_2016_05/Pablo.thumb.png.35bb0384ef7b88e807d55ffc31af0896.png"
-    }
+    },
+    "refresh": 3600000
   },
   {
     "url": "https://forums.warframe.com/discover/1779.xml",
@@ -124,6 +139,7 @@
       "name": "[DE]Marcus",
       "url": "https://forums.warframe.com/profile/3443485-demarcus/",
       "icon_url": "https://content.invisioncic.com/Mwarframe/monthly_2018_01/5a55278d71caa_MarcusIIPrint.thumb.jpg.16cb689d778112333cffb6fe546b89ec.jpg"
-    }
+    },
+    "refresh": 3600000
   }
 ]
