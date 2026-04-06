@@ -9,10 +9,11 @@ export default defineConfig({
     switch (context.format) {
       case 'cjs':
         js = '.js';
+        dts = '.d.cts';
         break;
       case 'es':
         js = '.mjs';
-        dts = '.d.mts';
+        dts = '.d.ts';
         break;
       case 'umd':
       case 'iife':
