@@ -6,6 +6,7 @@
 
 declare module 'twitter' {
   import type { EventEmitter } from 'node:events';
+
   import request = require('request');
 
   // Re-export the Twitter class as a named export for ES module usage
