@@ -1,8 +1,7 @@
 import { expect } from 'chai';
-import RSS from '../../handlers/RSS';
+import RSS from '@/handlers/RSS';
 import {
   mockRSSItem,
-  mockRSSItemOldDate,
   mockRSSItemWithDefaultAttach,
   mockRSSItemWithoutImage,
   mockRSSItemWithRelativeImage,

@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import WSEmitter from '../../index';
+import WSEmitter from 'worldstate-emitter';
 
 describe('WorldstateEmitter', () => {
   describe('initialization', () => {

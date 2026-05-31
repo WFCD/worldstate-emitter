@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { between, fromNow, groupBy } from '../../utilities';
+import { between, fromNow, groupBy } from '@/utilities';
 
 describe('Utility Functions', () => {
   describe('groupBy', () => {

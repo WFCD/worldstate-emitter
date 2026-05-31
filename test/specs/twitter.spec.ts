@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import TwitterCache from '../../handlers/Twitter';
+import TwitterCache from '@/handlers/Twitter';
 import {
   mockQuoteTweet,
   mockReplyTweet,

@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import type { ExternalMission, Fissure, PersistentEnemy, WorldStateObject } from 'warframe-worldstate-parser';
-import * as eKeyOverrides from '../../handlers/events/eKeyOverrides';
+import * as eKeyOverrides from '@/handlers/events/eKeyOverrides';
 
 describe('Event Key Overrides', () => {
   describe('fissures', () => {

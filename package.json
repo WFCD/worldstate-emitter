@@ -76,6 +76,7 @@
     "lint-staged": "^17.0.3",
     "mocha": "^11.7.5",
     "nodemon": "^3.1.11",
+    "reflect-metadata": "^0.2.2",
     "sinon": "^22.0.0",
     "tsdown": "^0.22.0",
     "tsx": "^4.21.0",
@@ -84,7 +85,7 @@
   },
   "peerDependencies": {
     "warframe-worldstate-data": "^3.x",
-    "warframe-worldstate-parser": "^5.2.14",
+    "warframe-worldstate-parser": "^5.3.9",
     "winston": "^3.19.0"
   },
   "engines": {

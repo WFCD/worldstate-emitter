@@ -1,6 +1,6 @@
 import { expect } from 'chai';
-import arrayLike from '../../handlers/events/arrayLike';
-import type { ArrayEventDeps } from '../../handlers/events/types';
+import arrayLike from '@/handlers/events/arrayLike';
+import type { ArrayEventDeps } from '@/handlers/events/types';
 
 describe('arrayLike', () => {
   it('should process array of objects and return event packets', () => {

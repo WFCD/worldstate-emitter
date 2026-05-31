@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import CronCache from '../../utilities/Cache';
+import CronCache from '@/utilities/Cache';
 
 describe('CronCache', () => {
   // Use a mock server URL that will fail
