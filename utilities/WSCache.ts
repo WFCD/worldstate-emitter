@@ -1,6 +1,7 @@
 import type EventEmitter from 'node:events';
-
-import type WorldState from 'warframe-worldstate-parser';
+import type { Locale } from 'warframe-worldstate-data';
+import type { Dependency } from 'warframe-worldstate-parser';
+import WorldState from 'warframe-worldstate-parser';
 import { logger } from '@/utilities';
 import type CronCache from '@/utilities/Cache';
 
@@ -11,11 +12,7 @@ interface WSCacheOptions {
   eventEmitter: EventEmitter;
 }
 
-interface WorldStateDeps {
-  locale: string;
-  kuvaData: Record<string, unknown>;
-  sentientData: Record<string, unknown>;
-}
+interface WorldStateDeps extends Dependency {}
 
 /**
  * Warframe WorldState Cache - store and retrieve current worldstate data
@@ -52,9 +49,9 @@ export default class WSCache {
    */
   #update = async (newData: string): Promise<void> => {
     const deps: WorldStateDeps = {
-      locale: this.#language,
-      kuvaData: {},
-      sentientData: {},
+      locale: this.#language as Locale,
+      kuvaData: [],
+      sentientData: undefined,
     };
     try {
       const kuvaRaw = await this.#kuvaCache.get();
@@ -75,7 +72,6 @@ export default class WSCache {
 
     let t: WorldState | undefined;
     try {
-      // @ts-expect-error - WorldState.build exists but might not be in types
       t = await WorldState.build(newData, deps);
       if (!t?.timestamp) return;
     } catch (err) {
@@ -115,8 +111,7 @@ export default class WSCache {
   set twitter(newTwitter: unknown[]) {
     if (!newTwitter?.length) return;
     if (this.#inner) {
-      // @ts-expect-error - twitter property might not be in types
-      this.#inner.twitter = newTwitter;
+      (this.#inner as any).twitter = newTwitter;
     }
   }
 }

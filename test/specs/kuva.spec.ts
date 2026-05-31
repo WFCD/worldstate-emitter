@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import type { ExternalMission } from 'warframe-worldstate-parser';
-import kuva from '../../handlers/events/kuva';
+import kuva from '@/handlers/events/kuva';
 
 describe('kuva', () => {
   it('should process kuva missions and group by type', () => {

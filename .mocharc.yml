@@ -1,6 +1,9 @@
 exit: true
 spec: test/specs/**/*.spec.ts
-require: test/setup.ts
 timeout: 10000
+require:
+  - 'chai/register-should.js'
+  - 'reflect-metadata'
+  - 'test/setup.ts'
 node-option:
   - import=tsx

@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import checkOverrides from '../../handlers/events/checkOverrides';
+import checkOverrides from '@/handlers/events/checkOverrides';
 
 describe('checkOverrides', () => {
   it('should return original key when no override exists', () => {

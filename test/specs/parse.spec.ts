@@ -1,6 +1,6 @@
 import { expect } from 'chai';
-import parseNew from '../../handlers/events/parse';
-import type { BaseEventData, CycleLike } from '../../handlers/events/types';
+import parseNew from '@/handlers/events/parse';
+import type { BaseEventData, CycleLike } from '@/handlers/events/types';
 
 describe('Event Parsing', () => {
   const baseDeps = {
