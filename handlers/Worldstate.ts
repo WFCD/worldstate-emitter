@@ -2,6 +2,7 @@ import type EventEmitter from 'node:events';
 
 import wsData from 'warframe-worldstate-data';
 import type WorldState from 'warframe-worldstate-parser';
+import type { Logger } from 'winston';
 import parseNew from '@/handlers/events/parse';
 import type { BaseEventData, EventPacket } from '@/handlers/events/types';
 import { externalCron, kuvaUrl, sentientUrl, worldstateCron, worldstateUrl } from '@/resources/config';
@@ -24,6 +25,7 @@ interface ParseEventsPacket {
 export default class Worldstate {
   #emitter: EventEmitter;
   #locale?: string;
+  #logger: Logger;
   #worldStates: Record<string, WSCache> = {};
   #wsRawCache?: Cache;
   #kuvaCache?: Cache;
@@ -32,21 +34,28 @@ export default class Worldstate {
   /**
    * Set up listening for specific platform and locale if provided.
    * @param eventEmitter - Emitter to push new worldstate events to
-   * @param locale - Locale (actually just language) to watch
+   * @param options - Configuration options
    */
-  constructor(eventEmitter: EventEmitter, locale?: string) {
+  constructor(
+    eventEmitter: EventEmitter,
+    options: {
+      locale?: string;
+      logger?: Logger;
+    } = {},
+  ) {
     this.#emitter = eventEmitter;
-    this.#locale = locale;
-    logger.debug('starting up worldstate listener...');
-    if (locale) {
-      logger.debug(`only listening for ${locale}...`);
+    this.#locale = options.locale;
+    this.#logger = options.logger || logger;
+    this.#logger.debug('starting up worldstate listener...');
+    if (options.locale) {
+      this.#logger.debug(`only listening for ${options.locale}...`);
     }
   }
 
   async init(): Promise<void> {
-    this.#wsRawCache = await Cache.make(worldstateUrl, worldstateCron);
-    this.#kuvaCache = await Cache.make(kuvaUrl, externalCron);
-    this.#sentientCache = await Cache.make(sentientUrl, externalCron);
+    this.#wsRawCache = await Cache.make(worldstateUrl, worldstateCron, this.#logger);
+    this.#kuvaCache = await Cache.make(kuvaUrl, externalCron, this.#logger);
+    this.#sentientCache = await Cache.make(sentientUrl, externalCron, this.#logger);
 
     await this.setUpRawEmitters();
     this.setupParsedEvents();
@@ -65,6 +74,7 @@ export default class Worldstate {
           kuvaCache: this.#kuvaCache!,
           sentientCache: this.#sentientCache!,
           eventEmitter: this.#emitter,
+          logger: this.#logger,
         });
       }
     }
@@ -76,7 +86,7 @@ export default class Worldstate {
 
     /* when the raw emits happen, parse them and store them on parsed worldstate caches */
     this.#emitter.on('ws:update:raw', ({ data }: { data: string }) => {
-      logger.debug('ws:update:raw - updating locales data');
+      this.#logger.debug('ws:update:raw - updating locales data');
       locales.forEach((locale) => {
         if (!this.#locale || this.#locale === locale) {
           this.#worldStates[locale].data = data;
@@ -140,9 +150,9 @@ export default class Worldstate {
    * @param packet - Data packet to emit
    */
   emit(id: string, packet: EventPacket): void {
-    if (debugEvents.includes(packet.key)) logger.warn(packet.key);
+    if (debugEvents.includes(packet.key)) this.#logger.warn(packet.key);
 
-    logger.debug(`ws:update:event - emitting ${packet.id}`);
+    this.#logger.debug(`ws:update:event - emitting ${packet.id}`);
     delete packet.cycleStart;
     this.#emitter.emit(id, packet);
   }
@@ -154,7 +164,7 @@ export default class Worldstate {
    * @throws When the platform or locale aren't tracked and aren't updated
    */
   get(language = 'en'): WorldState | undefined {
-    logger.debug(`getting worldstate ${language}...`);
+    this.#logger.debug(`getting worldstate ${language}...`);
     if (this.#worldStates?.[language]) {
       return this.#worldStates?.[language]?.data;
     }

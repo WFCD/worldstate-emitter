@@ -1,5 +1,6 @@
 import type EventEmitter from 'node:events';
 import Twitter, { type BearerTokenOptions, type MediaEntity, type Status, type TwitterClient } from 'twitter';
+import type { Logger } from 'winston';
 
 import toWatch from '@/resources/tweeters.json';
 import { logger } from '@/utilities';
@@ -96,6 +97,7 @@ const parseTweet = (tweets: Status[], watchable: Watchable): ParsedTweet => {
  */
 export default class TwitterCache {
   private emitter: EventEmitter;
+  private logger: Logger;
   private timeout: number;
   public clientInfoValid: boolean;
   private client?: TwitterClient;
@@ -114,6 +116,7 @@ export default class TwitterCache {
    * @param options.clientInfo - Custom Twitter client credentials
    * @param options.watchList - Custom list of Twitter accounts to watch
    * @param options.timeout - Polling interval in milliseconds
+   * @param options.logger - Custom logger instance (default: uses global logger)
    */
   constructor(
     eventEmitter: EventEmitter,
@@ -122,9 +125,11 @@ export default class TwitterCache {
       clientInfo?: Partial<BearerTokenOptions>;
       watchList?: Watchable[];
       timeout?: number;
+      logger?: Logger;
     } = {},
   ) {
     this.emitter = eventEmitter;
+    this.logger = options.logger || logger;
     this.timeout = options.timeout ?? TWITTER_TIMEOUT;
     this.lastUpdated = Date.now() - 60000;
     this.disposed = false;
@@ -159,11 +164,11 @@ export default class TwitterCache {
         this.updateInterval = setInterval(() => this.update(), this.timeout);
         this.update();
       } else {
-        logger.warn(`Twitter client not initialized... invalid token: ${clientInfo.bearer_token}`);
+        this.logger.warn(`Twitter client not initialized... invalid token: ${clientInfo.bearer_token}`);
         this.dispose();
       }
     } catch (err) {
-      logger.error(err);
+      this.logger.error(err);
       this.dispose();
     }
   }
@@ -189,12 +194,12 @@ export default class TwitterCache {
     if (this.disposed || !this.clientInfoValid) return undefined;
 
     if (!this.toWatch || this.toWatch.length === 0) {
-      logger.verbose('Not processing twitter, no data to watch.');
+      this.logger.verbose('Not processing twitter, no data to watch.');
       return undefined;
     }
 
     if (!this.client) {
-      logger.verbose('Not processing twitter, no client to connect.');
+      this.logger.verbose('Not processing twitter, no client to connect.');
       return undefined;
     }
 
@@ -208,7 +213,7 @@ export default class TwitterCache {
    * @returns Tweets
    */
   private async getParseableData(): Promise<ParsedTweet[] | undefined> {
-    logger.silly('Starting Twitter update...');
+    this.logger.silly('Starting Twitter update...');
     const parsedData: ParsedTweet[] = [];
     try {
       await Promise.all(
@@ -241,10 +246,10 @@ export default class TwitterCache {
    */
   private onError(error: unknown): void {
     if (Array.isArray(error) && error[0] && error[0].code === 32) {
-      logger.info('wiping twitter client data, could not authenticate...');
+      this.logger.info('wiping twitter client data, could not authenticate...');
       this.dispose();
     } else {
-      logger.debug(JSON.stringify(error));
+      this.logger.debug(JSON.stringify(error));
     }
   }
 
@@ -272,6 +277,6 @@ export default class TwitterCache {
     }
     this.client = undefined;
     this.clientInfoValid = false;
-    logger.verbose('Twitter polling stopped and resources cleaned up');
+    this.logger.verbose('Twitter polling stopped and resources cleaned up');
   }
 }

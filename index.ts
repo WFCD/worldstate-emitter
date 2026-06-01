@@ -2,16 +2,17 @@ import EventEmitter from 'node:events';
 
 import type { RSSItem } from 'rss-feed-emitter';
 import type WorldState from 'warframe-worldstate-parser';
-
+import type { Logger } from 'winston';
 import RSS from '@/handlers/RSS';
 import Twitter from '@/handlers/Twitter';
 import Worldstate from '@/handlers/Worldstate';
 import { FEATURES } from '@/resources/config';
-import { logger } from '@/utilities';
+import { logger, setLogger } from '@/utilities';
 
 interface WorldstateEmitterOptions {
   locale?: string;
   features?: string[];
+  logger?: Logger;
 }
 
 interface RssFeedItem {
@@ -53,9 +54,13 @@ export default class WorldstateEmitter extends EventEmitter {
   #worldstate?: Worldstate;
   #twitter?: Twitter;
   #rss?: RSS;
+  #logger?: Logger;
 
-  static async make({ locale, features }: WorldstateEmitterOptions = {}): Promise<WorldstateEmitter> {
-    const emitter = new WorldstateEmitter({ locale });
+  static async make({ locale, features, logger: upLogger }: WorldstateEmitterOptions = {}): Promise<WorldstateEmitter> {
+    if (upLogger) {
+      setLogger(upLogger);
+    }
+    const emitter = new WorldstateEmitter({ locale, logger: upLogger });
     await emitter.#init(features?.length ? features : FEATURES);
     return emitter;
   }
@@ -64,24 +69,25 @@ export default class WorldstateEmitter extends EventEmitter {
    * Pull in and instantiate emitters
    * @param options - Configuration options
    */
-  constructor({ locale }: WorldstateEmitterOptions = {}) {
+  constructor({ locale, logger: uLogger }: WorldstateEmitterOptions = {}) {
     super();
     this.#locale = locale;
+    this.#logger = uLogger || logger;
   }
 
   async #init(features: string[]): Promise<void> {
     if (features.includes('rss')) {
-      this.#rss = new RSS(this);
+      this.#rss = new RSS(this, { logger: this.#logger });
     }
     if (features.includes('worldstate')) {
-      this.#worldstate = new Worldstate(this, this.#locale);
+      this.#worldstate = new Worldstate(this, { locale: this.#locale, logger: this.#logger });
       await this.#worldstate.init();
     }
     if (features.includes('twitter')) {
-      this.#twitter = new Twitter(this);
+      this.#twitter = new Twitter(this, { logger: this.#logger });
     }
 
-    logger.silly('hey look, i started up...');
+    this.#logger!.silly('hey look, i started up...');
     this.setupLogging();
   }
 
@@ -90,17 +96,18 @@ export default class WorldstateEmitter extends EventEmitter {
    * @private
    */
   private setupLogging(): void {
-    this.on('error', logger.error);
+    const log = this.#logger!;
+    this.on('error', log.error.bind(log));
 
-    this.on('rss', (body: RssEventBody) => logger.silly(`emitted: ${body.id}`));
-    this.on('ws:update:raw', (body: WorldstateRawEventBody) => logger.silly(`emitted raw: ${body.platform}`));
+    this.on('rss', (body: RssEventBody) => log.silly(`emitted: ${body.id}`));
+    this.on('ws:update:raw', (body: WorldstateRawEventBody) => log.silly(`emitted raw: ${body.platform}`));
     this.on('ws:update:parsed', (body: WorldstateParsedEventBody) =>
-      logger.silly(`emitted parsed: ${body.platform} in ${body.language}`),
+      log.silly(`emitted parsed: ${body.platform} in ${body.language}`),
     );
     this.on('ws:update:event', (body: WorldstateEventBody) =>
-      logger.silly(`emitted event: ${body.id} ${body.platform} in ${body.language}`),
+      log.silly(`emitted event: ${body.id} ${body.platform} in ${body.language}`),
     );
-    this.on('tweet', (body: TweetEventBody) => logger.silly(`emitted: ${body.id}`));
+    this.on('tweet', (body: TweetEventBody) => log.silly(`emitted: ${body.id}`));
   }
 
   /**
@@ -151,5 +158,6 @@ export default class WorldstateEmitter extends EventEmitter {
       this.#twitter.dispose();
       this.#twitter = undefined;
     }
+    this.#logger!.debug('Emitter destroyed');
   }
 }

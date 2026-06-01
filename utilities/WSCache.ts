@@ -2,6 +2,7 @@ import type EventEmitter from 'node:events';
 import type { Locale } from 'warframe-worldstate-data';
 import type { Dependency } from 'warframe-worldstate-parser';
 import WorldState from 'warframe-worldstate-parser';
+import type { Logger } from 'winston';
 import { logger } from '@/utilities';
 import type CronCache from '@/utilities/Cache';
 
@@ -10,6 +11,7 @@ interface WSCacheOptions {
   kuvaCache: CronCache;
   sentientCache: CronCache;
   eventEmitter: EventEmitter;
+  logger?: Logger;
 }
 
 interface WorldStateDeps extends Dependency {}
@@ -34,12 +36,13 @@ export default class WSCache {
    * @param options.sentientCache - Cache of sentient outpost data, provided by Semlar
    * @param options.eventEmitter - Emitter to push new worldstate updates to
    */
-  constructor({ language, kuvaCache, sentientCache, eventEmitter }: WSCacheOptions) {
+  constructor({ language, kuvaCache, sentientCache, eventEmitter, logger: uLogger }: WSCacheOptions) {
     this.#inner = undefined;
     this.#kuvaCache = kuvaCache;
     this.#sentientCache = sentientCache;
     this.#language = language;
     this.#emitter = eventEmitter;
+    this.#logger = uLogger || logger;
   }
 
   /**
@@ -52,6 +55,9 @@ export default class WSCache {
       locale: this.#language as Locale,
       kuvaData: [],
       sentientData: undefined,
+      logger: {
+        debug: (message: string) => this.#logger.debug(message),
+      },
     };
     try {
       const kuvaRaw = await this.#kuvaCache.get();
@@ -59,7 +65,7 @@ export default class WSCache {
         deps.kuvaData = JSON.parse(kuvaRaw);
       }
     } catch (err) {
-      logger.debug(`Error parsing kuva data for ${this.#language}: ${err}`);
+      this.#logger.debug(`Error parsing kuva data for ${this.#language}: ${err}`);
     }
     try {
       const sentientRaw = await this.#sentientCache.get();
@@ -67,7 +73,7 @@ export default class WSCache {
         deps.sentientData = JSON.parse(sentientRaw);
       }
     } catch (err) {
-      logger.warn(`Error parsing sentient data for ${this.#language}: ${err}`);
+      this.#logger.warn(`Error parsing sentient data for ${this.#language}: ${err}`);
     }
 
     let t: WorldState | undefined;
@@ -100,7 +106,7 @@ export default class WSCache {
    * @param newData - New string data to parse
    */
   set data(newData: string) {
-    logger.debug(`got new data for ${this.#language}, parsing...`);
+    this.#logger.debug(`got new data for ${this.#language}, parsing...`);
     void this.#update(newData);
   }
 
