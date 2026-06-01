@@ -1,5 +1,6 @@
 import { expect } from 'chai';
 import WSEmitter from 'worldstate-emitter';
+import { createMockLogger } from '../helpers/mocks';
 
 describe('WorldstateEmitter', () => {
   describe('initialization', () => {
@@ -7,6 +8,13 @@ describe('WorldstateEmitter', () => {
       const ws = await WSEmitter.make();
       expect(ws).to.be.instanceOf(WSEmitter);
       ws.destroy();
+    });
+
+    it('should use a custom logger when provided', async () => {
+      const customLogger = createMockLogger()._withCapture();
+      const ws = await WSEmitter.make({ features: ['worldstate'], logger: customLogger as never });
+      ws.destroy();
+      expect(customLogger._logs.some((entry) => entry.level === 'debug')).to.equal(true);
     });
 
     it('should create emitter with specific locale', async () => {

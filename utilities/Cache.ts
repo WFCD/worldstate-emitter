@@ -2,6 +2,7 @@ import { EventEmitter } from 'node:events';
 
 import type { CronJob as CronJobType } from 'cron';
 import { CronJob } from 'cron';
+import type { Logger } from 'winston';
 
 import { logger } from '@/utilities';
 
@@ -22,8 +23,8 @@ export default class CronCache extends EventEmitter {
    * @param pattern - Optional cron pattern for update frequency
    * @returns Initialized CronCache instance
    */
-  static async make(url: string, pattern?: string): Promise<CronCache> {
-    const cache = new CronCache(url, pattern);
+  static async make(url: string, pattern?: string, uLogger?: Logger): Promise<CronCache> {
+    const cache = new CronCache(url, pattern, uLogger);
     await cache.#update();
     return cache;
   }
@@ -32,11 +33,13 @@ export default class CronCache extends EventEmitter {
    * Create a new CronCache
    * @param url - The URL to fetch data from
    * @param pattern - Optional cron pattern for update frequency
+   * @param uLogger - Optional logger instance
    */
-  constructor(url: string, pattern?: string) {
+  constructor(url: string, pattern?: string, uLogger?: Logger) {
     super();
     this.#url = url;
     if (pattern) this.#pattern = pattern;
+    if (uLogger) this.#logger = uLogger;
     this.#job = new CronJob(this.#pattern, () => void this.#update(), undefined, true);
     this.#job.start();
   }
@@ -72,13 +75,13 @@ export default class CronCache extends EventEmitter {
    * @private
    */
   async #fetch(): Promise<string> {
-    logger.silly(`fetching... ${this.#url}`);
+    this.#logger.silly(`fetching... ${this.#url}`);
     const response = await fetch(this.#url);
 
     if (!response.ok) {
       const responseText = await response.text();
       const errorMessage = `Failed to fetch ${this.#url}: ${response.status} ${response.statusText}`;
-      logger.error(errorMessage, { responseText });
+      this.#logger.error(errorMessage, { responseText });
       throw new Error(errorMessage);
     }
 
@@ -92,14 +95,14 @@ export default class CronCache extends EventEmitter {
    */
   async get(): Promise<string | undefined> {
     if (this.#updating) {
-      logger.silly('returning in-progress update promise');
+      this.#logger.silly('returning in-progress update promise');
       return this.#updating;
     }
     if (!this.#data) {
-      logger.silly('returning new update promise');
+      this.#logger.silly('returning new update promise');
       return this.#update();
     }
-    logger.silly('returning cached data');
+    this.#logger.silly('returning cached data');
     return this.#data;
   }
 

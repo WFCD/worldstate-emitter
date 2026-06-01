@@ -1,26 +1,65 @@
 import { createLogger, format, type Logger, transports } from 'winston';
 import { LOG_LEVEL } from '@/utilities/env';
 
-let tempLogger: Logger;
+export enum LogLevel {
+  FATAL = 'fatal',
+  ERROR = 'error',
+  WARN = 'warn',
+  INFO = 'info',
+  DEBUG = 'debug',
+  SILLY = 'silly',
+}
+const levels = {
+  [LogLevel.FATAL]: 0,
+  [LogLevel.ERROR]: 1,
+  [LogLevel.WARN]: 2,
+  [LogLevel.INFO]: 3,
+  [LogLevel.DEBUG]: 4,
+  [LogLevel.SILLY]: 5,
+};
+
+let loggerInstance: Logger;
 try {
   const { combine, label, printf, colorize } = format;
 
   /* Logger setup */
   const transport = new transports.Console();
   const logFormat = printf((info) => `[${info.label}] ${info.level}: ${info.message}`);
-  tempLogger = createLogger({
+  loggerInstance = createLogger({
     format: combine(colorize(), label({ label: 'WS' }), logFormat),
     transports: [transport],
+    level: LOG_LEVEL,
+    levels,
   });
-  tempLogger.level = LOG_LEVEL;
+  loggerInstance.level = LOG_LEVEL;
 } catch (_e) {
   // Fallback to console wrapped as Logger
-  tempLogger = createLogger({
+  loggerInstance = createLogger({
     transports: [new transports.Console()],
+    level: LOG_LEVEL,
+    levels,
   });
 }
 
-export const logger = tempLogger;
+/**
+ * Replace the module-wide logger used by emitter internals.
+ * Call before constructing handlers when injecting a host-provided logger.
+ */
+export const setLogger = (uLogger: Logger): void => {
+  loggerInstance = uLogger;
+};
+
+/** Global logger proxy so existing imports pick up setLogger() overrides. */
+export const logger: Logger = new Proxy({} as Logger, {
+  get(_target, prop) {
+    const value = Reflect.get(loggerInstance, prop, loggerInstance);
+    return typeof value === 'function' ? value.bind(loggerInstance) : value;
+  },
+  set(_target, prop, value) {
+    Reflect.set(loggerInstance, prop, value);
+    return true;
+  },
+});
 
 /**
  * Group an array by a field value

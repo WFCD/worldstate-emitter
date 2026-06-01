@@ -50,6 +50,8 @@ describe('CronCache', () => {
       const promise2 = cache.get();
 
       const [data1, data2] = await Promise.all([promise1, promise2]);
+      expect(data1).to.be.a('string');
+      expect(data2).to.be.a('string');
       expect(data1).to.equal(data2);
     });
 
@@ -59,8 +61,9 @@ describe('CronCache', () => {
       cacheInstances.push(cache);
 
       const data1 = await cache.get();
+      expect(data1).to.be.a('string');
       const data2 = await cache.get();
-
+      expect(data2).to.be.a('string');
       expect(data1).to.equal(data2);
     });
   });
