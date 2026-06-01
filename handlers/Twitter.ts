@@ -194,12 +194,12 @@ export default class TwitterCache {
     if (this.disposed || !this.clientInfoValid) return undefined;
 
     if (!this.toWatch || this.toWatch.length === 0) {
-      this.logger.verbose('Not processing twitter, no data to watch.');
+      this.logger.debug('Not processing twitter, no data to watch.');
       return undefined;
     }
 
     if (!this.client) {
-      this.logger.verbose('Not processing twitter, no client to connect.');
+      this.logger.debug('Not processing twitter, no client to connect.');
       return undefined;
     }
 
@@ -213,7 +213,7 @@ export default class TwitterCache {
    * @returns Tweets
    */
   private async getParseableData(): Promise<ParsedTweet[] | undefined> {
-    this.logger.silly('Starting Twitter update...');
+    this.logger.debug('Starting Twitter update...');
     const parsedData: ParsedTweet[] = [];
     try {
       await Promise.all(
@@ -277,6 +277,6 @@ export default class TwitterCache {
     }
     this.client = undefined;
     this.clientInfoValid = false;
-    this.logger.verbose('Twitter polling stopped and resources cleaned up');
+    this.logger.debug('Twitter polling stopped and resources cleaned up');
   }
 }
