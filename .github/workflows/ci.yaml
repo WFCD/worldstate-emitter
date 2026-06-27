@@ -18,7 +18,7 @@ jobs:
       - run: |
           npm ci --omit=optional
           npm install --no-save warframe-worldstate-parser@^5.x warframe-worldstate-data@^3.x winston@^3
-      - uses: actions/cache/save@v5
+      - uses: actions/cache/save@v6
         with:
           path: |
             ./node_modules/**/*
@@ -36,7 +36,7 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version-file: .nvmrc
-      - uses: actions/cache/restore@v5
+      - uses: actions/cache/restore@v6
         with:
           path: |
             ./node_modules/**/*
@@ -56,7 +56,7 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version-file: .nvmrc
-      - uses: actions/cache/restore@v5
+      - uses: actions/cache/restore@v6
         with:
           path: |
             ./node_modules/**/*
