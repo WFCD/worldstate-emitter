@@ -20,7 +20,7 @@ jobs:
           node-version-file: ".nvmrc"
       - name: Install
         run: |
-          npm ci --omit=optional
+          npm ci
           npm install --no-save warframe-worldstate-parser@^5.x warframe-worldstate-data@^3.x winston@^3
       - name: Build
         run: npm run build
@@ -69,7 +69,7 @@ jobs:
           node-version-file: ".nvmrc"
       - name: Install
         run: |
-          npm ci --omit=optional
+          npm ci
           npm install --no-save warframe-worldstate-parser@^5.x warframe-worldstate-data@^3.x winston@^3
       - name: Build
         run: npm run build
