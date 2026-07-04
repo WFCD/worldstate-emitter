@@ -72,6 +72,7 @@
     "@types/twitter": "^1.7.4",
     "c8": "^11.0.0",
     "chai": "^6.2.2",
+    "conventional-commits-parser": "^6.4.0",
     "husky": "^9.1.7",
     "lint-staged": "^17.0.3",
     "mocha": "^11.7.5",
