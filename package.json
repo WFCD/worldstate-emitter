@@ -68,7 +68,7 @@
     "@types/mocha": "^10.0.10",
     "@types/node": "^26.1.0",
     "@types/sanitize-html": "^2.16.0",
-    "@types/sinon": "^21.0.0",
+    "@types/sinon": "^22.0.0",
     "@types/twitter": "^1.7.4",
     "c8": "^11.0.0",
     "chai": "^6.2.2",
