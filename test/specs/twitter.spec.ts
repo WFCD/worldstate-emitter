@@ -1,5 +1,6 @@
 import { expect } from 'chai';
 import TwitterCache from '@/handlers/Twitter';
+import { XTimelineClient } from '@/handlers/twitterClient';
 import {
   mockQuoteTweet,
   mockReplyTweet,
@@ -388,6 +389,99 @@ describe('Twitter Handler', () => {
       // All IDs should be unique
       const uniqueIds = new Set(ids);
       expect(uniqueIds.size).to.equal(ids.length);
+    });
+  });
+
+  describe('X API v2 client', () => {
+    const originalFetch = globalThis.fetch;
+    const timeline = {
+      data: [
+        {
+          id: '9001',
+          text: 'v2 tweet',
+          created_at: '2026-01-02T00:00:00.000Z',
+          author_id: '42',
+          attachments: { media_keys: ['3_1'] },
+          referenced_tweets: [{ type: 'quoted', id: '8001' }],
+        },
+      ],
+      includes: {
+        users: [
+          {
+            id: '42',
+            name: 'Warframe',
+            username: 'PlayWarframe',
+            profile_image_url: 'https://pbs.twimg.com/profile_images/123/test_normal.jpg',
+          },
+          { id: '7', name: 'Other User', username: 'OtherUser' },
+        ],
+        tweets: [
+          {
+            id: '8001',
+            text: 'Original quoted tweet full text',
+            created_at: '2026-01-01T00:00:00.000Z',
+            author_id: '7',
+          },
+        ],
+        media: [{ media_key: '3_1', type: 'photo', url: 'https://pbs.twimg.com/media/test_image.jpg' }],
+      },
+    };
+
+    afterEach(() => {
+      globalThis.fetch = originalFetch;
+    });
+
+    it('should map a v2 timeline onto the existing tweet shape', async () => {
+      const urls: string[] = [];
+      globalThis.fetch = (async (input: RequestInfo | URL) => {
+        const url = String(input);
+        urls.push(url);
+        if (url.includes('/users/by/username/PlayWarframe')) {
+          return Response.json({ data: { id: '42' } });
+        }
+        return Response.json(timeline);
+      }) as typeof fetch;
+
+      const client = new XTimelineClient('test_bearer_token');
+      const [tweet] = await client.get('statuses/user_timeline', { screen_name: 'PlayWarframe' });
+      expect(tweet).to.exist;
+      if (!tweet) return;
+
+      expect(urls[0]).to.include('https://api.x.com/2/users/by/username/PlayWarframe');
+      expect(urls[1]).to.include('https://api.x.com/2/users/42/tweets');
+      expect(tweet.user.screen_name).to.equal('PlayWarframe');
+      expect(tweet.entities.media?.[0].media_url).to.equal('https://pbs.twimg.com/media/test_image.jpg');
+      expect(tweet.quoted_status?.text).to.equal('Original quoted tweet full text');
+      expect(tweet.quoted_status?.user.screen_name).to.equal('OtherUser');
+    });
+
+    it('should reuse the resolved user id', async () => {
+      let calls = 0;
+      globalThis.fetch = (async (input: RequestInfo | URL) => {
+        calls += 1;
+        const url = String(input);
+        if (url.includes('/users/by/username/')) return Response.json({ data: { id: '42' } });
+        return Response.json({ data: [] });
+      }) as typeof fetch;
+
+      const client = new XTimelineClient('test_bearer_token');
+      await client.get('statuses/user_timeline', { screen_name: 'PlayWarframe' });
+      await client.get('statuses/user_timeline', { screen_name: 'PlayWarframe' });
+
+      expect(calls).to.equal(3);
+    });
+
+    it('should surface auth failure as code 32', async () => {
+      globalThis.fetch = (async () =>
+        Response.json({ title: 'Unauthorized', status: 401 }, { status: 401 })) as typeof fetch;
+
+      const client = new XTimelineClient('bad');
+      try {
+        await client.get('statuses/user_timeline', { screen_name: 'PlayWarframe' });
+        expect.fail('expected auth error');
+      } catch (error) {
+        expect(error).to.deep.equal([{ code: 32, message: 'Unauthorized' }]);
+      }
     });
   });
 

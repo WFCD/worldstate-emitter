@@ -1,7 +1,8 @@
 import type EventEmitter from 'node:events';
-import Twitter, { type BearerTokenOptions, type MediaEntity, type Status, type TwitterClient } from 'twitter';
 import type { Logger } from 'winston';
 
+import { XTimelineClient } from '@/handlers/twitterClient';
+import type { Status, TimelineClient, TwitterCredentials } from '@/handlers/twitterTypes';
 import toWatch from '@/resources/tweeters.json';
 import { logger } from '@/utilities';
 import { TWITTER_TIMEOUT, twiClientInfo } from '@/utilities/env';
@@ -58,7 +59,7 @@ const parseAuthor = (tweet: Status): TweetAuthor => ({
   name: tweet.user.name,
   handle: tweet.user.screen_name,
   url: `https://twitter.com/${tweet.user.screen_name}`,
-  avatar: tweet.user.profile_image_url ? tweet.user.profile_image_url.replace('_normal.jpg', '.jpg') : '',
+  avatar: tweet.user.profile_image_url ? tweet.user.profile_image_url.replace('_normal.', '.') : '',
 });
 
 const parseQuoted = (tweet: Status, type: 'quoted_status' | 'retweeted_status'): QuotedTweet | undefined =>
@@ -83,7 +84,7 @@ const parseTweet = (tweets: Status[], watchable: Watchable): ParsedTweet => {
     uniqueId: String(tweets[0].id_str),
     text: tweet.full_text || tweet.text,
     url: `https://twitter.com/${tweet.user.screen_name}/status/${tweet.id_str}`,
-    mediaUrl: tweet.entities.media ? (tweet.entities.media[0] as MediaEntity).media_url : undefined,
+    mediaUrl: tweet.entities.media?.[0]?.media_url,
     isReply: typeof tweet.in_reply_to_status_id !== 'undefined',
     author: parseAuthor(tweet),
     quote: parseQuoted(tweet, 'quoted_status'),
@@ -100,7 +101,7 @@ export default class TwitterCache {
   private logger: Logger;
   private timeout: number;
   public clientInfoValid: boolean;
-  private client?: TwitterClient;
+  private client?: TimelineClient;
   private toWatch?: Watchable[];
   private currentData?: ParsedTweet[];
   private lastUpdated: number;
@@ -122,7 +123,7 @@ export default class TwitterCache {
     eventEmitter: EventEmitter,
     options: {
       autoStart?: boolean;
-      clientInfo?: Partial<BearerTokenOptions>;
+      clientInfo?: TwitterCredentials;
       watchList?: Watchable[];
       timeout?: number;
       logger?: Logger;
@@ -146,14 +147,10 @@ export default class TwitterCache {
     }
   }
 
-  private initClient(clientInfo: Partial<BearerTokenOptions>): void {
+  private initClient(clientInfo: TwitterCredentials): void {
     try {
       if (this.clientInfoValid && clientInfo.consumer_key && clientInfo.consumer_secret && clientInfo.bearer_token) {
-        this.client = new Twitter({
-          consumer_key: clientInfo.consumer_key,
-          consumer_secret: clientInfo.consumer_secret,
-          bearer_token: clientInfo.bearer_token,
-        });
+        this.client = new XTimelineClient(clientInfo.bearer_token);
 
         // don't attempt anything else if authentication fails
         if (!this.toWatch) {
@@ -178,7 +175,7 @@ export default class TwitterCache {
    * @param mockClient - Mock Twitter client
    * @internal
    */
-  setClient(mockClient: TwitterClient): void {
+  setClient(mockClient: TimelineClient): void {
     this.client = mockClient;
     if (!this.toWatch) {
       this.toWatch = toWatch as Watchable[];
@@ -223,7 +220,7 @@ export default class TwitterCache {
             tweet_mode: 'extended',
             count: 1,
           });
-          const tweet = parseTweet(tweets as Status[], watchable);
+          const tweet = parseTweet(tweets, watchable);
           parsedData.push(tweet);
 
           if (tweet.createdAt.getTime() > this.lastUpdated) {

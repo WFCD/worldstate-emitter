@@ -56,9 +56,8 @@
   },
   "dependencies": {
     "cron": "^4.4.0",
-    "rss-feed-emitter": "^3.2.4",
-    "sanitize-html": "^2.17.0",
-    "twitter": "^1.7.1"
+    "rss-feed-emitter": "^4.0.0",
+    "sanitize-html": "^2.17.0"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.3.14",
@@ -69,7 +68,6 @@
     "@types/node": "^26.1.0",
     "@types/sanitize-html": "^2.16.0",
     "@types/sinon": "^22.0.0",
-    "@types/twitter": "^1.7.4",
     "argue-cli": "^3.1.0",
     "c8": "^11.0.0",
     "chai": "^6.2.2",
@@ -91,7 +89,7 @@
     "winston": "^3.19.0"
   },
   "engines": {
-    "node": ">=20.10.0"
+    "node": ">=22.13.0"
   },
   "publishConfig": {
     "provenance": true
