@@ -1,9 +1,9 @@
 import type EventEmitter from 'node:events';
-import type { RSSItem } from 'rss-feed-emitter';
 import RssFeedEmitter from 'rss-feed-emitter';
 import sanitizeHtml from 'sanitize-html';
 
 import feedsJson from '@/resources/rssFeeds.json';
+import type { RSSFeedList, RSSItem } from '@/types/rss';
 import { logger } from '@/utilities';
 
 const FEED_DEFAULT_REFRESH = 30000; // 30 seconds in MS
@@ -136,7 +136,7 @@ export default class RSS {
     }
 
     // Strategy 3: Use feeder.list to find registered feed by item URL
-    const registeredFeeds = this.feeder.list;
+    const registeredFeeds = this.feeder.list as unknown as RSSFeedList[];
     if (Array.isArray(registeredFeeds)) {
       for (const registeredFeed of registeredFeeds) {
         const matchingFeed = this.feeds.find((f) => f.url === registeredFeed.url);

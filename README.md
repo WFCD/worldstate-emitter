@@ -16,7 +16,7 @@ Very opinionated decisions on what events and event names, as well as.... everyt
 npm install worldstate-emitter
 ```
 
-This package requires Node.js 20.10.0 or higher and is an ES Module.
+This package requires Node.js 22.13.0 or higher and is an ES Module.
 
 ### Peer Dependencies
 

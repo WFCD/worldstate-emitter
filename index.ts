@@ -1,12 +1,12 @@
 import EventEmitter from 'node:events';
 
-import type { RSSItem } from 'rss-feed-emitter';
 import type WorldState from 'warframe-worldstate-parser';
 import type { Logger } from 'winston';
 import RSS from '@/handlers/RSS';
 import Twitter from '@/handlers/Twitter';
 import Worldstate from '@/handlers/Worldstate';
 import { FEATURES } from '@/resources/config';
+import type { RSSFeedList, RSSItem } from '@/types/rss';
 import { logger, setLogger } from '@/utilities';
 
 interface WorldstateEmitterOptions {
@@ -116,7 +116,7 @@ export default class WorldstateEmitter extends EventEmitter {
    */
   getRss(): RssFeedItem[] | undefined {
     if (!this.#rss) return undefined;
-    return this.#rss.feeder.list.map((i) => ({ url: i.url, items: i.items }));
+    return (this.#rss.feeder.list as unknown as RSSFeedList[]).map((i) => ({ url: i.url, items: i.items }));
   }
 
   /**
